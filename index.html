@@ -1,0 +1,2613 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>英語学習アプリ</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --text: #172033;
+      --muted: #657084;
+      --line: #d8deea;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --soft: #eef4ff;
+      --good: #047857;
+      --good-bg: #ecfdf5;
+      --bad: #b91c1c;
+      --bad-bg: #fef2f2;
+      --pause: #9a3412;
+      --pause-bg: #fff7ed;
+      font-family: "Segoe UI", "Noto Sans JP", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-text-size-adjust: 100%;
+      touch-action: manipulation;
+    }
+
+    .app {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      padding: 24px 20px 28px;
+    }
+
+    header {
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(26px, 4vw, 40px);
+      letter-spacing: 0;
+      line-height: 1.2;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 18px 0;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .tab-button,
+    button {
+      border: 0;
+      border-radius: 8px;
+      min-height: 48px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tab-button {
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .tab-button.active {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .panel {
+      display: none;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      box-shadow: 0 16px 38px rgba(31, 41, 55, 0.08);
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .primary:hover:not(:disabled) {
+      background: var(--primary-dark);
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: var(--text);
+    }
+
+    button:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      border-radius: 999px;
+      padding: 6px 12px;
+      background: var(--soft);
+      color: #3730a3;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 18px;
+      margin-top: 16px;
+    }
+
+    .quiz-prompt {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .quiz-word {
+      margin: 0;
+      font-size: clamp(24px, 5vw, 42px);
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .choices {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .choice {
+      width: 100%;
+      min-height: 56px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .choice.correct {
+      border-color: #86efac;
+      background: var(--good-bg);
+      color: var(--good);
+    }
+
+    .choice.wrong {
+      border-color: #fecaca;
+      background: var(--bad-bg);
+      color: var(--bad);
+    }
+
+    .feedback {
+      min-height: 28px;
+      margin-top: 12px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .speaking-display {
+      min-height: 190px;
+      display: grid;
+      align-content: center;
+      gap: 12px;
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 20px;
+    }
+
+    .phase {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .big-ja,
+    .big-en,
+    .empty {
+      margin: 0;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .big-ja {
+      font-size: clamp(24px, 5vw, 38px);
+      font-weight: 900;
+    }
+
+    .big-en {
+      font-size: clamp(22px, 4vw, 34px);
+      font-weight: 850;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 18px;
+      font-weight: 750;
+    }
+
+    .pause-badge {
+      width: fit-content;
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: var(--pause-bg);
+      color: var(--pause);
+      font-weight: 900;
+    }
+
+    .speaking-settings {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(140px, 0.6fr);
+      gap: 12px;
+      margin-top: 14px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .segmented label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .segmented input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .segmented label:has(input:checked) {
+      border-color: var(--primary);
+      background: var(--soft);
+      color: var(--primary-dark);
+    }
+
+    .problem-list {
+      display: grid;
+      gap: 10px;
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .problem {
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #ffffff;
+    }
+
+    .problem.checked {
+      background: #f9fafb;
+      color: var(--muted);
+    }
+
+    .excluded-section {
+      display: grid;
+      gap: 10px;
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .excluded-section h2 {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .problem label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .problem input {
+      width: 28px;
+      height: 28px;
+      accent-color: var(--primary);
+      flex: 0 0 auto;
+    }
+
+    .problem-text {
+      display: grid;
+      gap: 4px;
+      line-height: 1.55;
+    }
+
+    .phrase-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .guide {
+      display: grid;
+      gap: 12px;
+      line-height: 1.75;
+    }
+
+    .sync-note {
+      display: grid;
+      gap: 8px;
+      margin: 14px 0 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .csv-box {
+      min-height: 160px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-weight: 900;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text);
+      background: #ffffff;
+      font: inherit;
+      line-height: 1.45;
+    }
+
+    textarea {
+      min-height: 84px;
+      resize: vertical;
+    }
+
+    .phrase-textarea {
+      min-height: 96px;
+      max-height: 220px;
+      overflow-y: auto;
+      transition: min-height 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .phrase-textarea:focus {
+      min-height: 190px;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .tag-picker {
+      min-height: 112px;
+    }
+
+    .tag-actions {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .selected-tags {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .added-phrase-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .added-phrase {
+      display: grid;
+      gap: 5px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      line-height: 1.55;
+    }
+
+    .phrase-group,
+    .phrase-group-item {
+      display: block;
+    }
+
+    .phrase-group {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      overflow: hidden;
+    }
+
+    .phrase-group summary {
+      min-height: 50px;
+      padding: 13px 14px;
+      cursor: pointer;
+      font-weight: 900;
+      color: var(--primary-dark);
+      list-style-position: inside;
+    }
+
+    .phrase-group[open] summary {
+      border-bottom: 1px solid var(--line);
+      background: var(--soft);
+    }
+
+    .phrase-group-body {
+      display: grid;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .phrase-group-body.problem-list {
+      margin: 0;
+    }
+
+    .item-manager {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .manager-item {
+      display: grid;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #ffffff;
+      line-height: 1.55;
+    }
+
+    .manager-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .manager-actions button {
+      min-height: 42px;
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+
+    .danger {
+      background: var(--bad-bg);
+      color: var(--bad);
+    }
+
+    .guide h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .guide ol {
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .guide li {
+      margin-bottom: 8px;
+    }
+
+    code {
+      border-radius: 6px;
+      background: #eef2ff;
+      padding: 2px 6px;
+      font-family: Consolas, monospace;
+    }
+
+    @media (max-width: 700px) {
+      .app {
+        min-height: 100dvh;
+        padding: 16px 12px calc(124px + env(safe-area-inset-bottom));
+      }
+
+      h1 {
+        font-size: 27px;
+      }
+
+      .lead {
+        font-size: 14px;
+      }
+
+      .tag-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .phrase-textarea:focus {
+        min-height: 160px;
+      }
+
+      .tabs {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 20;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin: 0;
+        padding: 12px 10px calc(14px + env(safe-area-inset-bottom));
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 0;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+      }
+
+      .tab-button {
+        min-height: 62px;
+        padding: 8px 4px;
+        font-size: 12px;
+      }
+
+      .panel {
+        padding: 16px 14px;
+        box-shadow: none;
+      }
+
+      .row button {
+        flex: 1 1 130px;
+        min-height: 56px;
+        font-size: 17px;
+      }
+
+      .pill {
+        width: 100%;
+      }
+
+      .choice {
+        min-height: 60px;
+        font-size: 17px;
+      }
+
+      .speaking-display {
+        min-height: 250px;
+        padding: 18px;
+      }
+
+      .problem {
+        padding: 14px 12px;
+      }
+
+      .problem input {
+        width: 32px;
+        height: 32px;
+      }
+
+      .speaking-settings {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>英語学習アプリ</h1>
+      <p class="lead">単語クイズで表現を確認し、1秒スピーキングで日本語から英語をすぐ出す練習をします。スマホのブラウザだけで動きます。</p>
+    </header>
+
+    <nav class="tabs" aria-label="学習メニュー">
+      <button class="tab-button" type="button" data-tab="quiz">単語クイズ</button>
+      <button class="tab-button active" type="button" data-tab="speaking">1秒スピーキング</button>
+      <button class="tab-button" type="button" data-tab="phrases">追加したフレーズ一覧</button>
+      <button class="tab-button" type="button" data-tab="add">問題追加</button>
+    </nav>
+
+    <section id="quiz" class="panel" aria-label="単語クイズ">
+      <div class="row">
+        <button id="quizSpeakButton" class="secondary" type="button">問題を読む</button>
+        <button id="quizResetButton" class="secondary" type="button">最初から</button>
+        <span id="quizStatus" class="pill">0 / 0</span>
+      </div>
+      <div class="field">
+        <label for="quizTagFilter">タグで絞り込み</label>
+        <select id="quizTagFilter"></select>
+      </div>
+
+      <div class="card">
+        <p class="quiz-prompt">日本語に合う英語を選んでください</p>
+        <p id="quizQuestion" class="quiz-word">自業自得</p>
+        <div id="choices" class="choices">
+          <button class="choice" type="button">a taste of your own medicine</button>
+          <button class="choice" type="button">a piece of cake</button>
+          <button class="choice" type="button">on the same page</button>
+        </div>
+        <div id="quizFeedback" class="feedback" aria-live="polite"></div>
+        <div class="row">
+          <button id="nextQuizButton" class="primary" type="button" disabled>次の問題</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="speaking" class="panel active" aria-label="1秒スピーキング">
+      <div class="row">
+        <button id="playButton" class="primary" type="button">再生</button>
+        <button id="stopButton" class="secondary" type="button" disabled>停止</button>
+        <span id="speakingStatus" class="pill">待機中</span>
+      </div>
+
+      <div class="speaking-settings" aria-label="再生設定">
+        <div class="field">
+          <label>読み上げモード</label>
+          <div class="segmented">
+            <label>
+              <input type="radio" name="speakingMode" value="ja-en" checked>
+              日本語あり
+            </label>
+            <label>
+              <input type="radio" name="speakingMode" value="en-only">
+              英語のみ
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="repeatCount">英語の繰り返し回数</label>
+          <select id="repeatCount" aria-label="英語の繰り返し回数">
+            <option value="1" selected>1回</option>
+            <option value="2">2回</option>
+            <option value="3">3回</option>
+            <option value="4">4回</option>
+            <option value="5">5回</option>
+            <option value="6">6回</option>
+            <option value="7">7回</option>
+            <option value="8">8回</option>
+            <option value="9">9回</option>
+            <option value="10">10回</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="voicePreference">読み上げ音声</label>
+          <select id="voicePreference" aria-label="読み上げ音声">
+            <option value="default" selected>ブラウザ標準</option>
+            <option value="male">男性風（低音補正）</option>
+            <option value="female">女性優先</option>
+          </select>
+          <span class="hint">音質を優先する場合はブラウザ標準がおすすめです。男性風は低音補正のため音質が変わることがあります。</span>
+        </div>
+        <div class="field">
+          <label for="speakingTagFilter">タグで絞り込み</label>
+          <select id="speakingTagFilter"></select>
+        </div>
+      </div>
+
+      <div class="speaking-display" aria-live="polite">
+        <p id="phase" class="phase">Ready</p>
+        <div id="sentenceArea">
+          <p class="empty">再生ボタンを押してください。</p>
+        </div>
+      </div>
+
+      <ul id="problemList" class="problem-list" aria-label="再生する問題"></ul>
+      <section class="excluded-section" aria-label="除外したフレーズ">
+        <h2>除外したフレーズ</h2>
+        <ul id="excludedProblemList" class="problem-list"></ul>
+      </section>
+    </section>
+
+    <section id="phrases" class="panel" aria-label="追加したフレーズ一覧">
+      <section class="card" aria-label="追加したフレーズ一覧">
+        <h2>追加したフレーズ一覧</h2>
+        <p class="hint">自分で追加した1秒スピーキング用フレーズをここで確認できます。日本語・英語を単体で再生できます。</p>
+        <div id="addedPhraseList" class="added-phrase-list"></div>
+      </section>
+    </section>
+
+    <section id="add" class="panel" aria-label="問題追加">
+      <div class="row">
+        <span id="syncStatus" class="pill">同期準備中</span>
+        <button id="syncNowButton" class="secondary" type="button">今すぐ同期</button>
+      </div>
+      <form id="itemForm" class="form-grid">
+        <input id="editingId" type="hidden">
+        <div class="field">
+          <label for="jaInput">日本語文（必須）</label>
+          <textarea id="jaInput" class="phrase-textarea" required placeholder="例: 彼らは新しいマーケティング戦略を実行する予定です。"></textarea>
+        </div>
+        <div class="field">
+          <label for="enInput">英語文（必須）</label>
+          <textarea id="enInput" class="phrase-textarea" required placeholder="例: They will implement a new marketing strategy."></textarea>
+        </div>
+        <div class="field">
+          <label for="tagSelect">タグ</label>
+          <select id="tagSelect" class="tag-picker" multiple size="4"></select>
+          <span id="selectedTagPreview" class="selected-tags">タグ未選択</span>
+          <span class="hint">使うタグを選択してください。複数選ぶ場合は Ctrl キーを押しながら選択できます。</span>
+        </div>
+        <div class="field">
+          <label for="newTagInput">新しいタグを追加</label>
+          <div class="tag-actions">
+            <input id="newTagInput" type="text" placeholder="例: 授業">
+            <button id="addTagButton" class="secondary" type="button">追加</button>
+            <button id="deleteTagButton" class="danger" type="button">選択タグを削除</button>
+          </div>
+          <span class="hint">一度追加したタグは、次回から上の一覧で選べます。削除すると追加済み問題からもそのタグを外します。</span>
+          <div id="tagMessage" class="feedback" aria-live="polite"></div>
+        </div>
+        <div class="field">
+          <label for="promptInput">クイズ用の日本語ヒント</label>
+          <input id="promptInput" type="text" placeholder="例: 実行する">
+          <span class="hint">空欄の場合は1秒スピーキングだけに追加します。</span>
+        </div>
+        <div class="field">
+          <label for="answerInput">クイズ正解</label>
+          <input id="answerInput" type="text" placeholder="例: implement">
+        </div>
+        <div class="field">
+          <label for="choiceAInput">クイズ選択肢1</label>
+          <input id="choiceAInput" type="text" placeholder="例: imagine">
+        </div>
+        <div class="field">
+          <label for="choiceBInput">クイズ選択肢2</label>
+          <input id="choiceBInput" type="text" placeholder="例: interrupt">
+        </div>
+        <div class="row">
+          <button id="saveItemButton" class="primary" type="submit">問題を保存</button>
+          <button id="clearFormButton" class="secondary" type="button">入力をクリア</button>
+        </div>
+        <div id="formMessage" class="feedback" aria-live="polite"></div>
+      </form>
+
+      <section class="card" aria-label="CSV一括追加">
+        <div class="form-grid">
+          <div class="field">
+            <label for="csvInput">CSV一括追加</label>
+            <textarea id="csvInput" class="csv-box" placeholder="日本語,英語,タグ,クイズヒント,正解,選択肢1,選択肢2&#10;彼らは新しい戦略を実行します,They will implement a new strategy,仕事,実行する,implement,imagine,interrupt"></textarea>
+            <span class="hint">1行目に見出しを書いてもOKです。タグやクイズ欄は空でも追加できます。</span>
+          </div>
+          <div class="row">
+            <button id="importCsvButton" class="primary" type="button">CSVを追加</button>
+            <button id="clearCsvButton" class="secondary" type="button">CSVをクリア</button>
+          </div>
+          <div id="csvMessage" class="feedback" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="追加済み問題の編集">
+        <h2>追加済み問題の編集</h2>
+        <div id="itemManager" class="item-manager"></div>
+      </section>
+
+      <div class="sync-note">
+        <strong>スマホとPCで同じ問題を使うには</strong>
+        <span>下のSupabase設定を保存してください。スマホとPCで同じ <code>SYNC_KEY</code> を使うと、追加した問題とチェック状態が同期されます。未設定の間は、この端末だけに保存されます。</span>
+      </div>
+
+      <section class="card" aria-label="Supabase同期設定">
+        <div class="form-grid">
+          <div class="field">
+            <label for="supabaseUrlInput">Supabase Project URL</label>
+            <input id="supabaseUrlInput" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="supabaseAnonKeyInput">Supabase anon public key</label>
+            <input id="supabaseAnonKeyInput" type="password" placeholder="eyJ..." autocomplete="off">
+            <span class="hint">service role key は絶対に入れないでください。anon public keyだけを使います。</span>
+          </div>
+          <div class="field">
+            <label for="syncKeyInput">SYNC_KEY</label>
+            <input id="syncKeyInput" type="text" placeholder="例: english-my-private-sync-2026" autocomplete="off">
+            <span class="hint">スマホとPCで同じ文字列にしてください。推測されにくい長めの文字列がおすすめです。</span>
+          </div>
+          <div class="row">
+            <button id="saveSyncSettingsButton" class="primary" type="button">同期設定を保存</button>
+            <button id="clearSyncSettingsButton" class="secondary" type="button">同期設定を消去</button>
+          </div>
+          <div id="syncSettingsMessage" class="feedback" aria-live="polite"></div>
+        </div>
+      </section>
+    </section>
+    <noscript>
+      <p class="card">このアプリを使うにはJavaScriptを有効にしてください。SafariまたはChromeで開くと動きやすいです。</p>
+    </noscript>
+  </div>
+
+  <script>
+    const DEFAULT_SUPABASE_URL = "";
+    const DEFAULT_SUPABASE_ANON_KEY = "";
+    const DEFAULT_SYNC_KEY = "english-my-sync-key";
+    const SETTINGS_STORAGE_KEY = "english_sync_settings";
+    const USER_TAGS_STORAGE_KEY = "english_user_tags";
+    const VOICE_PREF_STORAGE_KEY = "english_voice_preference";
+    const SYNC_INTERVAL_MS = 10000;
+    const PHRASE_GROUP_SIZE = 20;
+
+    const INITIAL_SENTENCES = [
+      {
+        id: "builtin-sentence-1",
+        kind: "sentence",
+        ja: "どんな気分か分かったでしょう！自業自得だよ。",
+        en: "Now you see how it feels! It's a taste of your own medicine.",
+        tags: ["基本"],
+        excluded: false
+      },
+      {
+        id: "builtin-sentence-2",
+        kind: "sentence",
+        ja: "電車を乗り過ごした、というわけだ。",
+        en: "We missed the train, so there you go.",
+        tags: ["基本"],
+        excluded: false
+      },
+      {
+        id: "builtin-sentence-3",
+        kind: "sentence",
+        ja: "彼らは新しいマーケティング戦略を実行する予定です。",
+        en: "They will implement a new marketing strategy.",
+        tags: ["仕事"],
+        excluded: false
+      }
+    ];
+
+    const INITIAL_QUIZZES = [
+      {
+        id: "builtin-quiz-1",
+        kind: "quiz",
+        prompt: "自業自得",
+        answer: "a taste of your own medicine",
+        tags: ["基本"],
+        choices: ["a taste of your own medicine", "a piece of cake", "on the same page"]
+      },
+      {
+        id: "builtin-quiz-2",
+        kind: "quiz",
+        prompt: "電車に乗り遅れる / 乗り過ごす",
+        answer: "miss the train",
+        tags: ["基本"],
+        choices: ["miss the train", "take a break", "catch a cold"]
+      },
+      {
+        id: "builtin-quiz-3",
+        kind: "quiz",
+        prompt: "というわけだ / ほらね",
+        answer: "there you go",
+        tags: ["基本"],
+        choices: ["there you go", "by the way", "not at all"]
+      },
+      {
+        id: "builtin-quiz-4",
+        kind: "quiz",
+        prompt: "実行する",
+        answer: "implement",
+        tags: ["仕事"],
+        choices: ["implement", "imagine", "interrupt"]
+      },
+      {
+        id: "builtin-quiz-5",
+        kind: "quiz",
+        prompt: "マーケティング戦略",
+        answer: "marketing strategy",
+        tags: ["仕事"],
+        choices: ["marketing strategy", "morning routine", "meeting schedule"]
+      }
+    ];
+
+    let customItems = [];
+    let userTags = [];
+    let sentencePairs = [];
+    let quizItems = [];
+    let syncConfig = {
+      supabaseUrl: DEFAULT_SUPABASE_URL,
+      supabaseAnonKey: DEFAULT_SUPABASE_ANON_KEY,
+      syncKey: DEFAULT_SYNC_KEY
+    };
+
+    const tabs = document.querySelectorAll(".tab-button");
+    const panels = document.querySelectorAll(".panel");
+    const quizQuestion = document.getElementById("quizQuestion");
+    const choicesEl = document.getElementById("choices");
+    const quizTagFilter = document.getElementById("quizTagFilter");
+    const quizFeedback = document.getElementById("quizFeedback");
+    const quizStatus = document.getElementById("quizStatus");
+    const nextQuizButton = document.getElementById("nextQuizButton");
+    const quizResetButton = document.getElementById("quizResetButton");
+    const quizSpeakButton = document.getElementById("quizSpeakButton");
+
+    const playButton = document.getElementById("playButton");
+    const stopButton = document.getElementById("stopButton");
+    const speakingStatus = document.getElementById("speakingStatus");
+    const phaseEl = document.getElementById("phase");
+    const sentenceArea = document.getElementById("sentenceArea");
+    const problemList = document.getElementById("problemList");
+    const excludedProblemList = document.getElementById("excludedProblemList");
+    const repeatCount = document.getElementById("repeatCount");
+    const voicePreference = document.getElementById("voicePreference");
+    const speakingTagFilter = document.getElementById("speakingTagFilter");
+    const speakingModeInputs = document.querySelectorAll('input[name="speakingMode"]');
+    const syncStatus = document.getElementById("syncStatus");
+    const syncNowButton = document.getElementById("syncNowButton");
+    const supabaseUrlInput = document.getElementById("supabaseUrlInput");
+    const supabaseAnonKeyInput = document.getElementById("supabaseAnonKeyInput");
+    const syncKeyInput = document.getElementById("syncKeyInput");
+    const saveSyncSettingsButton = document.getElementById("saveSyncSettingsButton");
+    const clearSyncSettingsButton = document.getElementById("clearSyncSettingsButton");
+    const syncSettingsMessage = document.getElementById("syncSettingsMessage");
+    const itemForm = document.getElementById("itemForm");
+    const editingId = document.getElementById("editingId");
+    const jaInput = document.getElementById("jaInput");
+    const enInput = document.getElementById("enInput");
+    const tagSelect = document.getElementById("tagSelect");
+    const selectedTagPreview = document.getElementById("selectedTagPreview");
+    const newTagInput = document.getElementById("newTagInput");
+    const addTagButton = document.getElementById("addTagButton");
+    const deleteTagButton = document.getElementById("deleteTagButton");
+    const tagMessage = document.getElementById("tagMessage");
+    const promptInput = document.getElementById("promptInput");
+    const answerInput = document.getElementById("answerInput");
+    const choiceAInput = document.getElementById("choiceAInput");
+    const choiceBInput = document.getElementById("choiceBInput");
+    const clearFormButton = document.getElementById("clearFormButton");
+    const formMessage = document.getElementById("formMessage");
+    const addedPhraseList = document.getElementById("addedPhraseList");
+    const itemManager = document.getElementById("itemManager");
+    const csvInput = document.getElementById("csvInput");
+    const importCsvButton = document.getElementById("importCsvButton");
+    const clearCsvButton = document.getElementById("clearCsvButton");
+    const csvMessage = document.getElementById("csvMessage");
+
+    let quizIndex = 0;
+    let score = 0;
+    let answered = false;
+    let isPlaying = false;
+    let pauseTimer = null;
+    let currentLoop = [];
+    let currentPosition = 0;
+    let syncTimer = null;
+    let isSyncing = false;
+    let speechRunId = 0;
+    let activeUtterance = null;
+    let warmupUtterance = null;
+    const phraseGroupOpenState = new Map();
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function canUseSpeech() {
+      return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+    }
+
+    function getVoicePreference() {
+      return voicePreference ? voicePreference.value : "default";
+    }
+
+    function loadVoicePreference() {
+      const saved = localStorage.getItem(VOICE_PREF_STORAGE_KEY);
+      voicePreference.value = saved === "female" ? "female" : "default";
+      localStorage.setItem(VOICE_PREF_STORAGE_KEY, voicePreference.value);
+    }
+
+    function saveVoicePreference() {
+      localStorage.setItem(VOICE_PREF_STORAGE_KEY, getVoicePreference());
+    }
+
+    function getPreferredPitch() {
+      const preference = getVoicePreference();
+      if (preference === "male") return 0.68;
+      if (preference === "female") return 1.06;
+      return 1;
+    }
+
+    function getPreferredRate() {
+      const preference = getVoicePreference();
+      if (preference === "male") return 0.86;
+      if (preference === "female") return 0.95;
+      return 0.92;
+    }
+
+    function choosePreferredVoice(lang) {
+      const preference = getVoicePreference();
+      if (preference === "default" || !canUseSpeech()) {
+        return null;
+      }
+
+      const voices = window.speechSynthesis.getVoices();
+      const langPrefix = String(lang || "").split("-")[0].toLowerCase();
+      const candidates = voices.filter((voice) => {
+        const voiceLang = String(voice.lang || "").toLowerCase();
+        return voiceLang === String(lang || "").toLowerCase() || voiceLang.startsWith(`${langPrefix}-`);
+      });
+      const usableVoices = candidates.length > 0 ? candidates : voices;
+      const maleWords = ["male", "man", "david", "mark", "daniel", "alex", "george", "guy", "ryan", "ichiro", "keita", "otoya"];
+      const femaleWords = ["female", "woman", "zira", "susan", "samantha", "karen", "victoria", "haruka", "nanami", "ayumi", "kyoko"];
+      const goodWords = preference === "male" ? maleWords : femaleWords;
+      const badWords = preference === "male" ? femaleWords : maleWords;
+
+      const scored = usableVoices.map((voice) => {
+        const name = `${voice.name || ""} ${voice.voiceURI || ""}`.toLowerCase();
+        const good = goodWords.some((word) => name.includes(word)) ? 2 : 0;
+        const bad = badWords.some((word) => name.includes(word)) ? -2 : 0;
+        const local = voice.localService ? 0.3 : 0;
+        return { voice, score: good + bad + local };
+      }).sort((a, b) => b.score - a.score);
+
+      return scored.length > 0 && scored[0].score > 0 ? scored[0].voice : null;
+    }
+
+    function warmupSpeech(lang, runId) {
+      return new Promise((resolve) => {
+        if (!canUseSpeech()) {
+          resolve();
+          return;
+        }
+
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          resolve();
+        };
+
+        try {
+          warmupUtterance = new SpeechSynthesisUtterance(".");
+          warmupUtterance.lang = lang;
+          warmupUtterance.volume = 0;
+          warmupUtterance.rate = 10;
+          const preferredVoice = choosePreferredVoice(lang);
+          if (preferredVoice) {
+            warmupUtterance.voice = preferredVoice;
+          }
+          warmupUtterance.onend = finish;
+          warmupUtterance.onerror = finish;
+          window.speechSynthesis.speak(warmupUtterance);
+          window.setTimeout(finish, 220);
+        } catch (error) {
+          finish();
+        }
+      }).then(() => {
+        if (runId !== speechRunId) {
+          return Promise.reject(new Error("speech stopped"));
+        }
+        return new Promise((resolve) => window.setTimeout(resolve, 90));
+      });
+    }
+
+    function speak(text, lang) {
+      return new Promise((resolve) => {
+        if (!canUseSpeech()) {
+          wait(Math.min(Math.max(String(text).length * 70, 900), 2400)).then(resolve);
+          return;
+        }
+
+        try {
+          speechRunId += 1;
+          const runId = speechRunId;
+          let finished = false;
+          const finish = () => {
+            if (finished) return;
+            finished = true;
+            resolve();
+          };
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = lang;
+          utterance.rate = getPreferredRate();
+          utterance.pitch = getPreferredPitch();
+          const preferredVoice = choosePreferredVoice(lang);
+          if (preferredVoice) {
+            utterance.voice = preferredVoice;
+          }
+          utterance.onend = finish;
+          utterance.onerror = finish;
+          activeUtterance = utterance;
+          warmupSpeech(lang, runId).then(() => {
+            if (runId !== speechRunId) {
+              finish();
+              return;
+            }
+            try {
+              if (typeof window.speechSynthesis.resume === "function") {
+                window.speechSynthesis.resume();
+              }
+              window.speechSynthesis.speak(utterance);
+            } catch (error) {
+              finish();
+            }
+          }).catch(finish);
+        } catch (error) {
+          wait(Math.min(Math.max(String(text).length * 70, 900), 2400)).then(resolve);
+        }
+      });
+    }
+
+    function readText(text, lang, fallbackMessage) {
+      if (!canUseSpeech() && fallbackMessage) {
+        quizFeedback.textContent = fallbackMessage;
+      }
+      return speak(text, lang);
+    }
+
+    function warmUpVoices() {
+      if (!canUseSpeech()) {
+        return;
+      }
+
+      try {
+        window.speechSynthesis.getVoices();
+      } catch (error) {
+        // Some mobile WebViews throw here. Text-only playback still works.
+      }
+    }
+
+    function isSupabaseConfigured() {
+      return Boolean(syncConfig.supabaseUrl.trim() && syncConfig.supabaseAnonKey.trim());
+    }
+
+    function nowIso() {
+      return new Date().toISOString();
+    }
+
+    function makeId(prefix) {
+      return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    }
+
+    function cleanText(value) {
+      return String(value || "").trim();
+    }
+
+    function normalizeSplitPart(value) {
+      return cleanText(value).replace(/^[\s/／|｜・、。:：-]+|[\s/／|｜・、。:：-]+$/g, "");
+    }
+
+    function hasJapaneseText(value) {
+      return /[ぁ-んァ-ヶ一-龯々〆ヵヶ]/.test(value);
+    }
+
+    function hasEnglishText(value) {
+      return /[A-Za-z]/.test(value);
+    }
+
+    function splitByLanguageLabels(value) {
+      const text = cleanText(value);
+      const jaMatch = /(?:日本語|和文|ja|japanese)\s*[:：]/i.exec(text);
+      const enMatch = /(?:英語|英文|en|english)\s*[:：]/i.exec(text);
+      if (!jaMatch || !enMatch) {
+        return null;
+      }
+
+      const jaStart = jaMatch.index + jaMatch[0].length;
+      const enStart = enMatch.index + enMatch[0].length;
+      const jaEnd = jaMatch.index < enMatch.index ? enMatch.index : text.length;
+      const enEnd = enMatch.index < jaMatch.index ? jaMatch.index : text.length;
+      const ja = normalizeSplitPart(text.slice(jaStart, jaEnd));
+      const en = normalizeSplitPart(text.slice(enStart, enEnd));
+      return ja && en ? { ja, en } : null;
+    }
+
+    function splitByLanguageParts(value) {
+      const parts = cleanText(value)
+        .split(/\r?\n|\/|／|\||｜/)
+        .map(normalizeSplitPart)
+        .filter(Boolean);
+      if (parts.length < 2) {
+        return null;
+      }
+
+      const jaParts = [];
+      const enParts = [];
+      parts.forEach((part) => {
+        if (hasJapaneseText(part)) {
+          jaParts.push(part);
+        } else if (hasEnglishText(part)) {
+          enParts.push(part);
+        }
+      });
+
+      const ja = jaParts.join(" ");
+      const en = enParts.join(" ");
+      return ja && en ? { ja, en } : null;
+    }
+
+    function splitMixedLanguageText(value) {
+      const text = cleanText(value);
+      if (!hasJapaneseText(text) || !hasEnglishText(text)) {
+        return null;
+      }
+
+      return splitByLanguageLabels(text) || splitByLanguageParts(text);
+    }
+
+    function distributeMixedLanguageInput(sourceInput) {
+      const result = splitMixedLanguageText(sourceInput.value);
+      if (!result) {
+        return;
+      }
+
+      const keepExistingJa = sourceInput !== jaInput && Boolean(cleanText(jaInput.value));
+      const keepExistingEn = sourceInput !== enInput && Boolean(cleanText(enInput.value));
+      if (keepExistingJa && keepExistingEn) {
+        return;
+      }
+
+      if (!keepExistingJa) {
+        jaInput.value = result.ja;
+      }
+      if (!keepExistingEn) {
+        enInput.value = result.en;
+      }
+      resizePhraseTextarea(jaInput);
+      resizePhraseTextarea(enInput);
+      formMessage.textContent = keepExistingJa || keepExistingEn
+        ? "既に入力済みの欄は残して、自動で振り分けました。"
+        : "日本語文と英語文に自動で振り分けました。";
+    }
+
+    function parseTags(value) {
+      return String(value || "")
+        .split(/[,\u3001]/)
+        .map(cleanText)
+        .filter((tag, index, array) => tag && array.indexOf(tag) === index);
+    }
+
+    function getSelectedTags() {
+      return Array.from(tagSelect.selectedOptions || []).map((option) => option.value).filter(Boolean);
+    }
+
+    function updateSelectedTagPreview() {
+      const tags = getSelectedTags();
+      selectedTagPreview.textContent = tags.length > 0 ? `選択中: ${tags.join(" / ")}` : "タグ未選択";
+    }
+
+    function setSelectedTags(tags) {
+      const selected = new Set(tags || []);
+      Array.from(tagSelect.options || []).forEach((option) => {
+        option.selected = selected.has(option.value);
+      });
+      updateSelectedTagPreview();
+    }
+
+    function loadUserTags() {
+      try {
+        userTags = parseTags((JSON.parse(localStorage.getItem(USER_TAGS_STORAGE_KEY) || "[]") || []).join(","));
+      } catch (error) {
+        userTags = [];
+      }
+    }
+
+    function saveUserTags() {
+      localStorage.setItem(USER_TAGS_STORAGE_KEY, JSON.stringify(userTags));
+    }
+
+    function addTagsToUserList(tags) {
+      const merged = userTags.concat(tags || []);
+      userTags = merged.filter((tag, index, array) => tag && array.indexOf(tag) === index).sort();
+      saveUserTags();
+    }
+
+    function removeTagsFromItems(tags) {
+      let changed = false;
+      customItems = customItems.map((item) => {
+        const currentTags = item.tags || [];
+        const nextTags = currentTags.filter((tag) => !tags.includes(tag));
+        if (nextTags.length === currentTags.length) {
+          return item;
+        }
+        changed = true;
+        return Object.assign({}, item, {
+          tags: nextTags,
+          updated_at: nowIso(),
+          dirty: true
+        });
+      });
+      if (changed) {
+        saveLocalItems();
+        syncWithCloud("tags");
+      }
+      return changed;
+    }
+
+    function matchesTag(item, selectedTag) {
+      if (!selectedTag) return true;
+      return Array.isArray(item.tags) && item.tags.includes(selectedTag);
+    }
+
+    function getAllTags() {
+      const tags = userTags.slice();
+      sentencePairs.concat(quizItems).forEach((item) => {
+        (item.tags || []).forEach((tag) => {
+          if (tags.indexOf(tag) === -1) tags.push(tag);
+        });
+      });
+      return tags.sort();
+    }
+
+    function updateTagFilters() {
+      const currentQuizTag = quizTagFilter.value;
+      const currentSpeakingTag = speakingTagFilter.value;
+      const currentFormTags = getSelectedTags();
+      const tags = getAllTags();
+      const html = ['<option value="">すべて</option>']
+        .concat(tags.map((tag) => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`))
+        .join("");
+      quizTagFilter.innerHTML = html;
+      speakingTagFilter.innerHTML = html;
+      quizTagFilter.value = tags.includes(currentQuizTag) ? currentQuizTag : "";
+      speakingTagFilter.value = tags.includes(currentSpeakingTag) ? currentSpeakingTag : "";
+      tagSelect.innerHTML = tags.map((tag) => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join("");
+      setSelectedTags(currentFormTags.filter((tag) => tags.includes(tag)));
+    }
+
+    function getVisibleQuizItems() {
+      return quizItems.filter((item) => matchesTag(item, quizTagFilter.value));
+    }
+
+    function getStorageKey() {
+      return `english_items_${syncConfig.syncKey || DEFAULT_SYNC_KEY}`;
+    }
+
+    function loadSyncConfig() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}");
+        syncConfig = {
+          supabaseUrl: cleanText(saved.supabaseUrl || DEFAULT_SUPABASE_URL),
+          supabaseAnonKey: cleanText(saved.supabaseAnonKey || DEFAULT_SUPABASE_ANON_KEY),
+          syncKey: cleanText(saved.syncKey || DEFAULT_SYNC_KEY)
+        };
+      } catch (error) {
+        syncConfig = {
+          supabaseUrl: DEFAULT_SUPABASE_URL,
+          supabaseAnonKey: DEFAULT_SUPABASE_ANON_KEY,
+          syncKey: DEFAULT_SYNC_KEY
+        };
+      }
+      renderSyncSettings();
+    }
+
+    function saveSyncConfig() {
+      const nextSyncKey = cleanText(syncKeyInput.value) || DEFAULT_SYNC_KEY;
+      const previousItems = customItems.map((item) => Object.assign({}, item, {
+        sync_key: nextSyncKey,
+        updated_at: nowIso(),
+        dirty: true
+      }));
+
+      syncConfig = {
+        supabaseUrl: cleanText(supabaseUrlInput.value),
+        supabaseAnonKey: cleanText(supabaseAnonKeyInput.value),
+        syncKey: nextSyncKey
+      };
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(syncConfig));
+      loadLocalItems();
+
+      const byId = new Map(customItems.map((item) => [item.id, item]));
+      previousItems.forEach((item) => {
+        byId.set(item.id, normalizeItem(item));
+      });
+      customItems = Array.from(byId.values());
+      saveLocalItems();
+
+      syncSettingsMessage.textContent = "同期設定を保存しました。端末内の追加問題も同期対象にしました。";
+      renderAll();
+      syncWithCloud("settings");
+    }
+
+    function clearSyncConfig() {
+      localStorage.removeItem(SETTINGS_STORAGE_KEY);
+      syncConfig = {
+        supabaseUrl: DEFAULT_SUPABASE_URL,
+        supabaseAnonKey: DEFAULT_SUPABASE_ANON_KEY,
+        syncKey: DEFAULT_SYNC_KEY
+      };
+      renderSyncSettings();
+      loadLocalItems();
+      renderAll();
+      setSyncStatus("ローカル保存中（Supabase未設定）", true);
+      syncSettingsMessage.textContent = "同期設定を消去しました。";
+    }
+
+    function renderSyncSettings() {
+      supabaseUrlInput.value = syncConfig.supabaseUrl || "";
+      supabaseAnonKeyInput.value = syncConfig.supabaseAnonKey || "";
+      syncKeyInput.value = syncConfig.syncKey || DEFAULT_SYNC_KEY;
+    }
+
+    function normalizeItem(item) {
+      const normalized = {
+        id: item.id,
+        sync_key: item.sync_key || syncConfig.syncKey || DEFAULT_SYNC_KEY,
+        kind: item.kind,
+        ja: item.ja || "",
+        en: item.en || "",
+        prompt: item.prompt || "",
+        answer: item.answer || "",
+        choices: Array.isArray(item.choices) ? item.choices.filter(Boolean) : [],
+        tags: Array.isArray(item.tags) ? item.tags.filter(Boolean) : parseTags(item.tags),
+        excluded: Boolean(item.excluded),
+        position: Number.isFinite(Number(item.position)) ? Number(item.position) : Date.now(),
+        updated_at: item.updated_at || nowIso(),
+        deleted_at: item.deleted_at || null,
+        dirty: Boolean(item.dirty)
+      };
+      return normalized;
+    }
+
+    function loadLocalItems() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(getStorageKey()) || "[]");
+        customItems = Array.isArray(saved) ? saved.map(normalizeItem) : [];
+      } catch (error) {
+        customItems = [];
+        setSyncStatus("ローカル保存の読み込みに失敗しました", true);
+      }
+    }
+
+    function saveLocalItems() {
+      localStorage.setItem(getStorageKey(), JSON.stringify(customItems));
+    }
+
+    function setSyncStatus(message, warning = false) {
+      syncStatus.textContent = message;
+      syncStatus.style.background = warning ? "var(--bad-bg)" : "var(--soft)";
+      syncStatus.style.color = warning ? "var(--bad)" : "#3730a3";
+    }
+
+    function rebuildLearningData() {
+      const sentenceMap = new Map(INITIAL_SENTENCES.map((item) => [item.id, Object.assign({}, item)]));
+      const quizMap = new Map(INITIAL_QUIZZES.map((item) => [item.id, Object.assign({}, item)]));
+
+      customItems
+        .filter((item) => !item.deleted_at)
+        .sort((a, b) => a.position - b.position)
+        .forEach((item) => {
+          if (item.kind === "sentence" && item.ja && item.en) {
+            sentenceMap.set(item.id, Object.assign({}, sentenceMap.get(item.id) || {}, item));
+          }
+          if (item.kind === "quiz" && item.prompt && item.answer && item.choices.length > 0) {
+            const choices = item.choices.includes(item.answer) ? item.choices : [item.answer].concat(item.choices);
+            quizMap.set(item.id, Object.assign({}, item, { choices: choices.slice(0, 4) }));
+          }
+        });
+
+      sentencePairs = Array.from(sentenceMap.values()).sort((a, b) => {
+        const aInitial = INITIAL_SENTENCES.findIndex((item) => item.id === a.id);
+        const bInitial = INITIAL_SENTENCES.findIndex((item) => item.id === b.id);
+        const aPos = aInitial >= 0 ? aInitial : a.position;
+        const bPos = bInitial >= 0 ? bInitial : b.position;
+        return aPos - bPos;
+      });
+      quizItems = Array.from(quizMap.values()).sort((a, b) => {
+        const aInitial = INITIAL_QUIZZES.findIndex((item) => item.id === a.id);
+        const bInitial = INITIAL_QUIZZES.findIndex((item) => item.id === b.id);
+        const aPos = aInitial >= 0 ? aInitial : a.position;
+        const bPos = bInitial >= 0 ? bInitial : b.position;
+        return aPos - bPos;
+      });
+    }
+
+    function renderAll() {
+      rebuildLearningData();
+      if (quizIndex >= quizItems.length) {
+        quizIndex = 0;
+        score = 0;
+      }
+      updateTagFilters();
+      renderQuiz();
+      renderProblemList();
+      if (!isPlaying) {
+        updateSpeakingStatus();
+      }
+      renderAddedPhraseList();
+      renderItemManager();
+    }
+
+    function supabaseEndpoint(query = "") {
+      return `${syncConfig.supabaseUrl.replace(/\/$/, "")}/rest/v1/osaru_items${query}`;
+    }
+
+    function supabaseHeaders(extra = {}) {
+      return Object.assign({
+        apikey: syncConfig.supabaseAnonKey,
+        Authorization: `Bearer ${syncConfig.supabaseAnonKey}`,
+        "Content-Type": "application/json"
+      }, extra);
+    }
+
+    async function supabaseRequest(path, options = {}) {
+      const response = await fetch(supabaseEndpoint(path), Object.assign({}, options, {
+        headers: supabaseHeaders(options.headers || {})
+      }));
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `Supabase error ${response.status}`);
+      }
+      if (response.status === 204) {
+        return [];
+      }
+      return response.json();
+    }
+
+    function mergeRemoteItems(remoteItems) {
+      const byId = new Map(customItems.map((item) => [item.id, item]));
+
+      remoteItems.map(normalizeItem).forEach((remoteItem) => {
+        const localItem = byId.get(remoteItem.id);
+        if (!localItem) {
+          byId.set(remoteItem.id, Object.assign({}, remoteItem, { dirty: false }));
+          return;
+        }
+
+        const localTime = new Date(localItem.updated_at || 0).getTime();
+        const remoteTime = new Date(remoteItem.updated_at || 0).getTime();
+        if (!localItem.dirty || remoteTime >= localTime) {
+          byId.set(remoteItem.id, Object.assign({}, remoteItem, { dirty: false }));
+        }
+      });
+
+      customItems = Array.from(byId.values()).map(normalizeItem);
+      saveLocalItems();
+    }
+
+    async function pushDirtyItems() {
+      const dirtyItems = customItems.filter((item) => item.dirty);
+      if (dirtyItems.length === 0) {
+        return;
+      }
+
+      const rows = dirtyItems.map((item) => ({
+        id: item.id,
+        sync_key: syncConfig.syncKey,
+        kind: item.kind,
+        ja: item.ja,
+        en: item.en,
+        prompt: item.prompt,
+        answer: item.answer,
+        choices: item.choices,
+        tags: item.tags || [],
+        excluded: item.excluded,
+        position: item.position,
+        updated_at: item.updated_at,
+        deleted_at: item.deleted_at
+      }));
+
+      await supabaseRequest("?on_conflict=id", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+        body: JSON.stringify(rows)
+      });
+
+      const syncedIds = new Set(dirtyItems.map((item) => item.id));
+      customItems = customItems.map((item) => {
+        if (!syncedIds.has(item.id)) {
+          return item;
+        }
+        return Object.assign({}, item, { dirty: false });
+      });
+      saveLocalItems();
+    }
+
+    async function pullRemoteItems() {
+      const query = `?sync_key=eq.${encodeURIComponent(syncConfig.syncKey)}&order=position.asc`;
+      const remoteItems = await supabaseRequest(query);
+      mergeRemoteItems(remoteItems);
+    }
+
+    async function syncWithCloud(reason = "manual") {
+      if (isSyncing) {
+        return;
+      }
+
+      if (!isSupabaseConfigured()) {
+        saveLocalItems();
+        setSyncStatus("ローカル保存中（Supabase未設定）", true);
+        renderAll();
+        return;
+      }
+
+      isSyncing = true;
+      setSyncStatus(reason === "auto" ? "自動同期中..." : "同期中...");
+      try {
+        await pushDirtyItems();
+        await pullRemoteItems();
+        setSyncStatus(`同期済み ${new Date().toLocaleTimeString()}`);
+        renderAll();
+      } catch (error) {
+        saveLocalItems();
+        setSyncStatus("オフライン保存中（再接続で同期）", true);
+      } finally {
+        isSyncing = false;
+      }
+    }
+
+    function scheduleSync() {
+      if (syncTimer !== null) {
+        window.clearInterval(syncTimer);
+      }
+      syncTimer = window.setInterval(() => syncWithCloud("auto"), SYNC_INTERVAL_MS);
+    }
+
+    function upsertLocalItem(item, syncNow = true) {
+      const normalized = normalizeItem(Object.assign({}, item, {
+        sync_key: syncConfig.syncKey,
+        updated_at: nowIso(),
+        dirty: true
+      }));
+      const index = customItems.findIndex((existing) => existing.id === normalized.id);
+      if (index >= 0) {
+        customItems[index] = Object.assign({}, customItems[index], normalized);
+      } else {
+        customItems.push(normalized);
+      }
+      saveLocalItems();
+      renderAll();
+      if (syncNow) {
+        syncWithCloud("save");
+      }
+    }
+
+    function softDeleteLocalItem(id) {
+      const item = customItems.find((existing) => existing.id === id);
+      if (!item) {
+        return;
+      }
+      item.deleted_at = nowIso();
+      item.updated_at = item.deleted_at;
+      item.dirty = true;
+      saveLocalItems();
+      renderAll();
+      syncWithCloud("delete");
+    }
+
+    function updateSentenceExcluded(id, excluded) {
+      const base = sentencePairs.find((item) => item.id === id);
+      const existing = customItems.find((item) => item.id === id);
+      const item = Object.assign({}, base || existing, existing || {}, {
+        id,
+        kind: "sentence",
+        excluded,
+        position: base && base.position ? base.position : Date.now()
+      });
+      upsertLocalItem(item);
+    }
+
+    function clearForm() {
+      editingId.value = "";
+      jaInput.value = "";
+      enInput.value = "";
+      resetPhraseTextarea(jaInput);
+      resetPhraseTextarea(enInput);
+      setSelectedTags([]);
+      newTagInput.value = "";
+      tagMessage.textContent = "";
+      promptInput.value = "";
+      answerInput.value = "";
+      choiceAInput.value = "";
+      choiceBInput.value = "";
+      formMessage.textContent = "";
+      document.getElementById("saveItemButton").textContent = "問題を保存";
+    }
+
+    function resizePhraseTextarea(textarea) {
+      textarea.style.height = "auto";
+      const maxHeight = Math.round(window.innerHeight * 0.45);
+      const nextHeight = Math.min(Math.max(textarea.scrollHeight, 190), maxHeight);
+      textarea.style.height = `${nextHeight}px`;
+    }
+
+    function resetPhraseTextarea(textarea) {
+      textarea.style.height = "";
+    }
+
+    function setupExpandableTextarea(textarea) {
+      textarea.addEventListener("focus", () => resizePhraseTextarea(textarea));
+      textarea.addEventListener("input", () => {
+        resizePhraseTextarea(textarea);
+        distributeMixedLanguageInput(textarea);
+      });
+      textarea.addEventListener("blur", () => resetPhraseTextarea(textarea));
+    }
+
+    function scrollToPageTop() {
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+
+    function handleAddTag() {
+      const currentTags = getSelectedTags();
+      const tags = parseTags(newTagInput.value);
+      if (tags.length === 0) {
+        tagMessage.textContent = "追加するタグ名を入力してください。";
+        return;
+      }
+
+      addTagsToUserList(tags);
+      updateTagFilters();
+      setSelectedTags(currentTags.concat(tags).filter((tag, index, array) => tag && array.indexOf(tag) === index));
+      newTagInput.value = "";
+      tagMessage.textContent = "タグを追加しました。";
+    }
+
+    function handleDeleteSelectedTags() {
+      const tags = getSelectedTags();
+      if (tags.length === 0) {
+        tagMessage.textContent = "削除するタグを上の一覧から選択してください。";
+        return;
+      }
+
+      userTags = userTags.filter((tag) => !tags.includes(tag));
+      saveUserTags();
+      const changedItems = removeTagsFromItems(tags);
+      updateTagFilters();
+      setSelectedTags([]);
+      renderAll();
+      tagMessage.textContent = changedItems
+        ? `タグ「${tags.join(" / ")}」を削除し、追加済み問題からも外しました。`
+        : `タグ「${tags.join(" / ")}」を削除しました。`;
+    }
+
+    function getFormQuizValues() {
+      const prompt = cleanText(promptInput.value);
+      const answer = cleanText(answerInput.value);
+      const choiceA = cleanText(choiceAInput.value);
+      const choiceB = cleanText(choiceBInput.value);
+      const anyQuizValue = Boolean(prompt || answer || choiceA || choiceB);
+
+      if (!anyQuizValue) {
+        return null;
+      }
+
+      if (!prompt || !answer || !choiceA || !choiceB) {
+        throw new Error("クイズも追加する場合は、ヒント・正解・選択肢2つをすべて入力してください。");
+      }
+
+      const choices = [answer, choiceA, choiceB]
+        .map(cleanText)
+        .filter((value, index, array) => value && array.indexOf(value) === index);
+
+      return { prompt, answer, choices };
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+
+      const ja = cleanText(jaInput.value);
+      const en = cleanText(enInput.value);
+      const tags = getSelectedTags();
+      if (!ja || !en) {
+        formMessage.textContent = "日本語文と英語文を入力してください。";
+        return;
+      }
+
+      let quizValues = null;
+      try {
+        quizValues = getFormQuizValues();
+      } catch (error) {
+        formMessage.textContent = error.message;
+        return;
+      }
+
+      const editId = editingId.value;
+      if (editId) {
+        const existing = customItems.find((item) => item.id === editId)
+          || sentencePairs.find((item) => item.id === editId)
+          || quizItems.find((item) => item.id === editId);
+        if (!existing) {
+          formMessage.textContent = "編集対象が見つかりません。";
+          return;
+        }
+
+        if (existing.kind === "quiz") {
+          if (!quizValues) {
+            formMessage.textContent = "クイズを編集する場合は、クイズ欄も入力してください。";
+            return;
+          }
+          upsertLocalItem(Object.assign({}, existing, quizValues, { ja, en, tags }));
+        } else {
+          upsertLocalItem(Object.assign({}, existing, { ja, en, tags }));
+        }
+        clearForm();
+        formMessage.textContent = "編集内容を保存しました。";
+        return;
+      }
+
+      const baseId = makeId("item");
+      const position = Date.now();
+      upsertLocalItem({
+        id: `${baseId}-sentence`,
+        kind: "sentence",
+        ja,
+        en,
+        tags,
+        excluded: false,
+        position
+      }, false);
+
+      if (quizValues) {
+        upsertLocalItem(Object.assign({}, quizValues, {
+          id: `${baseId}-quiz`,
+          kind: "quiz",
+          ja,
+          en,
+          tags,
+          excluded: false,
+          position: position + 1
+        }), false);
+      }
+
+      saveLocalItems();
+      renderAll();
+      syncWithCloud("save");
+      clearForm();
+      formMessage.textContent = quizValues ? "1秒スピーキングとクイズに追加しました。" : "1秒スピーキングに追加しました。";
+      scrollToPageTop();
+    }
+
+    function editItem(id) {
+      const item = customItems.find((existing) => existing.id === id && !existing.deleted_at);
+      if (!item) {
+        return;
+      }
+
+      editingId.value = item.id;
+      jaInput.value = item.ja || "";
+      enInput.value = item.en || "";
+      addTagsToUserList(item.tags || []);
+      updateTagFilters();
+      setSelectedTags(item.tags || []);
+      promptInput.value = item.prompt || "";
+      answerInput.value = item.answer || "";
+      const extraChoices = (item.choices || []).filter((choice) => choice !== item.answer);
+      choiceAInput.value = extraChoices[0] || "";
+      choiceBInput.value = extraChoices[1] || "";
+      formMessage.textContent = `${item.kind === "quiz" ? "クイズ" : "1秒スピーキング"}を編集中です。`;
+      document.getElementById("saveItemButton").textContent = "編集を保存";
+      document.querySelector('[data-tab="add"]').click();
+      jaInput.focus();
+    }
+
+    function editSentenceFromList(id) {
+      const item = sentencePairs.find((existing) => existing.id === id && !existing.deleted_at);
+      if (!item) {
+        return;
+      }
+
+      editingId.value = item.id;
+      jaInput.value = item.ja || "";
+      enInput.value = item.en || "";
+      addTagsToUserList(item.tags || []);
+      updateTagFilters();
+      setSelectedTags(item.tags || []);
+      promptInput.value = "";
+      answerInput.value = "";
+      choiceAInput.value = "";
+      choiceBInput.value = "";
+      formMessage.textContent = "フレーズ内容を編集中です。";
+      document.getElementById("saveItemButton").textContent = "編集を保存";
+      document.querySelector('[data-tab="add"]').click();
+      resizePhraseTextarea(jaInput);
+      resizePhraseTextarea(enInput);
+      jaInput.focus();
+    }
+
+    function makeGroupTitle(startIndex, endIndex, total) {
+      return `${startIndex + 1}-${endIndex}件 / 全${total}件`;
+    }
+
+    function appendGroupedItems(container, items, createItem, options = {}) {
+      const stateKey = options.stateKey || "default";
+      for (let start = 0; start < items.length; start += PHRASE_GROUP_SIZE) {
+        const chunk = items.slice(start, start + PHRASE_GROUP_SIZE);
+        const end = start + chunk.length;
+        const details = document.createElement("details");
+        details.className = "phrase-group";
+        const groupKey = `${stateKey}:${start}`;
+        details.open = phraseGroupOpenState.has(groupKey) ? phraseGroupOpenState.get(groupKey) : start === 0;
+        details.addEventListener("toggle", () => {
+          phraseGroupOpenState.set(groupKey, details.open);
+        });
+
+        const summary = document.createElement("summary");
+        summary.textContent = makeGroupTitle(start, end, items.length);
+        details.appendChild(summary);
+
+        const body = document.createElement(options.bodyTag || "div");
+        body.className = options.bodyClass || "phrase-group-body";
+        chunk.forEach((item, offset) => body.appendChild(createItem(item, start + offset)));
+        details.appendChild(body);
+
+        if (options.wrapInListItem) {
+          const li = document.createElement("li");
+          li.className = "phrase-group-item";
+          li.appendChild(details);
+          container.appendChild(li);
+        } else {
+          container.appendChild(details);
+        }
+      }
+    }
+
+    function createAddedPhraseCard(item) {
+      const div = document.createElement("div");
+      div.className = "added-phrase";
+      div.innerHTML = `
+        <strong>${escapeHtml(item.en || "")}</strong>
+        <span>${escapeHtml(item.ja || "")}</span>
+        <span class="hint">タグ: ${escapeHtml((item.tags || []).join(" / ") || "なし")}</span>
+        <div class="phrase-actions">
+          <button class="secondary" type="button" data-action="play-ja" data-id="${escapeHtml(item.id)}">日本語を再生</button>
+          <button class="secondary" type="button" data-action="play-en" data-id="${escapeHtml(item.id)}">英語を再生</button>
+          <button class="primary" type="button" data-action="start-from" data-id="${escapeHtml(item.id)}">ここから順に再生</button>
+          <button class="secondary" type="button" data-action="edit-sentence" data-id="${escapeHtml(item.id)}">内容を編集</button>
+        </div>
+      `;
+      return div;
+    }
+
+    function renderAddedPhraseList() {
+      const phrases = customItems
+        .filter((item) => !item.deleted_at && !item.id.startsWith("builtin-") && item.kind === "sentence")
+        .sort((a, b) => a.position - b.position);
+
+      addedPhraseList.innerHTML = "";
+      if (phrases.length === 0) {
+        addedPhraseList.innerHTML = '<div class="sync-note">まだ追加したフレーズはありません。</div>';
+        return;
+      }
+
+      appendGroupedItems(addedPhraseList, phrases, createAddedPhraseCard, {
+        stateKey: "added"
+      });
+    }
+
+    function renderItemManager() {
+      const visibleItems = customItems
+        .filter((item) => !item.deleted_at && !item.id.startsWith("builtin-"))
+        .sort((a, b) => a.position - b.position);
+
+      itemManager.innerHTML = "";
+      if (visibleItems.length === 0) {
+        itemManager.innerHTML = '<div class="sync-note">まだ追加した問題はありません。</div>';
+        return;
+      }
+
+      visibleItems.forEach((item) => {
+        const div = document.createElement("div");
+        div.className = "manager-item";
+        const kindLabel = item.kind === "quiz" ? "単語クイズ" : "1秒スピーキング";
+        const body = item.kind === "quiz"
+          ? `<strong>${escapeHtml(kindLabel)}</strong><span>タグ: ${escapeHtml((item.tags || []).join(" / ") || "なし")}</span><span>ヒント: ${escapeHtml(item.prompt)}</span><span>答え: ${escapeHtml(item.answer)}</span><span>選択肢: ${escapeHtml(item.choices.join(" / "))}</span>`
+          : `<strong>${escapeHtml(kindLabel)}</strong><span>タグ: ${escapeHtml((item.tags || []).join(" / ") || "なし")}</span><span>日本語: ${escapeHtml(item.ja)}</span><span>英語: ${escapeHtml(item.en)}</span>`;
+
+        div.innerHTML = `
+          ${body}
+          <div class="hint">${item.dirty ? "未同期の変更があります" : "同期済みまたはローカル保存済み"}</div>
+          <div class="manager-actions">
+            <button class="secondary" type="button" data-action="edit" data-id="${escapeHtml(item.id)}">編集</button>
+            <button class="danger" type="button" data-action="delete" data-id="${escapeHtml(item.id)}">削除</button>
+          </div>
+        `;
+        itemManager.appendChild(div);
+      });
+    }
+
+    function parseCsvLine(line) {
+      const values = [];
+      let current = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i += 1) {
+        const char = line[i];
+        const next = line[i + 1];
+        if (char === '"' && next === '"') {
+          current += '"';
+          i += 1;
+        } else if (char === '"') {
+          inQuotes = !inQuotes;
+        } else if (char === "," && !inQuotes) {
+          values.push(cleanText(current));
+          current = "";
+        } else {
+          current += char;
+        }
+      }
+      values.push(cleanText(current));
+      return values;
+    }
+
+    function importCsvItems() {
+      const lines = csvInput.value
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+
+      if (lines.length === 0) {
+        csvMessage.textContent = "CSVを入力してください。";
+        return;
+      }
+
+      let imported = 0;
+      lines.forEach((line, lineIndex) => {
+        const cols = parseCsvLine(line);
+        if (lineIndex === 0 && /^(日本語|ja)$/i.test(cols[0] || "") && /^(英語|en)$/i.test(cols[1] || "")) {
+          return;
+        }
+
+        const ja = cleanText(cols[0]);
+        const en = cleanText(cols[1]);
+        if (!ja || !en) return;
+
+        const tags = parseTags(cols[2]);
+        const prompt = cleanText(cols[3]);
+        const answer = cleanText(cols[4]);
+        const choiceA = cleanText(cols[5]);
+        const choiceB = cleanText(cols[6]);
+        const baseId = makeId("csv");
+        const position = Date.now() + imported * 2;
+
+        upsertLocalItem({
+          id: `${baseId}-sentence`,
+          kind: "sentence",
+          ja,
+          en,
+          tags,
+          excluded: false,
+          position
+        }, false);
+
+        if (prompt && answer && choiceA && choiceB) {
+          upsertLocalItem({
+            id: `${baseId}-quiz`,
+            kind: "quiz",
+            ja,
+            en,
+            prompt,
+            answer,
+            choices: [answer, choiceA, choiceB].filter((value, index, array) => value && array.indexOf(value) === index),
+            tags,
+            excluded: false,
+            position: position + 1
+          }, false);
+        }
+        imported += 1;
+      });
+
+      saveLocalItems();
+      renderAll();
+      syncWithCloud("csv");
+      csvMessage.textContent = imported > 0 ? `${imported}件を追加しました。` : "追加できる行がありませんでした。";
+      if (imported > 0) {
+        scrollToPageTop();
+      }
+    }
+
+    function wait(ms) {
+      return new Promise((resolve) => {
+        pauseTimer = window.setTimeout(() => {
+          pauseTimer = null;
+          resolve();
+        }, ms);
+      });
+    }
+
+    function cancelSpeechAndTimer() {
+      if (pauseTimer !== null) {
+        window.clearTimeout(pauseTimer);
+        pauseTimer = null;
+      }
+      speechRunId += 1;
+      activeUtterance = null;
+      warmupUtterance = null;
+      if (canUseSpeech()) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    async function playSingleSentence(id, part) {
+      const problem = sentencePairs.find((item) => item.id === id);
+      if (!problem) {
+        return;
+      }
+
+      if (isPlaying) {
+        stopSpeaking();
+      } else {
+        cancelSpeechAndTimer();
+      }
+
+      if (part === "ja") {
+        showJa(problem);
+        speakingStatus.textContent = "単体再生: 日本語";
+        await speak(problem.ja, "ja-JP");
+      } else {
+        showEn(problem);
+        speakingStatus.textContent = "単体再生: 英語";
+        await speak(problem.en, "en-US");
+      }
+
+      if (!isPlaying) {
+        speakingStatus.textContent = "単体再生完了";
+      }
+    }
+
+    tabs.forEach((button) => {
+      button.addEventListener("click", () => {
+        const tabName = button.dataset.tab;
+        tabs.forEach((tab) => tab.classList.toggle("active", tab === button));
+        panels.forEach((panel) => panel.classList.toggle("active", panel.id === tabName));
+      });
+    });
+
+    function renderQuiz() {
+      const visibleQuizItems = getVisibleQuizItems();
+      if (quizIndex >= visibleQuizItems.length) {
+        quizIndex = 0;
+        score = 0;
+      }
+      if (visibleQuizItems.length === 0) {
+        quizQuestion.textContent = "クイズがありません";
+        quizFeedback.textContent = "";
+        quizStatus.textContent = "0 / 0";
+        nextQuizButton.disabled = true;
+        choicesEl.innerHTML = "";
+        return;
+      }
+
+      const item = visibleQuizItems[quizIndex];
+      answered = false;
+      quizQuestion.textContent = item.prompt;
+      quizFeedback.textContent = "";
+      quizStatus.textContent = `${quizIndex + 1} / ${visibleQuizItems.length} 正解 ${score}`;
+      nextQuizButton.disabled = true;
+      choicesEl.innerHTML = "";
+
+      item.choices.forEach((choice) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice";
+        button.textContent = choice;
+        button.addEventListener("click", () => answerQuiz(choice, button));
+        choicesEl.appendChild(button);
+      });
+    }
+
+    function answerQuiz(choice, selectedButton) {
+      if (answered) return;
+      answered = true;
+      const item = getVisibleQuizItems()[quizIndex];
+      const correct = choice === item.answer;
+
+      if (correct) {
+        score += 1;
+        quizFeedback.textContent = `正解: ${item.answer}`;
+        selectedButton.classList.add("correct");
+        readText(item.answer, "en-US", "このブラウザでは音声なしで進めます。SafariまたはChromeで開くと音声が使える場合があります。");
+      } else {
+        quizFeedback.textContent = `答え: ${item.answer}`;
+        selectedButton.classList.add("wrong");
+      }
+
+      [].slice.call(choicesEl.children).forEach((button) => {
+        button.disabled = true;
+        if (button.textContent === item.answer) {
+          button.classList.add("correct");
+        }
+      });
+
+      quizStatus.textContent = `${quizIndex + 1} / ${getVisibleQuizItems().length} 正解 ${score}`;
+      nextQuizButton.disabled = false;
+    }
+
+    nextQuizButton.addEventListener("click", () => {
+      const visibleQuizItems = getVisibleQuizItems();
+      quizIndex = (quizIndex + 1) % visibleQuizItems.length;
+      if (quizIndex === 0) {
+        score = 0;
+      }
+      renderQuiz();
+    });
+
+    quizResetButton.addEventListener("click", () => {
+      score = 0;
+      quizIndex = 0;
+      renderQuiz();
+    });
+
+    quizSpeakButton.addEventListener("click", () => {
+      if (quizItems.length === 0) {
+        return;
+      }
+      const item = getVisibleQuizItems()[quizIndex];
+      if (!item) return;
+      readText(item.prompt, "ja-JP", "このブラウザでは音声なしで進めます。SafariまたはChromeで開くと音声が使える場合があります。");
+    });
+
+    itemForm.addEventListener("submit", handleFormSubmit);
+    clearFormButton.addEventListener("click", clearForm);
+    setupExpandableTextarea(jaInput);
+    setupExpandableTextarea(enInput);
+    voicePreference.addEventListener("change", saveVoicePreference);
+    tagSelect.addEventListener("change", updateSelectedTagPreview);
+    addTagButton.addEventListener("click", handleAddTag);
+    deleteTagButton.addEventListener("click", handleDeleteSelectedTags);
+    newTagInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleAddTag();
+      }
+    });
+    importCsvButton.addEventListener("click", importCsvItems);
+    clearCsvButton.addEventListener("click", () => {
+      csvInput.value = "";
+      csvMessage.textContent = "";
+    });
+    quizTagFilter.addEventListener("change", () => {
+      quizIndex = 0;
+      score = 0;
+      renderQuiz();
+    });
+    speakingTagFilter.addEventListener("change", () => {
+      if (!isPlaying) {
+        renderProblemList();
+        updateSpeakingStatus();
+      }
+    });
+    syncNowButton.addEventListener("click", () => syncWithCloud("manual"));
+    saveSyncSettingsButton.addEventListener("click", saveSyncConfig);
+    clearSyncSettingsButton.addEventListener("click", clearSyncConfig);
+    itemManager.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (!button) {
+        return;
+      }
+
+      const id = button.dataset.id;
+      if (button.dataset.action === "edit") {
+        editItem(id);
+      }
+      if (button.dataset.action === "delete") {
+        softDeleteLocalItem(id);
+      }
+    });
+
+    function handleSinglePlayClick(event) {
+      const button = event.target.closest("button");
+      if (!button || !button.dataset.id) {
+        return;
+      }
+
+      if (button.dataset.action === "play-ja") {
+        playSingleSentence(button.dataset.id, "ja");
+      }
+      if (button.dataset.action === "play-en") {
+        playSingleSentence(button.dataset.id, "en");
+      }
+      if (button.dataset.action === "start-from") {
+        startSpeakingFromId(button.dataset.id);
+      }
+      if (button.dataset.action === "edit-sentence") {
+        editSentenceFromList(button.dataset.id);
+      }
+    }
+
+    problemList.addEventListener("click", handleSinglePlayClick);
+    excludedProblemList.addEventListener("click", handleSinglePlayClick);
+    addedPhraseList.addEventListener("click", handleSinglePlayClick);
+
+    function renderProblemList() {
+      problemList.innerHTML = "";
+      excludedProblemList.innerHTML = "";
+
+      const selectedTag = speakingTagFilter.value;
+      const activeProblems = sentencePairs.filter((problem) => !problem.excluded && matchesTag(problem, selectedTag));
+      const excludedProblems = sentencePairs.filter((problem) => problem.excluded && matchesTag(problem, selectedTag));
+
+      if (activeProblems.length === 0) {
+        problemList.innerHTML = '<li class="sync-note">再生対象のフレーズがありません。</li>';
+      }
+
+      if (excludedProblems.length === 0) {
+        excludedProblemList.innerHTML = '<li class="sync-note">除外したフレーズはありません。</li>';
+      }
+
+      appendGroupedItems(problemList, activeProblems, (problem, index) => createProblemListItem(problem, index, false), {
+        bodyTag: "ul",
+        bodyClass: "problem-list phrase-group-body",
+        wrapInListItem: true,
+        stateKey: "active"
+      });
+
+      appendGroupedItems(excludedProblemList, excludedProblems, (problem, index) => createProblemListItem(problem, index, true), {
+        bodyTag: "ul",
+        bodyClass: "problem-list phrase-group-body",
+        wrapInListItem: true,
+        stateKey: "excluded"
+      });
+    }
+
+    function createProblemListItem(problem, index, isExcluded) {
+        const li = document.createElement("li");
+        li.className = `problem${problem.excluded ? " checked" : ""}`;
+
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = problem.excluded;
+        checkbox.setAttribute("aria-label", `${index + 1}問目を次のループから除外`);
+        checkbox.addEventListener("change", () => {
+          updateSentenceExcluded(problem.id, checkbox.checked);
+          li.classList.toggle("checked", checkbox.checked);
+          if (!isPlaying) updateSpeakingStatus();
+        });
+
+        const title = document.createElement("span");
+        title.textContent = isExcluded
+          ? `${index + 1}件目: チェックを外すと再生対象に戻ります`
+          : `${index + 1}問目を次のループから除外`;
+        label.appendChild(checkbox);
+        label.appendChild(title);
+
+        const text = document.createElement("div");
+        text.className = "problem-text";
+        text.innerHTML = `
+          <span><strong>タグ:</strong> ${escapeHtml((problem.tags || []).join(" / ") || "なし")}</span>
+          <span><strong>日本語:</strong> ${escapeHtml(problem.ja)}</span>
+          <span><strong>英語:</strong> ${escapeHtml(problem.en)}</span>
+        `;
+
+        li.appendChild(label);
+        li.appendChild(text);
+        const actions = document.createElement("div");
+        actions.className = "phrase-actions";
+        const startButton = isExcluded
+          ? ""
+          : `<button class="primary" type="button" data-action="start-from" data-id="${escapeHtml(problem.id)}">ここから順に再生</button>`;
+        actions.innerHTML = `
+          <button class="secondary" type="button" data-action="play-ja" data-id="${escapeHtml(problem.id)}">日本語を再生</button>
+          <button class="secondary" type="button" data-action="play-en" data-id="${escapeHtml(problem.id)}">英語を再生</button>
+          ${startButton}
+          <button class="secondary" type="button" data-action="edit-sentence" data-id="${escapeHtml(problem.id)}">内容を編集</button>
+        `;
+        li.appendChild(actions);
+        return li;
+    }
+
+    function getPlayableIndexes() {
+      return sentencePairs
+        .map((item, index) => item.excluded || !matchesTag(item, speakingTagFilter.value) ? null : index)
+        .filter((index) => index !== null);
+    }
+
+    function updateSpeakingStatus() {
+      const count = getPlayableIndexes().length;
+      speakingStatus.textContent = count === 0 ? "すべて除外されています" : `待機中: ${count}問`;
+    }
+
+    function showSpeakingMessage(message, warning = false) {
+      phaseEl.textContent = "Ready";
+      sentenceArea.innerHTML = `<p class="empty" style="${warning ? "color: var(--bad);" : ""}">${escapeHtml(message)}</p>`;
+    }
+
+    function showJa(problem) {
+      phaseEl.textContent = "Japanese";
+      sentenceArea.innerHTML = `<p class="big-ja">${escapeHtml(problem.ja)}</p>`;
+    }
+
+    function showPause(problem) {
+      phaseEl.innerHTML = '<span class="pause-badge">2秒ポーズ</span>';
+      sentenceArea.innerHTML = `
+        <p class="big-ja">${escapeHtml(problem.ja)}</p>
+        <p class="empty">今、英語で言ってみましょう。</p>
+      `;
+    }
+
+    function showEn(problem) {
+      phaseEl.textContent = "English";
+      sentenceArea.innerHTML = `<p class="big-en">${escapeHtml(problem.en)}</p>`;
+    }
+
+    function getSpeakingMode() {
+      const selected = document.querySelector('input[name="speakingMode"]:checked');
+      return selected ? selected.value : "ja-en";
+    }
+
+    function getEnglishRepeatCount() {
+      const count = Number(repeatCount.value);
+      if (!Number.isFinite(count)) {
+        return 1;
+      }
+      return Math.min(Math.max(Math.round(count), 1), 10);
+    }
+
+    function setSpeakingButtons(playing) {
+      playButton.disabled = playing;
+      stopButton.disabled = !playing;
+      repeatCount.disabled = playing;
+      [].slice.call(speakingModeInputs).forEach((input) => {
+        input.disabled = playing;
+      });
+    }
+
+    async function speakEnglishRepeats(problem, progress, repeatTotal, mode) {
+      for (let repeatIndex = 1; repeatIndex <= repeatTotal; repeatIndex += 1) {
+        if (!isPlaying) return;
+
+        const modeLabel = mode === "en-only" ? "英語のみ" : "英語";
+        speakingStatus.textContent = `${modeLabel}: ${progress}・${repeatIndex}回目/${repeatTotal}回`;
+        showEn(problem);
+        await speak(problem.en, "en-US");
+      }
+    }
+
+    async function playCurrentProblem() {
+      if (!isPlaying) return;
+
+      if (currentPosition >= currentLoop.length) {
+        startNextLoop();
+        return;
+      }
+
+      const problem = sentencePairs[currentLoop[currentPosition]];
+      const progress = `${currentPosition + 1}/${currentLoop.length}`;
+      const mode = getSpeakingMode();
+      const repeatTotal = getEnglishRepeatCount();
+
+      if (mode === "ja-en") {
+        speakingStatus.textContent = `日本語: ${progress}`;
+        showJa(problem);
+        await speak(problem.ja, "ja-JP");
+        if (!isPlaying) return;
+
+        speakingStatus.textContent = `ポーズ: ${progress}`;
+        showPause(problem);
+        await wait(2000);
+        if (!isPlaying) return;
+      }
+
+      await speakEnglishRepeats(problem, progress, repeatTotal, mode);
+      if (!isPlaying) return;
+
+      currentPosition += 1;
+      playCurrentProblem();
+    }
+
+    function startNextLoop() {
+      currentLoop = getPlayableIndexes();
+      currentPosition = 0;
+
+      if (currentLoop.length === 0) {
+        stopSpeaking("すべて除外されています", true);
+        return;
+      }
+
+      playCurrentProblem();
+    }
+
+    function startSpeakingFromId(id) {
+      const selectedIndex = sentencePairs.findIndex((item) => item.id === id);
+      if (selectedIndex < 0) {
+        return;
+      }
+
+      const selectedProblem = sentencePairs[selectedIndex];
+      document.querySelector('[data-tab="speaking"]').click();
+
+      if (selectedProblem.excluded) {
+        stopSpeaking("このフレーズは除外中です。チェックを外すと再生できます。", true);
+        return;
+      }
+
+      if (!matchesTag(selectedProblem, speakingTagFilter.value)) {
+        speakingTagFilter.value = "";
+        renderProblemList();
+      }
+
+      currentLoop = getPlayableIndexes();
+      const startPosition = currentLoop.indexOf(selectedIndex);
+      if (startPosition < 0) {
+        stopSpeaking("このフレーズは再生対象外です。", true);
+        return;
+      }
+
+      cancelSpeechAndTimer();
+      isPlaying = true;
+      currentPosition = startPosition;
+      setSpeakingButtons(true);
+      if (!canUseSpeech()) {
+        speakingStatus.textContent = "音声なしで表示再生";
+      }
+      playCurrentProblem();
+    }
+
+    function startSpeaking() {
+      cancelSpeechAndTimer();
+      isPlaying = true;
+      setSpeakingButtons(true);
+      if (!canUseSpeech()) {
+        speakingStatus.textContent = "音声なしで表示再生";
+      }
+      startNextLoop();
+    }
+
+    function stopSpeaking(message = "停止しました", warning = false) {
+      isPlaying = false;
+      cancelSpeechAndTimer();
+      setSpeakingButtons(false);
+      showSpeakingMessage(message, warning);
+      speakingStatus.textContent = warning ? message : "停止中";
+    }
+
+    playButton.addEventListener("click", startSpeaking);
+    stopButton.addEventListener("click", () => stopSpeaking());
+
+    window.addEventListener("beforeunload", cancelSpeechAndTimer);
+    window.addEventListener("online", () => syncWithCloud("online"));
+
+    warmUpVoices();
+    loadVoicePreference();
+    loadUserTags();
+    loadSyncConfig();
+    loadLocalItems();
+    renderAll();
+    syncWithCloud("startup");
+    scheduleSync();
+  </script>
+</body>
+</html>
