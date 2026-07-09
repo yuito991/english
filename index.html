@@ -202,6 +202,7 @@
     }
 
     .speaking-display {
+      position: relative;
       min-height: 190px;
       display: grid;
       align-content: center;
@@ -211,6 +212,18 @@
       border-radius: 8px;
       background: #fbfcff;
       padding: 20px;
+    }
+
+    .phrase-counter {
+      position: absolute;
+      right: 14px;
+      bottom: 12px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: #e0f2fe;
+      color: #075985;
+      font-size: 13px;
+      font-weight: 900;
     }
 
     .phase {
@@ -293,6 +306,20 @@
       border-color: var(--primary);
       background: var(--soft);
       color: var(--primary-dark);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      font-weight: 900;
+    }
+
+    .toggle-row input {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--primary);
     }
 
     .problem-list {
@@ -722,6 +749,25 @@
           </select>
         </div>
         <div class="field">
+          <label for="speakingRate">再生速度</label>
+          <select id="speakingRate" aria-label="再生速度">
+            <option value="0.75">0.75倍</option>
+            <option value="0.85">0.85倍</option>
+            <option value="0.92" selected>0.92倍</option>
+            <option value="1">1.0倍</option>
+            <option value="1.1">1.1倍</option>
+            <option value="1.2">1.2倍</option>
+          </select>
+          <span class="hint">聞き取りやすさ優先なら0.85〜0.92倍がおすすめです。</span>
+        </div>
+        <div class="field">
+          <label class="toggle-row" for="keepAwakeToggle">
+            <input id="keepAwakeToggle" type="checkbox">
+            画面を閉じにくくする
+          </label>
+          <span class="hint">対応ブラウザでは再生中に画面点灯を維持します。完全なバックグラウンド再生はスマホOSに制限される場合があります。</span>
+        </div>
+        <div class="field">
           <label for="voicePreference">読み上げ音声</label>
           <select id="voicePreference" aria-label="読み上げ音声">
             <option value="default" selected>ブラウザ標準</option>
@@ -874,6 +920,11 @@
     const SETTINGS_STORAGE_KEY = "english_sync_settings";
     const USER_TAGS_STORAGE_KEY = "english_user_tags";
     const VOICE_PREF_STORAGE_KEY = "english_voice_preference";
+    const SPEAKING_PROGRESS_STORAGE_KEY = "english_speaking_progress";
+    const SPEAKING_RATE_STORAGE_KEY = "english_speaking_rate";
+    const SPEAKING_MODE_STORAGE_KEY = "english_speaking_mode";
+    const SPEAKING_REPEAT_STORAGE_KEY = "english_speaking_repeat";
+    const KEEP_AWAKE_STORAGE_KEY = "english_keep_awake";
     const SYNC_INTERVAL_MS = 10000;
     const PHRASE_GROUP_SIZE = 20;
 
@@ -976,6 +1027,8 @@
     const problemList = document.getElementById("problemList");
     const excludedProblemList = document.getElementById("excludedProblemList");
     const repeatCount = document.getElementById("repeatCount");
+    const speakingRate = document.getElementById("speakingRate");
+    const keepAwakeToggle = document.getElementById("keepAwakeToggle");
     const voicePreference = document.getElementById("voicePreference");
     const speakingTagFilter = document.getElementById("speakingTagFilter");
     const speakingModeInputs = document.querySelectorAll('input[name="speakingMode"]');
@@ -1022,6 +1075,7 @@
     let speechRunId = 0;
     let activeUtterance = null;
     let warmupUtterance = null;
+    let wakeLock = null;
     const phraseGroupOpenState = new Map();
 
     function escapeHtml(value) {
@@ -1051,6 +1105,42 @@
       localStorage.setItem(VOICE_PREF_STORAGE_KEY, getVoicePreference());
     }
 
+    function loadSpeakingControls() {
+      const savedRate = localStorage.getItem(SPEAKING_RATE_STORAGE_KEY);
+      const rateOptions = [].slice.call(speakingRate.options).map((option) => option.value);
+      if (savedRate && rateOptions.includes(savedRate)) {
+        speakingRate.value = savedRate;
+      }
+      const savedRepeat = localStorage.getItem(SPEAKING_REPEAT_STORAGE_KEY);
+      const repeatOptions = [].slice.call(repeatCount.options).map((option) => option.value);
+      if (savedRepeat && repeatOptions.includes(savedRepeat)) {
+        repeatCount.value = savedRepeat;
+      }
+      const savedMode = localStorage.getItem(SPEAKING_MODE_STORAGE_KEY);
+      if (savedMode) {
+        const modeInput = [].slice.call(speakingModeInputs).find((input) => input.value === savedMode);
+        if (modeInput) {
+          modeInput.checked = true;
+        }
+      }
+      keepAwakeToggle.checked = localStorage.getItem(KEEP_AWAKE_STORAGE_KEY) === "true";
+    }
+
+    function saveSpeakingControls() {
+      localStorage.setItem(SPEAKING_RATE_STORAGE_KEY, speakingRate.value);
+      localStorage.setItem(SPEAKING_REPEAT_STORAGE_KEY, repeatCount.value);
+      localStorage.setItem(SPEAKING_MODE_STORAGE_KEY, getSpeakingMode());
+      localStorage.setItem(KEEP_AWAKE_STORAGE_KEY, keepAwakeToggle.checked ? "true" : "false");
+    }
+
+    function getSpeakingRate() {
+      const rate = Number(speakingRate.value);
+      if (!Number.isFinite(rate)) {
+        return 0.92;
+      }
+      return Math.min(Math.max(rate, 0.5), 1.5);
+    }
+
     function getPreferredPitch() {
       const preference = getVoicePreference();
       if (preference === "male") return 0.68;
@@ -1060,9 +1150,10 @@
 
     function getPreferredRate() {
       const preference = getVoicePreference();
-      if (preference === "male") return 0.86;
-      if (preference === "female") return 0.95;
-      return 0.92;
+      let baseRate = 1;
+      if (preference === "male") baseRate = 0.94;
+      if (preference === "female") baseRate = 1;
+      return Math.min(Math.max(baseRate * getSpeakingRate(), 0.5), 1.5);
     }
 
     function choosePreferredVoice(lang) {
@@ -2160,6 +2251,80 @@
       }
     }
 
+    async function requestWakeLock() {
+      if (!keepAwakeToggle.checked || !("wakeLock" in navigator) || document.visibilityState !== "visible") {
+        return;
+      }
+
+      try {
+        wakeLock = await navigator.wakeLock.request("screen");
+        wakeLock.addEventListener("release", () => {
+          wakeLock = null;
+        });
+      } catch (error) {
+        wakeLock = null;
+      }
+    }
+
+    function releaseWakeLock() {
+      if (!wakeLock) {
+        return;
+      }
+
+      wakeLock.release().catch(() => {});
+      wakeLock = null;
+    }
+
+    function saveSpeakingProgress(phase = "ready") {
+      const loopLength = currentLoop.length;
+      const sentenceIndex = loopLength > 0 ? currentLoop[Math.min(currentPosition, loopLength - 1)] : null;
+      const problem = Number.isInteger(sentenceIndex) ? sentencePairs[sentenceIndex] : null;
+      if (!problem) {
+        return;
+      }
+
+      const payload = {
+        problemId: problem.id,
+        position: Math.min(currentPosition, Math.max(loopLength - 1, 0)),
+        total: loopLength,
+        tag: speakingTagFilter.value || "",
+        mode: getSpeakingMode(),
+        repeatCount: getEnglishRepeatCount(),
+        rate: getSpeakingRate(),
+        phase,
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem(SPEAKING_PROGRESS_STORAGE_KEY, JSON.stringify(payload));
+    }
+
+    function loadSpeakingProgress() {
+      try {
+        return JSON.parse(localStorage.getItem(SPEAKING_PROGRESS_STORAGE_KEY) || "null");
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function getResumePosition(loop) {
+      const saved = loadSpeakingProgress();
+      if (!saved || !saved.problemId || loop.length === 0) {
+        return 0;
+      }
+
+      if ((saved.tag || "") && !(speakingTagFilter.value || "")) {
+        speakingTagFilter.value = saved.tag;
+        renderProblemList();
+        loop.splice(0, loop.length, ...getPlayableIndexes());
+      }
+
+      const resumeIndex = loop.findIndex((index) => sentencePairs[index] && sentencePairs[index].id === saved.problemId);
+      return resumeIndex >= 0 ? resumeIndex : 0;
+    }
+
+    function getProgressLabel(progress) {
+      return progress ? `フレーズ ${progress}` : "";
+    }
+
     async function playSingleSentence(id, part) {
       const problem = sentencePairs.find((item) => item.id === id);
       if (!problem) {
@@ -2284,6 +2449,21 @@
     setupExpandableTextarea(jaInput);
     setupExpandableTextarea(enInput);
     voicePreference.addEventListener("change", saveVoicePreference);
+    repeatCount.addEventListener("change", saveSpeakingControls);
+    speakingRate.addEventListener("change", saveSpeakingControls);
+    [].slice.call(speakingModeInputs).forEach((input) => {
+      input.addEventListener("change", saveSpeakingControls);
+    });
+    keepAwakeToggle.addEventListener("change", () => {
+      saveSpeakingControls();
+      if (isPlaying) {
+        if (keepAwakeToggle.checked) {
+          requestWakeLock();
+        } else {
+          releaseWakeLock();
+        }
+      }
+    });
     tagSelect.addEventListener("change", updateSelectedTagPreview);
     addTagButton.addEventListener("click", handleAddTag);
     deleteTagButton.addEventListener("click", handleDeleteSelectedTags);
@@ -2437,7 +2617,15 @@
 
     function updateSpeakingStatus() {
       const count = getPlayableIndexes().length;
-      speakingStatus.textContent = count === 0 ? "すべて除外されています" : `待機中: ${count}問`;
+      const saved = loadSpeakingProgress();
+      const savedProblem = saved && saved.problemId ? sentencePairs.find((item) => item.id === saved.problemId) : null;
+      if (count === 0) {
+        speakingStatus.textContent = "すべて除外されています";
+      } else if (savedProblem && !savedProblem.excluded) {
+        speakingStatus.textContent = `待機中: ${count}問・続きあり`;
+      } else {
+        speakingStatus.textContent = `待機中: ${count}問`;
+      }
     }
 
     function showSpeakingMessage(message, warning = false) {
@@ -2445,22 +2633,33 @@
       sentenceArea.innerHTML = `<p class="empty" style="${warning ? "color: var(--bad);" : ""}">${escapeHtml(message)}</p>`;
     }
 
-    function showJa(problem) {
-      phaseEl.textContent = "Japanese";
-      sentenceArea.innerHTML = `<p class="big-ja">${escapeHtml(problem.ja)}</p>`;
+    function renderCounter(label) {
+      return label ? `<span class="phrase-counter">${escapeHtml(label)}</span>` : "";
     }
 
-    function showPause(problem) {
+    function showJa(problem, counterLabel = "") {
+      phaseEl.textContent = "Japanese";
+      sentenceArea.innerHTML = `
+        <p class="big-ja">${escapeHtml(problem.ja)}</p>
+        ${renderCounter(counterLabel)}
+      `;
+    }
+
+    function showPause(problem, counterLabel = "") {
       phaseEl.innerHTML = '<span class="pause-badge">2秒ポーズ</span>';
       sentenceArea.innerHTML = `
         <p class="big-ja">${escapeHtml(problem.ja)}</p>
         <p class="empty">今、英語で言ってみましょう。</p>
+        ${renderCounter(counterLabel)}
       `;
     }
 
-    function showEn(problem) {
+    function showEn(problem, counterLabel = "") {
       phaseEl.textContent = "English";
-      sentenceArea.innerHTML = `<p class="big-en">${escapeHtml(problem.en)}</p>`;
+      sentenceArea.innerHTML = `
+        <p class="big-en">${escapeHtml(problem.en)}</p>
+        ${renderCounter(counterLabel)}
+      `;
     }
 
     function getSpeakingMode() {
@@ -2486,12 +2685,14 @@
     }
 
     async function speakEnglishRepeats(problem, progress, repeatTotal, mode) {
+      const counterLabel = getProgressLabel(progress);
       for (let repeatIndex = 1; repeatIndex <= repeatTotal; repeatIndex += 1) {
         if (!isPlaying) return;
 
         const modeLabel = mode === "en-only" ? "英語のみ" : "英語";
         speakingStatus.textContent = `${modeLabel}: ${progress}・${repeatIndex}回目/${repeatTotal}回`;
-        showEn(problem);
+        showEn(problem, counterLabel);
+        saveSpeakingProgress(`${modeLabel} ${repeatIndex}/${repeatTotal}`);
         await speak(problem.en, "en-US");
       }
     }
@@ -2506,17 +2707,21 @@
 
       const problem = sentencePairs[currentLoop[currentPosition]];
       const progress = `${currentPosition + 1}/${currentLoop.length}`;
+      const counterLabel = getProgressLabel(progress);
       const mode = getSpeakingMode();
       const repeatTotal = getEnglishRepeatCount();
+      saveSpeakingProgress("start");
 
       if (mode === "ja-en") {
         speakingStatus.textContent = `日本語: ${progress}`;
-        showJa(problem);
+        showJa(problem, counterLabel);
+        saveSpeakingProgress("日本語");
         await speak(problem.ja, "ja-JP");
         if (!isPlaying) return;
 
         speakingStatus.textContent = `ポーズ: ${progress}`;
-        showPause(problem);
+        showPause(problem, counterLabel);
+        saveSpeakingProgress("ポーズ");
         await wait(2000);
         if (!isPlaying) return;
       }
@@ -2525,6 +2730,9 @@
       if (!isPlaying) return;
 
       currentPosition += 1;
+      if (currentPosition < currentLoop.length) {
+        saveSpeakingProgress("next");
+      }
       playCurrentProblem();
     }
 
@@ -2537,6 +2745,20 @@
         return;
       }
 
+      playCurrentProblem();
+    }
+
+    function startPlaybackAt(position) {
+      currentLoop = getPlayableIndexes();
+      currentPosition = Math.min(Math.max(position, 0), Math.max(currentLoop.length - 1, 0));
+
+      if (currentLoop.length === 0) {
+        stopSpeaking("すべて除外されています", true);
+        return;
+      }
+
+      saveSpeakingProgress("resume");
+      requestWakeLock();
       playCurrentProblem();
     }
 
@@ -2573,6 +2795,8 @@
       if (!canUseSpeech()) {
         speakingStatus.textContent = "音声なしで表示再生";
       }
+      saveSpeakingProgress("selected");
+      requestWakeLock();
       playCurrentProblem();
     }
 
@@ -2583,12 +2807,16 @@
       if (!canUseSpeech()) {
         speakingStatus.textContent = "音声なしで表示再生";
       }
-      startNextLoop();
+      currentLoop = getPlayableIndexes();
+      const resumePosition = getResumePosition(currentLoop);
+      startPlaybackAt(resumePosition);
     }
 
     function stopSpeaking(message = "停止しました", warning = false) {
+      saveSpeakingProgress("stopped");
       isPlaying = false;
       cancelSpeechAndTimer();
+      releaseWakeLock();
       setSpeakingButtons(false);
       showSpeakingMessage(message, warning);
       speakingStatus.textContent = warning ? message : "停止中";
@@ -2597,11 +2825,29 @@
     playButton.addEventListener("click", startSpeaking);
     stopButton.addEventListener("click", () => stopSpeaking());
 
-    window.addEventListener("beforeunload", cancelSpeechAndTimer);
+    window.addEventListener("beforeunload", () => {
+      saveSpeakingProgress("leave");
+      cancelSpeechAndTimer();
+      releaseWakeLock();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        saveSpeakingProgress("background");
+        return;
+      }
+
+      if (isPlaying) {
+        requestWakeLock();
+        if (canUseSpeech() && typeof window.speechSynthesis.resume === "function") {
+          window.speechSynthesis.resume();
+        }
+      }
+    });
     window.addEventListener("online", () => syncWithCloud("online"));
 
     warmUpVoices();
     loadVoicePreference();
+    loadSpeakingControls();
     loadUserTags();
     loadSyncConfig();
     loadLocalItems();
