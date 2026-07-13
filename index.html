@@ -41,7 +41,7 @@
     .app {
       width: min(980px, 100%);
       margin: 0 auto;
-      padding: 24px 20px 112px;
+      padding: 18px 16px 104px;
     }
 
     .playback-bar {
@@ -63,13 +63,13 @@
       align-items: center;
       gap: 8px;
       margin: 0 auto;
-      padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+      padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
     }
 
     .playback-bar button {
       min-width: 74px;
-      min-height: 46px;
-      padding: 8px 12px;
+      min-height: 44px;
+      padding: 7px 10px;
       font-size: 14px;
     }
 
@@ -84,12 +84,12 @@
     }
 
     header {
-      margin-bottom: 18px;
+      margin-bottom: 12px;
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(26px, 4vw, 40px);
+      margin: 0 0 5px;
+      font-size: clamp(24px, 3.6vw, 34px);
       letter-spacing: 0;
       line-height: 1.2;
     }
@@ -97,15 +97,15 @@
     .lead {
       margin: 0;
       color: var(--muted);
-      line-height: 1.7;
+      line-height: 1.5;
     }
 
     .tabs {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin: 18px 0;
-      padding: 6px;
+      gap: 6px;
+      margin: 12px 0;
+      padding: 4px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--panel);
@@ -115,8 +115,8 @@
     button {
       border: 0;
       border-radius: 8px;
-      min-height: 48px;
-      padding: 12px 16px;
+      min-height: 44px;
+      padding: 9px 12px;
       font: inherit;
       font-weight: 800;
       cursor: pointer;
@@ -138,8 +138,8 @@
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 22px;
-      box-shadow: 0 16px 38px rgba(31, 41, 55, 0.08);
+      padding: 16px;
+      box-shadow: 0 8px 22px rgba(31, 41, 55, 0.06);
     }
 
     .panel.active {
@@ -150,7 +150,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .primary {
@@ -176,12 +176,12 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 32px;
+      min-height: 28px;
       border-radius: 999px;
-      padding: 6px 12px;
+      padding: 5px 10px;
       background: var(--soft);
       color: #3730a3;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
     }
 
@@ -189,8 +189,8 @@
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcff;
-      padding: 18px;
-      margin-top: 16px;
+      padding: 14px;
+      margin-top: 12px;
     }
 
     .quiz-prompt {
@@ -208,13 +208,13 @@
 
     .choices {
       display: grid;
-      gap: 10px;
-      margin-top: 16px;
+      gap: 8px;
+      margin-top: 12px;
     }
 
     .choice {
       width: 100%;
-      min-height: 56px;
+      min-height: 50px;
       border: 1px solid var(--line);
       background: #ffffff;
       color: var(--text);
@@ -234,29 +234,29 @@
     }
 
     .feedback {
-      min-height: 28px;
-      margin-top: 12px;
+      min-height: 24px;
+      margin-top: 8px;
       font-weight: 800;
       line-height: 1.5;
     }
 
     .speaking-display {
       position: relative;
-      min-height: 190px;
+      min-height: 160px;
       display: grid;
       align-content: center;
-      gap: 12px;
-      margin-top: 16px;
+      gap: 8px;
+      margin-top: 12px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcff;
-      padding: 20px;
+      padding: 14px;
     }
 
     .phrase-counter {
       position: absolute;
-      right: 14px;
-      bottom: 12px;
+      right: 10px;
+      bottom: 8px;
       border-radius: 999px;
       padding: 4px 10px;
       background: #e0f2fe;
@@ -282,18 +282,18 @@
     }
 
     .big-ja {
-      font-size: clamp(24px, 5vw, 38px);
+      font-size: clamp(22px, 4.5vw, 34px);
       font-weight: 900;
     }
 
     .big-en {
-      font-size: clamp(22px, 4vw, 34px);
+      font-size: clamp(20px, 3.8vw, 30px);
       font-weight: 850;
     }
 
     .empty {
       color: var(--muted);
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 750;
     }
 
@@ -309,9 +309,9 @@
     .speaking-settings {
       display: grid;
       grid-template-columns: minmax(0, 1.4fr) minmax(140px, 0.6fr);
-      gap: 12px;
-      margin-top: 14px;
-      padding: 14px;
+      gap: 8px;
+      margin-top: 10px;
+      padding: 10px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcff;
@@ -320,14 +320,14 @@
     .segmented {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
+      gap: 6px;
     }
 
     .segmented label {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 46px;
+      min-height: 42px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #ffffff;
@@ -363,18 +363,18 @@
 
     .problem-list {
       display: grid;
-      gap: 10px;
-      margin: 18px 0 0;
+      gap: 7px;
+      margin: 14px 0 0;
       padding: 0;
       list-style: none;
     }
 
     .problem {
       display: grid;
-      gap: 8px;
+      gap: 6px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 14px;
+      padding: 10px;
       background: #ffffff;
     }
 
@@ -385,30 +385,30 @@
 
     .excluded-section {
       display: grid;
-      gap: 10px;
-      margin-top: 22px;
-      padding-top: 16px;
+      gap: 7px;
+      margin-top: 18px;
+      padding-top: 12px;
       border-top: 1px solid var(--line);
     }
 
     .excluded-section h2 {
       margin: 0;
       color: var(--muted);
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .problem label {
       display: flex;
       align-items: center;
-      gap: 10px;
-      min-height: 44px;
+      gap: 8px;
+      min-height: 40px;
       font-weight: 900;
       cursor: pointer;
     }
 
     .problem input {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       accent-color: var(--primary);
       flex: 0 0 auto;
     }
@@ -422,8 +422,8 @@
     .phrase-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 4px;
+      gap: 6px;
+      margin-top: 2px;
     }
 
     .guide {
@@ -434,9 +434,9 @@
 
     .sync-note {
       display: grid;
-      gap: 8px;
-      margin: 14px 0 0;
-      padding: 12px;
+      gap: 6px;
+      margin: 10px 0 0;
+      padding: 10px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcff;
@@ -446,20 +446,20 @@
     }
 
     .csv-box {
-      min-height: 160px;
+      min-height: 130px;
       font-family: Consolas, "Courier New", monospace;
       font-size: 14px;
     }
 
     .form-grid {
       display: grid;
-      gap: 12px;
-      margin-top: 16px;
+      gap: 9px;
+      margin-top: 12px;
     }
 
     .field {
       display: grid;
-      gap: 6px;
+      gap: 5px;
     }
 
     .field label {
@@ -472,7 +472,7 @@
       width: 100%;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 12px;
+      padding: 10px;
       color: var(--text);
       background: #ffffff;
       font: inherit;
@@ -503,7 +503,7 @@
     }
 
     .tag-picker {
-      min-height: 112px;
+      min-height: 96px;
     }
 
     .tag-actions {
@@ -521,14 +521,14 @@
 
     .added-phrase-list {
       display: grid;
-      gap: 10px;
-      margin-top: 12px;
+      gap: 8px;
+      margin-top: 10px;
     }
 
     .added-phrase {
       display: grid;
-      gap: 5px;
-      padding: 12px;
+      gap: 4px;
+      padding: 10px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #ffffff;
@@ -548,8 +548,8 @@
     }
 
     .phrase-group summary {
-      min-height: 50px;
-      padding: 13px 14px;
+      min-height: 44px;
+      padding: 10px 12px;
       cursor: pointer;
       font-weight: 900;
       color: var(--primary-dark);
@@ -563,8 +563,8 @@
 
     .phrase-group-body {
       display: grid;
-      gap: 10px;
-      padding: 10px;
+      gap: 7px;
+      padding: 8px;
     }
 
     .phrase-group-body.problem-list {
@@ -573,16 +573,16 @@
 
     .item-manager {
       display: grid;
-      gap: 10px;
-      margin-top: 18px;
+      gap: 8px;
+      margin-top: 14px;
     }
 
     .manager-item {
       display: grid;
-      gap: 8px;
+      gap: 6px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 12px;
+      padding: 10px;
       background: #ffffff;
       line-height: 1.55;
     }
@@ -590,7 +590,7 @@
     .manager-actions {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
     }
 
     .manager-actions button {
@@ -628,7 +628,7 @@
     @media (max-width: 700px) {
       .app {
         min-height: 100dvh;
-        padding: 16px 12px calc(220px + env(safe-area-inset-bottom));
+        padding: 14px 12px calc(196px + env(safe-area-inset-bottom));
       }
 
       h1 {
@@ -687,20 +687,20 @@
       }
 
       .tab-button {
-        min-height: 62px;
+        min-height: 54px;
         padding: 8px 4px;
         font-size: 12px;
       }
 
       .panel {
-        padding: 16px 14px;
+        padding: 14px 12px;
         box-shadow: none;
       }
 
       .row button {
         flex: 1 1 130px;
-        min-height: 56px;
-        font-size: 17px;
+        min-height: 50px;
+        font-size: 16px;
       }
 
       .pill {
@@ -708,22 +708,22 @@
       }
 
       .choice {
-        min-height: 60px;
-        font-size: 17px;
+        min-height: 54px;
+        font-size: 16px;
       }
 
       .speaking-display {
-        min-height: 250px;
-        padding: 18px;
+        min-height: 205px;
+        padding: 14px;
       }
 
       .problem {
-        padding: 14px 12px;
+        padding: 10px;
       }
 
       .problem input {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
       }
 
       .speaking-settings {
@@ -2693,9 +2693,15 @@
     function renderPlaybackBar() {
       const playable = getPlayableIndexes();
       const hasCurrent = currentLoop.length > 0 && currentPosition >= 0 && currentPosition < currentLoop.length;
-      const currentIndex = hasCurrent ? currentLoop[currentPosition] : playable[0];
+      const saved = loadSpeakingProgress();
+      const savedPosition = saved && saved.problemId
+        ? playable.findIndex((index) => sentencePairs[index] && sentencePairs[index].id === saved.problemId)
+        : -1;
+      const currentIndex = hasCurrent ? currentLoop[currentPosition] : (savedPosition >= 0 ? playable[savedPosition] : playable[0]);
       const problem = Number.isInteger(currentIndex) ? sentencePairs[currentIndex] : null;
-      const progress = hasCurrent ? `${currentPosition + 1}/${currentLoop.length}` : (problem ? `1/${playable.length}` : "-");
+      const progress = hasCurrent
+        ? `${currentPosition + 1}/${currentLoop.length}`
+        : (savedPosition >= 0 ? `${savedPosition + 1}/${playable.length}` : (problem ? `1/${playable.length}` : "-"));
 
       playbackBarStatus.textContent = problem ? `フレーズ ${progress}: ${problem.en}` : "再生対象のフレーズがありません";
       previousPhraseButton.disabled = playable.length === 0;
