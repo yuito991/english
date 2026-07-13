@@ -41,7 +41,46 @@
     .app {
       width: min(980px, 100%);
       margin: 0 auto;
-      padding: 24px 20px 28px;
+      padding: 24px 20px 112px;
+    }
+
+    .playback-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 30;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 -8px 24px rgba(31, 41, 55, 0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .playback-bar-inner {
+      width: min(980px, 100%);
+      display: grid;
+      grid-template-columns: minmax(120px, 1fr) repeat(4, auto);
+      align-items: center;
+      gap: 8px;
+      margin: 0 auto;
+      padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+    }
+
+    .playback-bar button {
+      min-width: 74px;
+      min-height: 46px;
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+
+    .playback-bar-status {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     header {
@@ -589,7 +628,7 @@
     @media (max-width: 700px) {
       .app {
         min-height: 100dvh;
-        padding: 16px 12px calc(124px + env(safe-area-inset-bottom));
+        padding: 16px 12px calc(220px + env(safe-area-inset-bottom));
       }
 
       h1 {
@@ -624,6 +663,27 @@
         border-radius: 0;
         background: rgba(255, 255, 255, 0.96);
         backdrop-filter: blur(10px);
+      }
+
+      .playback-bar {
+        bottom: calc(86px + env(safe-area-inset-bottom));
+      }
+
+      .playback-bar-inner {
+        grid-template-columns: minmax(84px, 1fr) repeat(4, minmax(0, 1fr));
+        gap: 5px;
+        padding: 8px 8px;
+      }
+
+      .playback-bar button {
+        min-width: 0;
+        min-height: 50px;
+        padding: 8px 4px;
+        font-size: 12px;
+      }
+
+      .playback-bar-status {
+        font-size: 12px;
       }
 
       .tab-button {
@@ -913,6 +973,16 @@
     </noscript>
   </div>
 
+  <aside class="playback-bar" aria-label="再生コントロール">
+    <div class="playback-bar-inner">
+      <span id="playbackBarStatus" class="playback-bar-status">待機中</span>
+      <button id="previousPhraseButton" class="secondary" type="button" title="前のフレーズ">前へ</button>
+      <button id="barPlayButton" class="primary" type="button">再生</button>
+      <button id="barStopButton" class="secondary" type="button" disabled>停止</button>
+      <button id="nextPhraseButton" class="secondary" type="button" title="次のフレーズ">次へ</button>
+    </div>
+  </aside>
+
   <script>
     const DEFAULT_SUPABASE_URL = "";
     const DEFAULT_SUPABASE_ANON_KEY = "";
@@ -1021,6 +1091,11 @@
 
     const playButton = document.getElementById("playButton");
     const stopButton = document.getElementById("stopButton");
+    const barPlayButton = document.getElementById("barPlayButton");
+    const barStopButton = document.getElementById("barStopButton");
+    const previousPhraseButton = document.getElementById("previousPhraseButton");
+    const nextPhraseButton = document.getElementById("nextPhraseButton");
+    const playbackBarStatus = document.getElementById("playbackBarStatus");
     const speakingStatus = document.getElementById("speakingStatus");
     const phaseEl = document.getElementById("phase");
     const sentenceArea = document.getElementById("sentenceArea");
@@ -2615,6 +2690,20 @@
         .filter((index) => index !== null);
     }
 
+    function renderPlaybackBar() {
+      const playable = getPlayableIndexes();
+      const hasCurrent = currentLoop.length > 0 && currentPosition >= 0 && currentPosition < currentLoop.length;
+      const currentIndex = hasCurrent ? currentLoop[currentPosition] : playable[0];
+      const problem = Number.isInteger(currentIndex) ? sentencePairs[currentIndex] : null;
+      const progress = hasCurrent ? `${currentPosition + 1}/${currentLoop.length}` : (problem ? `1/${playable.length}` : "-");
+
+      playbackBarStatus.textContent = problem ? `フレーズ ${progress}: ${problem.en}` : "再生対象のフレーズがありません";
+      previousPhraseButton.disabled = playable.length === 0;
+      nextPhraseButton.disabled = playable.length === 0;
+      barPlayButton.disabled = isPlaying || playable.length === 0;
+      barStopButton.disabled = !isPlaying;
+    }
+
     function updateSpeakingStatus() {
       const count = getPlayableIndexes().length;
       const saved = loadSpeakingProgress();
@@ -2626,6 +2715,7 @@
       } else {
         speakingStatus.textContent = `待機中: ${count}問`;
       }
+      renderPlaybackBar();
     }
 
     function showSpeakingMessage(message, warning = false) {
@@ -2682,6 +2772,7 @@
       [].slice.call(speakingModeInputs).forEach((input) => {
         input.disabled = playing;
       });
+      renderPlaybackBar();
     }
 
     async function speakEnglishRepeats(problem, progress, repeatTotal, mode) {
@@ -2711,6 +2802,7 @@
       const mode = getSpeakingMode();
       const repeatTotal = getEnglishRepeatCount();
       saveSpeakingProgress("start");
+      renderPlaybackBar();
 
       if (mode === "ja-en") {
         speakingStatus.textContent = `日本語: ${progress}`;
@@ -2812,6 +2904,36 @@
       startPlaybackAt(resumePosition);
     }
 
+    function navigatePhrase(delta) {
+      const playable = getPlayableIndexes();
+      if (playable.length === 0) {
+        stopSpeaking("すべて除外されています", true);
+        return;
+      }
+
+      const loopIsUsable = currentLoop.length > 0 && currentLoop.every((index) => playable.includes(index));
+      if (!loopIsUsable || currentLoop.length !== playable.length) {
+        currentLoop = playable;
+      }
+
+      let basePosition = currentPosition;
+      if (basePosition < 0 || basePosition >= currentLoop.length) {
+        const saved = loadSpeakingProgress();
+        const savedIndex = saved && saved.problemId
+          ? currentLoop.findIndex((index) => sentencePairs[index] && sentencePairs[index].id === saved.problemId)
+          : -1;
+        basePosition = savedIndex >= 0 ? savedIndex : 0;
+      }
+
+      currentPosition = (basePosition + delta + currentLoop.length) % currentLoop.length;
+      cancelSpeechAndTimer();
+      isPlaying = true;
+      setSpeakingButtons(true);
+      saveSpeakingProgress(delta < 0 ? "previous" : "next");
+      requestWakeLock();
+      playCurrentProblem();
+    }
+
     function stopSpeaking(message = "停止しました", warning = false) {
       saveSpeakingProgress("stopped");
       isPlaying = false;
@@ -2824,6 +2946,10 @@
 
     playButton.addEventListener("click", startSpeaking);
     stopButton.addEventListener("click", () => stopSpeaking());
+    barPlayButton.addEventListener("click", startSpeaking);
+    barStopButton.addEventListener("click", () => stopSpeaking());
+    previousPhraseButton.addEventListener("click", () => navigatePhrase(-1));
+    nextPhraseButton.addEventListener("click", () => navigatePhrase(1));
 
     window.addEventListener("beforeunload", () => {
       saveSpeakingProgress("leave");
