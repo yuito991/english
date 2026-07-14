@@ -307,14 +307,70 @@
     }
 
     .speaking-settings {
-      display: grid;
-      grid-template-columns: minmax(0, 1.4fr) minmax(140px, 0.6fr);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
       gap: 8px;
       margin-top: 10px;
       padding: 10px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcff;
+    }
+
+    .speaking-settings .field {
+      flex: 1 1 138px;
+      min-width: 138px;
+    }
+
+    .speaking-settings .field:first-child {
+      flex: 2 1 250px;
+    }
+
+    .speaking-settings .field:nth-child(4) {
+      flex: 1 1 190px;
+    }
+
+    .speaking-settings .hint {
+      display: none;
+    }
+
+    .current-phrase-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+
+    .current-phrase-actions[hidden] {
+      display: none;
+    }
+
+    .current-phrase-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
+      margin-right: auto;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .current-phrase-check input {
+      width: 23px;
+      height: 23px;
+      accent-color: var(--primary);
+    }
+
+    .current-phrase-actions button {
+      min-height: 40px;
+      padding: 7px 11px;
+      font-size: 14px;
     }
 
     .segmented {
@@ -727,7 +783,29 @@
       }
 
       .speaking-settings {
-        grid-template-columns: 1fr;
+        display: flex;
+        gap: 6px;
+        padding: 8px;
+      }
+
+      .speaking-settings .field,
+      .speaking-settings .field:first-child,
+      .speaking-settings .field:nth-child(4) {
+        flex: 1 1 calc(50% - 6px);
+        min-width: 0;
+      }
+
+      .speaking-settings .field:first-child,
+      .speaking-settings .field:nth-child(4) {
+        flex-basis: 100%;
+      }
+
+      .current-phrase-actions {
+        gap: 6px;
+      }
+
+      .current-phrase-check {
+        flex-basis: 100%;
       }
     }
   </style>
@@ -846,6 +924,13 @@
         <p id="phase" class="phase">Ready</p>
         <div id="sentenceArea">
           <p class="empty">再生ボタンを押してください。</p>
+        </div>
+        <div id="currentPhraseActions" class="current-phrase-actions" hidden>
+          <label class="current-phrase-check" for="currentPhraseExcluded">
+            <input id="currentPhraseExcluded" type="checkbox">
+            次のループから除外
+          </label>
+          <button id="currentPhraseEditButton" class="secondary" type="button">内容を編集</button>
         </div>
       </div>
 
@@ -1099,6 +1184,9 @@
     const speakingStatus = document.getElementById("speakingStatus");
     const phaseEl = document.getElementById("phase");
     const sentenceArea = document.getElementById("sentenceArea");
+    const currentPhraseActions = document.getElementById("currentPhraseActions");
+    const currentPhraseExcluded = document.getElementById("currentPhraseExcluded");
+    const currentPhraseEditButton = document.getElementById("currentPhraseEditButton");
     const problemList = document.getElementById("problemList");
     const excludedProblemList = document.getElementById("excludedProblemList");
     const repeatCount = document.getElementById("repeatCount");
@@ -1148,6 +1236,7 @@
     let syncTimer = null;
     let isSyncing = false;
     let speechRunId = 0;
+    let playbackGeneration = 0;
     let activeUtterance = null;
     let warmupUtterance = null;
     let wakeLock = null;
@@ -2318,6 +2407,7 @@
         window.clearTimeout(pauseTimer);
         pauseTimer = null;
       }
+      playbackGeneration += 1;
       speechRunId += 1;
       activeUtterance = null;
       warmupUtterance = null;
@@ -2727,6 +2817,21 @@
     function showSpeakingMessage(message, warning = false) {
       phaseEl.textContent = "Ready";
       sentenceArea.innerHTML = `<p class="empty" style="${warning ? "color: var(--bad);" : ""}">${escapeHtml(message)}</p>`;
+      currentPhraseActions.hidden = true;
+      currentPhraseExcluded.removeAttribute("data-id");
+    }
+
+    function renderCurrentPhraseControls(problem) {
+      if (!problem) {
+        currentPhraseActions.hidden = true;
+        currentPhraseExcluded.removeAttribute("data-id");
+        return;
+      }
+
+      currentPhraseActions.hidden = false;
+      currentPhraseExcluded.dataset.id = problem.id;
+      currentPhraseExcluded.checked = Boolean(problem.excluded);
+      currentPhraseEditButton.dataset.id = problem.id;
     }
 
     function renderCounter(label) {
@@ -2735,6 +2840,7 @@
 
     function showJa(problem, counterLabel = "") {
       phaseEl.textContent = "Japanese";
+      renderCurrentPhraseControls(problem);
       sentenceArea.innerHTML = `
         <p class="big-ja">${escapeHtml(problem.ja)}</p>
         ${renderCounter(counterLabel)}
@@ -2743,6 +2849,7 @@
 
     function showPause(problem, counterLabel = "") {
       phaseEl.innerHTML = '<span class="pause-badge">2秒ポーズ</span>';
+      renderCurrentPhraseControls(problem);
       sentenceArea.innerHTML = `
         <p class="big-ja">${escapeHtml(problem.ja)}</p>
         <p class="empty">今、英語で言ってみましょう。</p>
@@ -2752,6 +2859,7 @@
 
     function showEn(problem, counterLabel = "") {
       phaseEl.textContent = "English";
+      renderCurrentPhraseControls(problem);
       sentenceArea.innerHTML = `
         <p class="big-en">${escapeHtml(problem.en)}</p>
         ${renderCounter(counterLabel)}
@@ -2781,24 +2889,25 @@
       renderPlaybackBar();
     }
 
-    async function speakEnglishRepeats(problem, progress, repeatTotal, mode) {
+    async function speakEnglishRepeats(problem, progress, repeatTotal, mode, generation) {
       const counterLabel = getProgressLabel(progress);
       for (let repeatIndex = 1; repeatIndex <= repeatTotal; repeatIndex += 1) {
-        if (!isPlaying) return;
+        if (!isPlaying || generation !== playbackGeneration) return;
 
         const modeLabel = mode === "en-only" ? "英語のみ" : "英語";
         speakingStatus.textContent = `${modeLabel}: ${progress}・${repeatIndex}回目/${repeatTotal}回`;
         showEn(problem, counterLabel);
         saveSpeakingProgress(`${modeLabel} ${repeatIndex}/${repeatTotal}`);
         await speak(problem.en, "en-US");
+        if (!isPlaying || generation !== playbackGeneration) return;
       }
     }
 
-    async function playCurrentProblem() {
-      if (!isPlaying) return;
+    async function playCurrentProblem(generation = playbackGeneration) {
+      if (!isPlaying || generation !== playbackGeneration) return;
 
       if (currentPosition >= currentLoop.length) {
-        startNextLoop();
+        startNextLoop(generation);
         return;
       }
 
@@ -2815,26 +2924,29 @@
         showJa(problem, counterLabel);
         saveSpeakingProgress("日本語");
         await speak(problem.ja, "ja-JP");
-        if (!isPlaying) return;
+        if (!isPlaying || generation !== playbackGeneration) return;
 
         speakingStatus.textContent = `ポーズ: ${progress}`;
         showPause(problem, counterLabel);
         saveSpeakingProgress("ポーズ");
         await wait(2000);
-        if (!isPlaying) return;
+        if (!isPlaying || generation !== playbackGeneration) return;
       }
 
-      await speakEnglishRepeats(problem, progress, repeatTotal, mode);
-      if (!isPlaying) return;
+      await speakEnglishRepeats(problem, progress, repeatTotal, mode, generation);
+      if (!isPlaying || generation !== playbackGeneration) return;
 
       currentPosition += 1;
       if (currentPosition < currentLoop.length) {
         saveSpeakingProgress("next");
       }
-      playCurrentProblem();
+      playCurrentProblem(generation);
     }
 
-    function startNextLoop() {
+    function startNextLoop(generation = playbackGeneration) {
+      if (generation !== playbackGeneration || !isPlaying) {
+        return;
+      }
       currentLoop = getPlayableIndexes();
       currentPosition = 0;
 
@@ -2843,7 +2955,7 @@
         return;
       }
 
-      playCurrentProblem();
+      playCurrentProblem(generation);
     }
 
     function startPlaybackAt(position) {
@@ -2917,13 +3029,15 @@
         return;
       }
 
-      const loopIsUsable = currentLoop.length > 0 && currentLoop.every((index) => playable.includes(index));
-      if (!loopIsUsable || currentLoop.length !== playable.length) {
+      const loopIsUsable = currentLoop.length > 0
+        && currentLoop.length === playable.length
+        && currentLoop.every((index) => playable.includes(index));
+      if (!loopIsUsable) {
         currentLoop = playable;
       }
 
       let basePosition = currentPosition;
-      if (basePosition < 0 || basePosition >= currentLoop.length) {
+      if (!loopIsUsable || basePosition < 0 || basePosition >= currentLoop.length) {
         const saved = loadSpeakingProgress();
         const savedIndex = saved && saved.problemId
           ? currentLoop.findIndex((index) => sentencePairs[index] && sentencePairs[index].id === saved.problemId)
@@ -2949,6 +3063,31 @@
       showSpeakingMessage(message, warning);
       speakingStatus.textContent = warning ? message : "停止中";
     }
+
+    currentPhraseExcluded.addEventListener("change", () => {
+      const id = currentPhraseExcluded.dataset.id;
+      if (!id) {
+        return;
+      }
+
+      updateSentenceExcluded(id, currentPhraseExcluded.checked);
+      const problem = sentencePairs.find((item) => item.id === id);
+      renderCurrentPhraseControls(problem);
+      if (!isPlaying) {
+        updateSpeakingStatus();
+      }
+    });
+
+    currentPhraseEditButton.addEventListener("click", () => {
+      const id = currentPhraseEditButton.dataset.id;
+      if (!id) {
+        return;
+      }
+      if (isPlaying) {
+        stopSpeaking("編集のため停止しました");
+      }
+      editSentenceFromList(id);
+    });
 
     playButton.addEventListener("click", startSpeaking);
     stopButton.addEventListener("click", () => stopSpeaking());
