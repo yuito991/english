@@ -67,10 +67,19 @@
     }
 
     .playback-bar button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
       min-width: 74px;
       min-height: 44px;
       padding: 7px 10px;
       font-size: 14px;
+    }
+
+    .direction-symbol {
+      font-size: 20px;
+      line-height: 1;
     }
 
     .playback-bar-status {
@@ -1061,10 +1070,10 @@
   <aside class="playback-bar" aria-label="再生コントロール">
     <div class="playback-bar-inner">
       <span id="playbackBarStatus" class="playback-bar-status">待機中</span>
-      <button id="previousPhraseButton" class="secondary" type="button" title="前のフレーズ">前へ</button>
+      <button id="previousPhraseButton" class="secondary" type="button" title="前のフレーズ"><span class="direction-symbol" aria-hidden="true">←</span><span>前へ</span></button>
       <button id="barPlayButton" class="primary" type="button">再生</button>
       <button id="barStopButton" class="secondary" type="button" disabled>停止</button>
-      <button id="nextPhraseButton" class="secondary" type="button" title="次のフレーズ">次へ</button>
+      <button id="nextPhraseButton" class="secondary" type="button" title="次のフレーズ"><span>次へ</span><span class="direction-symbol" aria-hidden="true">→</span></button>
     </div>
   </aside>
 
