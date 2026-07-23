@@ -384,7 +384,7 @@
 
     .segmented {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 6px;
     }
 
@@ -456,10 +456,52 @@
       border-top: 1px solid var(--line);
     }
 
+    .mastered-section {
+      display: grid;
+      gap: 7px;
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
     .excluded-section h2 {
       margin: 0;
       color: var(--muted);
       font-size: 16px;
+    }
+
+    .mastered-section h2 {
+      margin: 0;
+      color: var(--good);
+      font-size: 16px;
+    }
+
+    .mastered-section .problem {
+      border-color: #bbf7d0;
+      background: var(--good-bg);
+      color: #166534;
+    }
+
+    .study-whisper {
+      display: grid;
+      gap: 2px;
+      margin: 10px 0 0;
+      padding: 9px 12px;
+      border-left: 3px solid #60a5fa;
+      background: #f8fbff;
+      color: #1e3a5f;
+      line-height: 1.45;
+    }
+
+    .study-whisper strong {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .study-whisper span {
+      color: var(--muted);
+      font-size: 13px;
     }
 
     .problem label {
@@ -878,6 +920,10 @@
               <input type="radio" name="speakingMode" value="en-only">
               英語のみ
             </label>
+            <label>
+              <input type="radio" name="speakingMode" value="mid-pause">
+              途中ポーズ
+            </label>
           </div>
         </div>
         <div class="field">
@@ -929,6 +975,8 @@
         </div>
       </div>
 
+      <p class="study-whisper"><strong>Listen. Recall. Speak.</strong><span>忘れた一瞬が、次に口から出る英語になります。</span></p>
+
       <div class="speaking-display" aria-live="polite">
         <p id="phase" class="phase">Ready</p>
         <div id="sentenceArea">
@@ -939,6 +987,7 @@
             <input id="currentPhraseExcluded" type="checkbox">
             次のループから除外
           </label>
+          <button id="currentPhraseMasterButton" class="primary" type="button">定着した</button>
           <button id="currentPhraseEditButton" class="secondary" type="button">内容を編集</button>
         </div>
       </div>
@@ -947,6 +996,11 @@
       <section class="excluded-section" aria-label="除外したフレーズ">
         <h2>除外したフレーズ</h2>
         <ul id="excludedProblemList" class="problem-list"></ul>
+      </section>
+      <section class="mastered-section" aria-label="定着したフレーズ">
+        <h2>定着したフレーズ</h2>
+        <p class="hint">定着したフレーズは通常再生から外れます。必要になったら再生対象へ戻せます。</p>
+        <ul id="masteredProblemList" class="problem-list"></ul>
       </section>
     </section>
 
@@ -1195,9 +1249,11 @@
     const sentenceArea = document.getElementById("sentenceArea");
     const currentPhraseActions = document.getElementById("currentPhraseActions");
     const currentPhraseExcluded = document.getElementById("currentPhraseExcluded");
+    const currentPhraseMasterButton = document.getElementById("currentPhraseMasterButton");
     const currentPhraseEditButton = document.getElementById("currentPhraseEditButton");
     const problemList = document.getElementById("problemList");
     const excludedProblemList = document.getElementById("excludedProblemList");
+    const masteredProblemList = document.getElementById("masteredProblemList");
     const repeatCount = document.getElementById("repeatCount");
     const speakingRate = document.getElementById("speakingRate");
     const keepAwakeToggle = document.getElementById("keepAwakeToggle");
@@ -1746,6 +1802,7 @@
         choices: Array.isArray(item.choices) ? item.choices.filter(Boolean) : [],
         tags: Array.isArray(item.tags) ? item.tags.filter(Boolean) : parseTags(item.tags),
         excluded: Boolean(item.excluded),
+        mastered: Boolean(item.mastered),
         position: Number.isFinite(Number(item.position)) ? Number(item.position) : Date.now(),
         updated_at: item.updated_at || nowIso(),
         deleted_at: item.deleted_at || null,
@@ -1887,6 +1944,7 @@
         choices: item.choices,
         tags: item.tags || [],
         excluded: item.excluded,
+        mastered: item.mastered,
         position: item.position,
         updated_at: item.updated_at,
         deleted_at: item.deleted_at
@@ -1987,6 +2045,19 @@
         id,
         kind: "sentence",
         excluded,
+        position: base && base.position ? base.position : Date.now()
+      });
+      upsertLocalItem(item);
+    }
+
+    function updateSentenceMastered(id, mastered) {
+      const base = sentencePairs.find((item) => item.id === id);
+      const existing = customItems.find((item) => item.id === id);
+      const item = Object.assign({}, base || existing, existing || {}, {
+        id,
+        kind: "sentence",
+        mastered,
+        excluded: false,
         position: base && base.position ? base.position : Date.now()
       });
       upsertLocalItem(item);
@@ -2696,6 +2767,12 @@
       if (button.dataset.action === "start-from") {
         startSpeakingFromId(button.dataset.id);
       }
+      if (button.dataset.action === "mark-mastered") {
+        updateSentenceMastered(button.dataset.id, true);
+      }
+      if (button.dataset.action === "unmaster") {
+        updateSentenceMastered(button.dataset.id, false);
+      }
       if (button.dataset.action === "edit-sentence") {
         editSentenceFromList(button.dataset.id);
       }
@@ -2703,15 +2780,18 @@
 
     problemList.addEventListener("click", handleSinglePlayClick);
     excludedProblemList.addEventListener("click", handleSinglePlayClick);
+    masteredProblemList.addEventListener("click", handleSinglePlayClick);
     addedPhraseList.addEventListener("click", handleSinglePlayClick);
 
     function renderProblemList() {
       problemList.innerHTML = "";
       excludedProblemList.innerHTML = "";
+      masteredProblemList.innerHTML = "";
 
       const selectedTag = speakingTagFilter.value;
-      const activeProblems = sentencePairs.filter((problem) => !problem.excluded && matchesTag(problem, selectedTag));
-      const excludedProblems = sentencePairs.filter((problem) => problem.excluded && matchesTag(problem, selectedTag));
+      const activeProblems = sentencePairs.filter((problem) => !problem.excluded && !problem.mastered && matchesTag(problem, selectedTag));
+      const excludedProblems = sentencePairs.filter((problem) => problem.excluded && !problem.mastered && matchesTag(problem, selectedTag));
+      const masteredProblems = sentencePairs.filter((problem) => problem.mastered && matchesTag(problem, selectedTag));
 
       if (activeProblems.length === 0) {
         problemList.innerHTML = '<li class="sync-note">再生対象のフレーズがありません。</li>';
@@ -2721,42 +2801,59 @@
         excludedProblemList.innerHTML = '<li class="sync-note">除外したフレーズはありません。</li>';
       }
 
-      appendGroupedItems(problemList, activeProblems, (problem, index) => createProblemListItem(problem, index, false), {
+      if (masteredProblems.length === 0) {
+        masteredProblemList.innerHTML = '<li class="sync-note">定着したフレーズはまだありません。</li>';
+      }
+
+      appendGroupedItems(problemList, activeProblems, (problem, index) => createProblemListItem(problem, index, "active"), {
         bodyTag: "ul",
         bodyClass: "problem-list phrase-group-body",
         wrapInListItem: true,
         stateKey: "active"
       });
 
-      appendGroupedItems(excludedProblemList, excludedProblems, (problem, index) => createProblemListItem(problem, index, true), {
+      appendGroupedItems(excludedProblemList, excludedProblems, (problem, index) => createProblemListItem(problem, index, "excluded"), {
         bodyTag: "ul",
         bodyClass: "problem-list phrase-group-body",
         wrapInListItem: true,
         stateKey: "excluded"
       });
+
+      appendGroupedItems(masteredProblemList, masteredProblems, (problem, index) => createProblemListItem(problem, index, "mastered"), {
+        bodyTag: "ul",
+        bodyClass: "problem-list phrase-group-body",
+        wrapInListItem: true,
+        stateKey: "mastered"
+      });
     }
 
-    function createProblemListItem(problem, index, isExcluded) {
+    function createProblemListItem(problem, index, section) {
+        const isExcluded = section === "excluded";
+        const isMastered = section === "mastered";
         const li = document.createElement("li");
-        li.className = `problem${problem.excluded ? " checked" : ""}`;
+        li.className = `problem${problem.excluded || problem.mastered ? " checked" : ""}`;
 
-        const label = document.createElement("label");
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = problem.excluded;
-        checkbox.setAttribute("aria-label", `${index + 1}問目を次のループから除外`);
-        checkbox.addEventListener("change", () => {
-          updateSentenceExcluded(problem.id, checkbox.checked);
-          li.classList.toggle("checked", checkbox.checked);
-          if (!isPlaying) updateSpeakingStatus();
-        });
+        const label = document.createElement(isMastered ? "div" : "label");
+        if (isMastered) {
+          label.textContent = `${index + 1}件目: 通常再生から外れています`;
+        } else {
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.checked = problem.excluded;
+          checkbox.setAttribute("aria-label", `${index + 1}問目を次のループから除外`);
+          checkbox.addEventListener("change", () => {
+            updateSentenceExcluded(problem.id, checkbox.checked);
+            li.classList.toggle("checked", checkbox.checked);
+            if (!isPlaying) updateSpeakingStatus();
+          });
 
-        const title = document.createElement("span");
-        title.textContent = isExcluded
-          ? `${index + 1}件目: チェックを外すと再生対象に戻ります`
-          : `${index + 1}問目を次のループから除外`;
-        label.appendChild(checkbox);
-        label.appendChild(title);
+          const title = document.createElement("span");
+          title.textContent = isExcluded
+            ? `${index + 1}件目: チェックを外すと再生対象に戻ります`
+            : `${index + 1}問目を次のループから除外`;
+          label.appendChild(checkbox);
+          label.appendChild(title);
+        }
 
         const text = document.createElement("div");
         text.className = "problem-text";
@@ -2770,13 +2867,19 @@
         li.appendChild(text);
         const actions = document.createElement("div");
         actions.className = "phrase-actions";
-        const startButton = isExcluded
-          ? ""
-          : `<button class="primary" type="button" data-action="start-from" data-id="${escapeHtml(problem.id)}">ここから順に再生</button>`;
+        const startButton = section === "active"
+          ? `<button class="primary" type="button" data-action="start-from" data-id="${escapeHtml(problem.id)}">ここから順に再生</button>`
+          : "";
+        const masteryButton = section === "active"
+          ? `<button class="secondary" type="button" data-action="mark-mastered" data-id="${escapeHtml(problem.id)}">定着した</button>`
+          : (isMastered
+            ? `<button class="primary" type="button" data-action="unmaster" data-id="${escapeHtml(problem.id)}">再生対象へ戻す</button>`
+            : "");
         actions.innerHTML = `
           <button class="secondary" type="button" data-action="play-ja" data-id="${escapeHtml(problem.id)}">日本語を再生</button>
           <button class="secondary" type="button" data-action="play-en" data-id="${escapeHtml(problem.id)}">英語を再生</button>
           ${startButton}
+          ${masteryButton}
           <button class="secondary" type="button" data-action="edit-sentence" data-id="${escapeHtml(problem.id)}">内容を編集</button>
         `;
         li.appendChild(actions);
@@ -2785,7 +2888,7 @@
 
     function getPlayableIndexes() {
       return sentencePairs
-        .map((item, index) => item.excluded || !matchesTag(item, speakingTagFilter.value) ? null : index)
+        .map((item, index) => item.excluded || item.mastered || !matchesTag(item, speakingTagFilter.value) ? null : index)
         .filter((index) => index !== null);
     }
 
@@ -2828,18 +2931,23 @@
       sentenceArea.innerHTML = `<p class="empty" style="${warning ? "color: var(--bad);" : ""}">${escapeHtml(message)}</p>`;
       currentPhraseActions.hidden = true;
       currentPhraseExcluded.removeAttribute("data-id");
+      currentPhraseMasterButton.removeAttribute("data-id");
     }
 
     function renderCurrentPhraseControls(problem) {
       if (!problem) {
         currentPhraseActions.hidden = true;
         currentPhraseExcluded.removeAttribute("data-id");
+        currentPhraseMasterButton.removeAttribute("data-id");
         return;
       }
 
       currentPhraseActions.hidden = false;
       currentPhraseExcluded.dataset.id = problem.id;
       currentPhraseExcluded.checked = Boolean(problem.excluded);
+      currentPhraseMasterButton.dataset.id = problem.id;
+      currentPhraseMasterButton.disabled = Boolean(problem.mastered);
+      currentPhraseMasterButton.textContent = problem.mastered ? "定着済み" : "定着した";
       currentPhraseEditButton.dataset.id = problem.id;
     }
 
@@ -2875,6 +2983,40 @@
       `;
     }
 
+    function showMidPhrasePause(problem, firstPart, counterLabel = "") {
+      phaseEl.innerHTML = '<span class="pause-badge">続き思い出し 2秒</span>';
+      renderCurrentPhraseControls(problem);
+      sentenceArea.innerHTML = `
+        <p class="big-en">${escapeHtml(firstPart)}</p>
+        <p class="empty">この続きの英語を思い出してみましょう。</p>
+        ${renderCounter(counterLabel)}
+      `;
+    }
+
+    function splitEnglishPhrase(text) {
+      const words = cleanText(text).split(/\s+/).filter(Boolean);
+      if (words.length < 2) {
+        return [cleanText(text), ""];
+      }
+
+      const middle = Math.floor(words.length / 2);
+      let splitAt = middle;
+      let closestDistance = Number.POSITIVE_INFINITY;
+      words.forEach((word, index) => {
+        const position = index + 1;
+        if (position <= 0 || position >= words.length || !/[,:;!?]$/.test(word)) {
+          return;
+        }
+        const distance = Math.abs(position - middle);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          splitAt = position;
+        }
+      });
+
+      return [words.slice(0, splitAt).join(" "), words.slice(splitAt).join(" ")];
+    }
+
     function getSpeakingMode() {
       const selected = document.querySelector('input[name="speakingMode"]:checked');
       return selected ? selected.value : "ja-en";
@@ -2903,11 +3045,32 @@
       for (let repeatIndex = 1; repeatIndex <= repeatTotal; repeatIndex += 1) {
         if (!isPlaying || generation !== playbackGeneration) return;
 
-        const modeLabel = mode === "en-only" ? "英語のみ" : "英語";
-        speakingStatus.textContent = `${modeLabel}: ${progress}・${repeatIndex}回目/${repeatTotal}回`;
-        showEn(problem, counterLabel);
-        saveSpeakingProgress(`${modeLabel} ${repeatIndex}/${repeatTotal}`);
-        await speak(problem.en, "en-US");
+        const modeLabel = mode === "en-only" ? "英語のみ" : (mode === "mid-pause" ? "途中ポーズ" : "英語");
+        if (mode === "mid-pause") {
+          const [firstPart, secondPart] = splitEnglishPhrase(problem.en);
+          speakingStatus.textContent = `${modeLabel}: ${progress}・前半・${repeatIndex}回目/${repeatTotal}回`;
+          showEn(Object.assign({}, problem, { en: firstPart }), counterLabel);
+          saveSpeakingProgress(`${modeLabel} 前半`);
+          await speak(firstPart, "en-US");
+          if (!isPlaying || generation !== playbackGeneration) return;
+
+          if (secondPart) {
+            speakingStatus.textContent = `${modeLabel}: ${progress}・思い出し中`;
+            showMidPhrasePause(problem, firstPart, counterLabel);
+            await wait(2000);
+            if (!isPlaying || generation !== playbackGeneration) return;
+
+            speakingStatus.textContent = `${modeLabel}: ${progress}・後半・${repeatIndex}回目/${repeatTotal}回`;
+            showEn(problem, counterLabel);
+            saveSpeakingProgress(`${modeLabel} 後半`);
+            await speak(secondPart, "en-US");
+          }
+        } else {
+          speakingStatus.textContent = `${modeLabel}: ${progress}・${repeatIndex}回目/${repeatTotal}回`;
+          showEn(problem, counterLabel);
+          saveSpeakingProgress(`${modeLabel} ${repeatIndex}/${repeatTotal}`);
+          await speak(problem.en, "en-US");
+        }
         if (!isPlaying || generation !== playbackGeneration) return;
       }
     }
@@ -2928,7 +3091,7 @@
       saveSpeakingProgress("start");
       renderPlaybackBar();
 
-      if (mode === "ja-en") {
+      if (mode === "ja-en" || mode === "mid-pause") {
         speakingStatus.textContent = `日本語: ${progress}`;
         showJa(problem, counterLabel);
         saveSpeakingProgress("日本語");
@@ -3085,6 +3248,16 @@
       if (!isPlaying) {
         updateSpeakingStatus();
       }
+    });
+
+    currentPhraseMasterButton.addEventListener("click", () => {
+      const id = currentPhraseMasterButton.dataset.id;
+      if (!id) {
+        return;
+      }
+      updateSentenceMastered(id, true);
+      const problem = sentencePairs.find((item) => item.id === id);
+      renderCurrentPhraseControls(problem);
     });
 
     currentPhraseEditButton.addEventListener("click", () => {
