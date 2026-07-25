@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>英語学習アプリ</title>
+  <title>1秒スピーキング</title>
   <style>
     :root {
       color-scheme: light;
@@ -41,7 +41,7 @@
     .app {
       width: min(980px, 100%);
       margin: 0 auto;
-      padding: 18px 16px 104px;
+      padding: 10px 16px 104px;
     }
 
     .playback-bar {
@@ -90,23 +90,6 @@
       font-weight: 850;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-
-    header {
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      margin: 0 0 5px;
-      font-size: clamp(24px, 3.6vw, 34px);
-      letter-spacing: 0;
-      line-height: 1.2;
-    }
-
-    .lead {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.5;
     }
 
     .tabs {
@@ -482,28 +465,6 @@
       color: #166534;
     }
 
-    .study-whisper {
-      display: grid;
-      gap: 2px;
-      margin: 10px 0 0;
-      padding: 9px 12px;
-      border-left: 3px solid #60a5fa;
-      background: #f8fbff;
-      color: #1e3a5f;
-      line-height: 1.45;
-    }
-
-    .study-whisper strong {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .study-whisper span {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
     .problem label {
       display: flex;
       align-items: center;
@@ -735,15 +696,7 @@
     @media (max-width: 700px) {
       .app {
         min-height: 100dvh;
-        padding: 14px 12px calc(196px + env(safe-area-inset-bottom));
-      }
-
-      h1 {
-        font-size: 27px;
-      }
-
-      .lead {
-        font-size: 14px;
+        padding: 8px 12px calc(196px + env(safe-area-inset-bottom));
       }
 
       .tag-actions {
@@ -863,11 +816,6 @@
 </head>
 <body>
   <div class="app">
-    <header>
-      <h1>英語学習アプリ</h1>
-      <p class="lead">単語クイズで表現を確認し、1秒スピーキングで日本語から英語をすぐ出す練習をします。スマホのブラウザだけで動きます。</p>
-    </header>
-
     <nav class="tabs" aria-label="学習メニュー">
       <button class="tab-button" type="button" data-tab="quiz">単語クイズ</button>
       <button class="tab-button active" type="button" data-tab="speaking">1秒スピーキング</button>
@@ -922,7 +870,7 @@
             </label>
             <label>
               <input type="radio" name="speakingMode" value="mid-pause">
-              途中ポーズ
+              英語途中停止
             </label>
           </div>
         </div>
@@ -974,8 +922,6 @@
           <select id="speakingTagFilter"></select>
         </div>
       </div>
-
-      <p class="study-whisper"><strong>Listen. Recall. Speak.</strong><span>忘れた一瞬が、次に口から出る英語になります。</span></p>
 
       <div class="speaking-display" aria-live="polite">
         <p id="phase" class="phase">Ready</p>
@@ -2039,6 +1985,8 @@
     }
 
     function updateSentenceExcluded(id, excluded) {
+      const playbackAnchor = capturePlaybackAnchor();
+      const wasCurrent = playbackAnchor && playbackAnchor.currentId === id;
       const base = sentencePairs.find((item) => item.id === id);
       const existing = customItems.find((item) => item.id === id);
       const item = Object.assign({}, base || existing, existing || {}, {
@@ -2048,9 +1996,14 @@
         position: base && base.position ? base.position : Date.now()
       });
       upsertLocalItem(item);
+      if (wasCurrent && excluded) {
+        continuePlaybackAfterRemovedPhrase(playbackAnchor);
+      }
     }
 
     function updateSentenceMastered(id, mastered) {
+      const playbackAnchor = capturePlaybackAnchor();
+      const wasCurrent = playbackAnchor && playbackAnchor.currentId === id;
       const base = sentencePairs.find((item) => item.id === id);
       const existing = customItems.find((item) => item.id === id);
       const item = Object.assign({}, base || existing, existing || {}, {
@@ -2061,6 +2014,9 @@
         position: base && base.position ? base.position : Date.now()
       });
       upsertLocalItem(item);
+      if (wasCurrent && mastered) {
+        continuePlaybackAfterRemovedPhrase(playbackAnchor);
+      }
     }
 
     function clearForm() {
@@ -2892,6 +2848,42 @@
         .filter((index) => index !== null);
     }
 
+    function capturePlaybackAnchor() {
+      if (!isPlaying || currentPosition < 0 || currentPosition >= currentLoop.length) {
+        return null;
+      }
+      const loopIds = currentLoop
+        .map((index) => sentencePairs[index] && sentencePairs[index].id)
+        .filter(Boolean);
+      const currentId = loopIds[currentPosition];
+      if (!currentId) {
+        return null;
+      }
+      return {
+        currentId,
+        nextIds: loopIds.slice(currentPosition + 1),
+        wrappedIds: loopIds.slice(0, currentPosition)
+      };
+    }
+
+    function continuePlaybackAfterRemovedPhrase(anchor) {
+      const playable = getPlayableIndexes();
+      if (playable.length === 0) {
+        stopSpeaking("すべて除外されています", true);
+        return;
+      }
+
+      const playableById = new Map(playable.map((index) => [sentencePairs[index].id, index]));
+      const nextId = anchor.nextIds.concat(anchor.wrappedIds).find((id) => playableById.has(id));
+      const nextIndex = nextId ? playableById.get(nextId) : playable[0];
+      cancelSpeechAndTimer();
+      currentLoop = playable;
+      currentPosition = currentLoop.indexOf(nextIndex);
+      saveSpeakingProgress("filter-change");
+      requestWakeLock();
+      playCurrentProblem();
+    }
+
     function renderPlaybackBar() {
       const playable = getPlayableIndexes();
       const hasCurrent = currentLoop.length > 0 && currentPosition >= 0 && currentPosition < currentLoop.length;
@@ -3091,7 +3083,7 @@
       saveSpeakingProgress("start");
       renderPlaybackBar();
 
-      if (mode === "ja-en" || mode === "mid-pause") {
+      if (mode === "ja-en") {
         speakingStatus.textContent = `日本語: ${progress}`;
         showJa(problem, counterLabel);
         saveSpeakingProgress("日本語");
