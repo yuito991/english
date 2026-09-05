@@ -3,3302 +3,458 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>1秒スピーキング</title>
+  <meta name="theme-color" content="#f7f8fc">
+  <title>1秒スピーキング｜周期復習</title>
   <style>
-    :root {
-      color-scheme: light;
-      --bg: #f6f7fb;
-      --panel: #ffffff;
-      --text: #172033;
-      --muted: #657084;
-      --line: #d8deea;
-      --primary: #2563eb;
-      --primary-dark: #1d4ed8;
-      --soft: #eef4ff;
-      --good: #047857;
-      --good-bg: #ecfdf5;
-      --bad: #b91c1c;
-      --bad-bg: #fef2f2;
-      --pause: #9a3412;
-      --pause-bg: #fff7ed;
-      font-family: "Segoe UI", "Noto Sans JP", system-ui, sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      min-height: 100dvh;
-      background: var(--bg);
-      color: var(--text);
-      -webkit-text-size-adjust: 100%;
-      touch-action: manipulation;
-    }
-
-    .app {
-      width: min(980px, 100%);
-      margin: 0 auto;
-      padding: 10px 16px 104px;
-    }
-
-    .playback-bar {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 30;
-      border-top: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.96);
-      box-shadow: 0 -8px 24px rgba(31, 41, 55, 0.12);
-      backdrop-filter: blur(10px);
-    }
-
-    .playback-bar-inner {
-      width: min(980px, 100%);
-      display: grid;
-      grid-template-columns: minmax(120px, 1fr) repeat(4, auto);
-      align-items: center;
-      gap: 8px;
-      margin: 0 auto;
-      padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
-    }
-
-    .playback-bar button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      min-width: 74px;
-      min-height: 44px;
-      padding: 7px 10px;
-      font-size: 14px;
-    }
-
-    .direction-symbol {
-      font-size: 20px;
-      line-height: 1;
-    }
-
-    .playback-bar-status {
-      min-width: 0;
-      overflow: hidden;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 850;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      margin: 12px 0;
-      padding: 4px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-    }
-
-    .tab-button,
-    button {
-      border: 0;
-      border-radius: 8px;
-      min-height: 44px;
-      padding: 9px 12px;
-      font: inherit;
-      font-weight: 800;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .tab-button {
-      background: transparent;
-      color: var(--muted);
-    }
-
-    .tab-button.active {
-      background: var(--primary);
-      color: #ffffff;
-    }
-
-    .panel {
-      display: none;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 16px;
-      box-shadow: 0 8px 22px rgba(31, 41, 55, 0.06);
-    }
-
-    .panel.active {
-      display: block;
-    }
-
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .primary {
-      background: var(--primary);
-      color: #ffffff;
-    }
-
-    .primary:hover:not(:disabled) {
-      background: var(--primary-dark);
-    }
-
-    .secondary {
-      background: #e5e7eb;
-      color: var(--text);
-    }
-
-    button:disabled {
-      opacity: 0.48;
-      cursor: not-allowed;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 28px;
-      border-radius: 999px;
-      padding: 5px 10px;
-      background: var(--soft);
-      color: #3730a3;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcff;
-      padding: 14px;
-      margin-top: 12px;
-    }
-
-    .quiz-prompt {
-      margin: 0 0 8px;
-      color: var(--muted);
-      font-weight: 800;
-    }
-
-    .quiz-word {
-      margin: 0;
-      font-size: clamp(24px, 5vw, 42px);
-      line-height: 1.25;
-      font-weight: 900;
-    }
-
-    .choices {
-      display: grid;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .choice {
-      width: 100%;
-      min-height: 50px;
-      border: 1px solid var(--line);
-      background: #ffffff;
-      color: var(--text);
-      text-align: left;
-    }
-
-    .choice.correct {
-      border-color: #86efac;
-      background: var(--good-bg);
-      color: var(--good);
-    }
-
-    .choice.wrong {
-      border-color: #fecaca;
-      background: var(--bad-bg);
-      color: var(--bad);
-    }
-
-    .feedback {
-      min-height: 24px;
-      margin-top: 8px;
-      font-weight: 800;
-      line-height: 1.5;
-    }
-
-    .speaking-display {
-      position: relative;
-      min-height: 160px;
-      display: grid;
-      align-content: center;
-      gap: 8px;
-      margin-top: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcff;
-      padding: 14px;
-    }
-
-    .phrase-counter {
-      position: absolute;
-      right: 10px;
-      bottom: 8px;
-      border-radius: 999px;
-      padding: 4px 10px;
-      background: #e0f2fe;
-      color: #075985;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .phase {
-      margin: 0;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .big-ja,
-    .big-en,
-    .empty {
-      margin: 0;
-      line-height: 1.55;
-      overflow-wrap: anywhere;
-    }
-
-    .big-ja {
-      font-size: clamp(22px, 4.5vw, 34px);
-      font-weight: 900;
-    }
-
-    .big-en {
-      font-size: clamp(20px, 3.8vw, 30px);
-      font-weight: 850;
-    }
-
-    .empty {
-      color: var(--muted);
-      font-size: 16px;
-      font-weight: 750;
-    }
-
-    .pause-badge {
-      width: fit-content;
-      border-radius: 999px;
-      padding: 5px 10px;
-      background: var(--pause-bg);
-      color: var(--pause);
-      font-weight: 900;
-    }
-
-    .speaking-settings {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: end;
-      gap: 8px;
-      margin-top: 10px;
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcff;
-    }
-
-    .speaking-settings .field {
-      flex: 1 1 138px;
-      min-width: 138px;
-    }
-
-    .speaking-settings .field:first-child {
-      flex: 2 1 250px;
-    }
-
-    .speaking-settings .field:nth-child(4) {
-      flex: 1 1 190px;
-    }
-
-    .speaking-settings .hint {
-      display: none;
-    }
-
-    .current-phrase-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      margin-top: 4px;
-      padding-top: 8px;
-      border-top: 1px solid var(--line);
-    }
-
-    .current-phrase-actions[hidden] {
-      display: none;
-    }
-
-    .current-phrase-check {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 40px;
-      margin-right: auto;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 850;
-      cursor: pointer;
-    }
-
-    .current-phrase-check input {
-      width: 23px;
-      height: 23px;
-      accent-color: var(--primary);
-    }
-
-    .current-phrase-actions button {
-      min-height: 40px;
-      padding: 7px 11px;
-      font-size: 14px;
-    }
-
-    .segmented {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-    }
-
-    .segmented label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #ffffff;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .segmented input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .segmented label:has(input:checked) {
-      border-color: var(--primary);
-      background: var(--soft);
-      color: var(--primary-dark);
-    }
-
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 44px;
-      font-weight: 900;
-    }
-
-    .toggle-row input {
-      width: 22px;
-      height: 22px;
-      accent-color: var(--primary);
-    }
-
-    .problem-list {
-      display: grid;
-      gap: 7px;
-      margin: 14px 0 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .problem {
-      display: grid;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px;
-      background: #ffffff;
-    }
-
-    .problem.checked {
-      background: #f9fafb;
-      color: var(--muted);
-    }
-
-    .excluded-section {
-      display: grid;
-      gap: 7px;
-      margin-top: 18px;
-      padding-top: 12px;
-      border-top: 1px solid var(--line);
-    }
-
-    .mastered-section {
-      display: grid;
-      gap: 7px;
-      margin-top: 18px;
-      padding-top: 12px;
-      border-top: 1px solid var(--line);
-    }
-
-    .excluded-section h2 {
-      margin: 0;
-      color: var(--muted);
-      font-size: 16px;
-    }
-
-    .mastered-section h2 {
-      margin: 0;
-      color: var(--good);
-      font-size: 16px;
-    }
-
-    .mastered-section .problem {
-      border-color: #bbf7d0;
-      background: var(--good-bg);
-      color: #166534;
-    }
-
-    .problem label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 40px;
-      font-weight: 900;
-      cursor: pointer;
-    }
-
-    .problem input {
-      width: 26px;
-      height: 26px;
-      accent-color: var(--primary);
-      flex: 0 0 auto;
-    }
-
-    .problem-text {
-      display: grid;
-      gap: 4px;
-      line-height: 1.55;
-    }
-
-    .phrase-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 2px;
-    }
-
-    .guide {
-      display: grid;
-      gap: 12px;
-      line-height: 1.75;
-    }
-
-    .sync-note {
-      display: grid;
-      gap: 6px;
-      margin: 10px 0 0;
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcff;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .csv-box {
-      min-height: 130px;
-      font-family: Consolas, "Courier New", monospace;
-      font-size: 14px;
-    }
-
-    .form-grid {
-      display: grid;
-      gap: 9px;
-      margin-top: 12px;
-    }
-
-    .field {
-      display: grid;
-      gap: 5px;
-    }
-
-    .field label {
-      font-weight: 900;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px;
-      color: var(--text);
-      background: #ffffff;
-      font: inherit;
-      line-height: 1.45;
-    }
-
-    textarea {
-      min-height: 84px;
-      resize: vertical;
-    }
-
-    .phrase-textarea {
-      min-height: 96px;
-      max-height: 220px;
-      overflow-y: auto;
-      transition: min-height 0.16s ease, box-shadow 0.16s ease;
-    }
-
-    .phrase-textarea:focus {
-      min-height: 190px;
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
-    }
-
-    .hint {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .tag-picker {
-      min-height: 96px;
-    }
-
-    .tag-actions {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      align-items: stretch;
-    }
-
-    .selected-tags {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-    }
-
-    .added-phrase-list {
-      display: grid;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .added-phrase {
-      display: grid;
-      gap: 4px;
-      padding: 10px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #ffffff;
-      line-height: 1.55;
-    }
-
-    .phrase-group,
-    .phrase-group-item {
-      display: block;
-    }
-
-    .phrase-group {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcff;
-      overflow: hidden;
-    }
-
-    .phrase-group summary {
-      min-height: 44px;
-      padding: 10px 12px;
-      cursor: pointer;
-      font-weight: 900;
-      color: var(--primary-dark);
-      list-style-position: inside;
-    }
-
-    .phrase-group[open] summary {
-      border-bottom: 1px solid var(--line);
-      background: var(--soft);
-    }
-
-    .phrase-group-body {
-      display: grid;
-      gap: 7px;
-      padding: 8px;
-    }
-
-    .phrase-group-body.problem-list {
-      margin: 0;
-    }
-
-    .item-manager {
-      display: grid;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .manager-item {
-      display: grid;
-      gap: 6px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px;
-      background: #ffffff;
-      line-height: 1.55;
-    }
-
-    .manager-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .manager-actions button {
-      min-height: 42px;
-      padding: 8px 12px;
-      font-size: 14px;
-    }
-
-    .danger {
-      background: var(--bad-bg);
-      color: var(--bad);
-    }
-
-    .guide h2 {
-      margin: 0;
-      font-size: 22px;
-    }
-
-    .guide ol {
-      margin: 0;
-      padding-left: 22px;
-    }
-
-    .guide li {
-      margin-bottom: 8px;
-    }
-
-    code {
-      border-radius: 6px;
-      background: #eef2ff;
-      padding: 2px 6px;
-      font-family: Consolas, monospace;
-    }
-
-    @media (max-width: 700px) {
-      .app {
-        min-height: 100dvh;
-        padding: 8px 12px calc(196px + env(safe-area-inset-bottom));
-      }
-
-      .tag-actions {
-        grid-template-columns: 1fr;
-      }
-
-      .phrase-textarea:focus {
-        min-height: 160px;
-      }
-
-      .tabs {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 20;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
-        margin: 0;
-        padding: 12px 10px calc(14px + env(safe-area-inset-bottom));
-        border-right: 0;
-        border-bottom: 0;
-        border-left: 0;
-        border-radius: 0;
-        background: rgba(255, 255, 255, 0.96);
-        backdrop-filter: blur(10px);
-      }
-
-      .playback-bar {
-        bottom: calc(86px + env(safe-area-inset-bottom));
-      }
-
-      .playback-bar-inner {
-        grid-template-columns: minmax(84px, 1fr) repeat(4, minmax(0, 1fr));
-        gap: 5px;
-        padding: 8px 8px;
-      }
-
-      .playback-bar button {
-        min-width: 0;
-        min-height: 50px;
-        padding: 8px 4px;
-        font-size: 12px;
-      }
-
-      .playback-bar-status {
-        font-size: 12px;
-      }
-
-      .tab-button {
-        min-height: 54px;
-        padding: 8px 4px;
-        font-size: 12px;
-      }
-
-      .panel {
-        padding: 14px 12px;
-        box-shadow: none;
-      }
-
-      .row button {
-        flex: 1 1 130px;
-        min-height: 50px;
-        font-size: 16px;
-      }
-
-      .pill {
-        width: 100%;
-      }
-
-      .choice {
-        min-height: 54px;
-        font-size: 16px;
-      }
-
-      .speaking-display {
-        min-height: 205px;
-        padding: 14px;
-      }
-
-      .problem {
-        padding: 10px;
-      }
-
-      .problem input {
-        width: 28px;
-        height: 28px;
-      }
-
-      .speaking-settings {
-        display: flex;
-        gap: 6px;
-        padding: 8px;
-      }
-
-      .speaking-settings .field,
-      .speaking-settings .field:first-child,
-      .speaking-settings .field:nth-child(4) {
-        flex: 1 1 calc(50% - 6px);
-        min-width: 0;
-      }
-
-      .speaking-settings .field:first-child,
-      .speaking-settings .field:nth-child(4) {
-        flex-basis: 100%;
-      }
-
-      .current-phrase-actions {
-        gap: 6px;
-      }
-
-      .current-phrase-check {
-        flex-basis: 100%;
-      }
-    }
+    :root{
+      color-scheme:light;
+      --bg:#f7f8fc;--panel:#fff;--panel2:#fbfcff;--text:#172033;--muted:#667085;
+      --line:#e2e7f0;--primary:#315efb;--primary2:#2448cf;--soft:#eef3ff;
+      --good:#087a55;--goodbg:#ebfaf4;--warn:#9a5a08;--warnbg:#fff7e6;
+      --bad:#b42318;--badbg:#fff0ee;--shadow:0 10px 30px rgba(28,39,64,.08);
+      --drawer:248px;--radius:16px;--topbar:64px;
+      font-family:"Segoe UI","Noto Sans JP",system-ui,-apple-system,sans-serif;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--bg);color:var(--text);min-height:100dvh;-webkit-text-size-adjust:100%}
+    button,input,select,textarea{font:inherit} button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+    button:disabled{cursor:not-allowed;opacity:.48} [hidden]{display:none!important}
+    .drawer{position:fixed;inset:0 auto 0 0;width:var(--drawer);z-index:60;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 14px}
+    .brand{display:flex;gap:11px;align-items:center;padding:4px 8px 18px}.brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#315efb,#6c8cff);display:grid;place-items:center;color:#fff;font-weight:950;box-shadow:0 8px 18px rgba(49,94,251,.24)}
+    .brand strong{display:block;font-size:15px}.brand span{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+    .nav{display:grid;gap:5px}.nav-button{width:100%;min-height:46px;border:0;border-radius:12px;background:transparent;color:#475467;text-align:left;padding:10px 12px;font-weight:800;display:flex;align-items:center;gap:10px}
+    .nav-button:hover{background:#f4f6fb}.nav-button.active{background:var(--soft);color:var(--primary2)}.nav-icon{width:24px;text-align:center;font-size:18px}
+    .drawer-foot{margin-top:auto;border-top:1px solid var(--line);padding:14px 8px 2px;color:var(--muted);font-size:12px;line-height:1.6}
+    .topbar{display:none}.scrim{display:none}
+    .main{margin-left:var(--drawer);min-height:100dvh}.content{width:min(1120px,100%);margin:0 auto;padding:28px 30px 120px}
+    .page{display:none}.page.active{display:block}.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}.page-head h1{font-size:clamp(24px,3vw,34px);line-height:1.25;margin:0}.page-head p{margin:7px 0 0;color:var(--muted);line-height:1.65}.page-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .panel,.card{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow)}.panel{padding:18px}.card{padding:16px}.card-flat{box-shadow:none;background:var(--panel2)}
+    .grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:16px}.stat{padding:16px;border:1px solid var(--line);border-radius:14px;background:#fff}.stat-label{color:var(--muted);font-weight:750;font-size:12px}.stat-value{font-size:30px;font-weight:950;line-height:1.2;margin-top:7px}.stat-sub{font-size:11px;color:var(--muted);margin-top:4px}
+    .two-col{grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr)}.three-col{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.section-title h2{margin:0;font-size:18px}.section-title p{margin:0;color:var(--muted);font-size:12px}
+    .primary,.secondary,.ghost,.danger,.success{border:0;border-radius:11px;min-height:42px;padding:9px 13px;font-weight:850}.primary{background:var(--primary);color:#fff}.primary:hover{background:var(--primary2)}.secondary{background:#edf0f5;color:#344054}.ghost{background:#fff;color:#475467;border:1px solid var(--line)}.danger{background:var(--badbg);color:var(--bad)}.success{background:var(--goodbg);color:var(--good)}
+    .pill{display:inline-flex;align-items:center;justify-content:center;min-height:28px;padding:4px 10px;border-radius:999px;background:var(--soft);color:var(--primary2);font-size:12px;font-weight:850}.pill.good{background:var(--goodbg);color:var(--good)}.pill.warn{background:var(--warnbg);color:var(--warn)}.pill.bad{background:var(--badbg);color:var(--bad)}
+    .row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.field{display:grid;gap:6px}.field label{font-size:13px;font-weight:850;color:#344054}.hint{font-size:12px;color:var(--muted);line-height:1.55}.form-grid{display:grid;gap:12px}.form-grid.cols2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    input,select,textarea{width:100%;border:1px solid #d8deea;border-radius:11px;background:#fff;color:var(--text);padding:10px 11px;line-height:1.45;outline:none}.input-small{width:auto;min-width:150px} textarea{min-height:90px;resize:vertical}input:focus,select:focus,textarea:focus{border-color:#8aa5ff;box-shadow:0 0 0 3px rgba(49,94,251,.11)}
+    .review-card{min-height:330px;display:grid;align-content:center;gap:14px;text-align:center;padding:24px}.review-meta{display:flex;flex-wrap:wrap;justify-content:center;gap:7px}.review-ja{font-size:clamp(24px,4vw,38px);font-weight:950;line-height:1.55;margin:3px 0}.review-en{font-size:clamp(21px,3.2vw,31px);font-weight:850;line-height:1.55;color:#283955;margin:0}.review-answer{padding-top:12px;border-top:1px solid var(--line)}.review-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:7px}.review-actions button{min-height:52px;border-radius:12px;border:1px solid var(--line);background:#fff;font-weight:900}.review-actions button:nth-child(1){color:var(--bad);background:var(--badbg)}.review-actions button:nth-child(2){color:var(--warn);background:var(--warnbg)}.review-actions button:nth-child(3){color:var(--primary2);background:var(--soft)}.review-actions button:nth-child(4){color:var(--good);background:var(--goodbg)}
+    .mini-list{display:grid;gap:8px}.mini-item{border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff}.mini-item strong{display:block;font-size:14px;line-height:1.5}.mini-item span{display:block;color:var(--muted);font-size:12px;margin-top:3px;line-height:1.45}
+    .progress-track{height:9px;border-radius:999px;background:#edf0f5;overflow:hidden}.progress-fill{height:100%;background:linear-gradient(90deg,#315efb,#55a6ff);border-radius:inherit;transition:width .2s ease}.retention{display:flex;align-items:center;gap:8px}.retention .progress-track{flex:1}.retention b{font-size:12px;min-width:38px;text-align:right}
+    .settings-grid{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:9px;align-items:end}.toggle{display:flex;align-items:center;gap:8px;min-height:43px;font-weight:800;font-size:13px}.toggle input{width:20px;height:20px;accent-color:var(--primary)}
+    .speaking-box{min-height:290px;margin-top:14px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#fff,#fbfcff);padding:22px;display:grid;align-content:center;gap:13px;position:relative}.speaking-phase{margin:0;color:var(--muted);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.speaking-ja{font-size:clamp(24px,4vw,37px);font-weight:950;line-height:1.55;margin:0}.speaking-en{font-size:clamp(21px,3.3vw,31px);font-weight:850;line-height:1.55;margin:0}.counter{position:absolute;right:14px;top:14px}.current-actions{display:flex;flex-wrap:wrap;gap:7px;align-items:center;border-top:1px solid var(--line);padding-top:12px;margin-top:3px}.current-actions .grade-group{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}.current-actions .grade-group button{padding:8px 10px;min-height:38px}
+    .list{display:grid;gap:8px;margin-top:14px}.phrase-item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}.phrase-main{min-width:0}.phrase-ja{font-weight:900;line-height:1.5}.phrase-en{color:#475467;line-height:1.5;margin-top:3px}.phrase-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.phrase-side{display:grid;align-content:center;gap:6px;min-width:120px}.phrase-side .retention{min-width:120px}.phrase-buttons{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:5px}.phrase-buttons button{min-height:34px;padding:6px 9px;font-size:12px}
+    .group{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}.group summary{cursor:pointer;list-style-position:inside;padding:13px 14px;font-weight:900;background:#fbfcff}.group[open] summary{border-bottom:1px solid var(--line)}.group-body{padding:10px;display:grid;gap:8px}
+    .searchbar{display:grid;grid-template-columns:minmax(180px,1fr) repeat(3,minmax(130px,.3fr));gap:8px;margin-bottom:12px}.empty-state{padding:28px 16px;text-align:center;color:var(--muted);line-height:1.7}.empty-state strong{display:block;color:#344054;margin-bottom:4px}
+    .quiz-card{max-width:720px;margin:0 auto;padding:24px}.quiz-prompt{font-size:12px;font-weight:850;color:var(--muted);margin:0}.quiz-word{font-size:clamp(25px,5vw,42px);font-weight:950;line-height:1.35;margin:9px 0 18px}.choices{display:grid;gap:8px}.choice{min-height:52px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text);font-weight:800;text-align:left;padding:11px 13px}.choice.correct{background:var(--goodbg);border-color:#a6e6ce;color:var(--good)}.choice.wrong{background:var(--badbg);border-color:#f0b5ae;color:var(--bad)}.feedback{min-height:24px;font-weight:850;line-height:1.5;margin-top:10px}
+    .note-card{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff}.note-card h3{margin:0 0 7px;font-size:16px}.note-card p{white-space:pre-wrap;margin:0;color:#475467;line-height:1.65}.note-links{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}.note-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}.note-actions button{min-height:34px;padding:6px 9px;font-size:12px}
+    .podcast-toolbar{display:grid;grid-template-columns:minmax(180px,.8fr) minmax(220px,1.2fr) minmax(220px,1fr);gap:9px;align-items:end}.podcast-import{margin-top:12px;padding:13px;border:1px solid var(--line);border-radius:13px;background:var(--panel2)}.podcast-import textarea{min-height:120px}.podcast-workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:14px}.podcast-pane{min-width:0;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}.podcast-pane-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 13px;border-bottom:1px solid var(--line);background:#fbfcff}.podcast-pane-head h3{margin:0;font-size:15px}.podcast-pane-head span{font-size:12px;color:var(--muted)}.podcast-pane-tools{padding:10px 12px;border-bottom:1px solid var(--line)}.transcript-list,.podcast-memo-list{display:grid;gap:8px;padding:10px;max-height:620px;overflow:auto;scrollbar-gutter:stable}.transcript-sentence{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;align-items:start;padding:10px;border:1px solid var(--line);border-radius:11px;background:#fff}.transcript-sentence.memoed{border-color:#b9c9ff;background:#f8faff}.transcript-number{width:30px;height:30px;border-radius:9px;background:#f0f3f8;color:#667085;display:grid;place-items:center;font-size:11px;font-weight:900}.transcript-text{line-height:1.65;color:#344054;overflow-wrap:anywhere}.transcript-add{min-height:34px;padding:6px 9px;font-size:12px}.podcast-memo-form{padding:12px;border-bottom:1px solid var(--line);background:#fff}.selected-phrase-box{min-height:76px;background:#fbfcff}.podcast-memo-card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff}.podcast-memo-card .memo-index{font-size:11px;color:var(--muted);font-weight:900}.podcast-memo-card .memo-phrase{font-size:16px;font-weight:900;line-height:1.6;margin-top:5px;color:#23324d}.podcast-memo-card .memo-body{white-space:pre-wrap;line-height:1.65;color:#475467;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}.podcast-memo-card .note-actions{margin-top:9px}.file-note{font-size:11px;color:var(--muted);line-height:1.5}.legacy-notes{margin-top:14px}.legacy-notes summary{cursor:pointer;font-weight:850;padding:12px 2px}.transcript-empty{padding:28px 14px;text-align:center;color:var(--muted);line-height:1.7}
+    .sync-note{padding:12px 13px;border:1px solid var(--line);border-radius:12px;background:#fbfcff;color:var(--muted);font-size:12px;line-height:1.6}.divider{height:1px;background:var(--line);margin:16px 0}.subhead{font-size:15px;margin:0 0 10px}
+    .image-upload{display:grid;gap:9px;padding:12px;border:1px dashed #cbd5e1;border-radius:13px;background:#fbfcff}.image-upload input[type="file"]{padding:9px;background:#fff}.image-preview{display:none;position:relative;width:min(420px,100%);border:1px solid var(--line);border-radius:13px;overflow:hidden;background:#eef2f7}.image-preview.show{display:block}.image-preview img{display:block;width:100%;max-height:300px;object-fit:contain;background:#f8fafc}.image-preview-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;background:#fff;border-top:1px solid var(--line)}.image-preview-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--muted);font-weight:750}.image-preview-bar button{min-height:34px;padding:6px 9px;font-size:12px}
+    .phrase-image-slot:empty{display:none}.phrase-image{display:block;width:min(520px,100%);max-height:340px;object-fit:contain;margin:12px auto 0;border:1px solid var(--line);border-radius:14px;background:#f8fafc}.phrase-image.thumb{width:150px;max-height:110px;margin:8px 0 0;object-fit:cover}.review-card .phrase-image{max-height:300px}.speaking-box .phrase-image{max-height:280px}
+    .manager{display:grid;gap:8px}.manager-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}.manager-row strong{display:block;font-size:13px}.manager-row span{display:block;font-size:12px;color:var(--muted);margin-top:2px}.manager-actions{display:flex;gap:5px}.manager-actions button{min-height:34px;padding:6px 9px;font-size:12px}
+    .playbar{position:fixed;left:var(--drawer);right:0;bottom:0;z-index:45;background:rgba(255,255,255,.94);border-top:1px solid var(--line);backdrop-filter:blur(12px)}.playbar-inner{width:min(1120px,100%);margin:0 auto;padding:8px 30px calc(8px + env(safe-area-inset-bottom));display:grid;grid-template-columns:minmax(130px,1fr) repeat(4,auto);gap:7px;align-items:center}.playbar-status{font-size:12px;color:var(--muted);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.playbar button{min-height:42px;padding:7px 11px}
+    .toast{position:fixed;right:18px;bottom:84px;z-index:100;max-width:min(420px,calc(100vw - 36px));border:1px solid var(--line);border-radius:13px;background:#172033;color:#fff;padding:11px 14px;box-shadow:var(--shadow);font-size:13px;font-weight:800;opacity:0;transform:translateY(12px);pointer-events:none;transition:.18s}.toast.show{opacity:1;transform:none}
+    @media(max-width:1040px){.stats{grid-template-columns:repeat(2,1fr)}.settings-grid{grid-template-columns:repeat(3,1fr)}.two-col{grid-template-columns:1fr}.three-col{grid-template-columns:1fr 1fr}.searchbar{grid-template-columns:1fr 1fr}}
+    @media(max-width:860px){
+      :root{--drawer:280px}.drawer{transform:translateX(-102%);transition:transform .2s ease;box-shadow:0 0 36px rgba(20,31,54,.18)}body.drawer-open .drawer{transform:none}.scrim{display:block;position:fixed;inset:0;background:rgba(17,24,39,.34);z-index:55;opacity:0;pointer-events:none;transition:opacity .2s}body.drawer-open .scrim{opacity:1;pointer-events:auto}.main{margin-left:0}.topbar{height:var(--topbar);position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(247,248,252,.92);border-bottom:1px solid rgba(226,231,240,.85);backdrop-filter:blur(12px)}.menu-btn{width:44px;height:44px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:20px}.topbar-title{font-weight:900}.content{padding:18px 14px 128px}.playbar{left:0}.playbar-inner{padding:7px 8px calc(7px + env(safe-area-inset-bottom));grid-template-columns:minmax(75px,1fr) repeat(4,minmax(0,1fr))}.playbar button{min-width:0;padding:7px 4px;font-size:12px}.page-head{display:block}.page-actions{margin-top:12px}.settings-grid{grid-template-columns:1fr 1fr}.review-actions{grid-template-columns:1fr 1fr}.phrase-item{grid-template-columns:1fr}.phrase-side{grid-template-columns:1fr auto;align-items:center}.phrase-buttons{justify-content:flex-start}.current-actions .grade-group{margin-left:0;width:100%}.searchbar{grid-template-columns:1fr}.form-grid.cols2{grid-template-columns:1fr}}
+    @media(max-width:560px){.stats{grid-template-columns:1fr 1fr;gap:8px}.stat{padding:13px}.stat-value{font-size:25px}.three-col{grid-template-columns:1fr}.settings-grid{grid-template-columns:1fr}.review-card{padding:18px 14px}.review-actions{grid-template-columns:1fr 1fr}.speaking-box{padding:17px 14px;min-height:310px}.current-actions>button{flex:1 1 110px}.phrase-side{display:block}.phrase-side .retention{margin-bottom:8px}.manager-row{grid-template-columns:1fr}.manager-actions{justify-content:flex-start}}
+
+    @media(max-width:900px){.podcast-toolbar{grid-template-columns:1fr 1fr}.podcast-toolbar .field:last-child{grid-column:1/-1}.podcast-workspace{grid-template-columns:1fr}.transcript-list,.podcast-memo-list{max-height:520px}}
+    @media(max-width:620px){.podcast-toolbar{grid-template-columns:1fr}.podcast-toolbar .field:last-child{grid-column:auto}.transcript-sentence{grid-template-columns:30px minmax(0,1fr)}.transcript-add{grid-column:2;justify-self:start}.podcast-pane-head{align-items:flex-start;flex-direction:column}.transcript-list,.podcast-memo-list{max-height:none;overflow:visible}}
   </style>
 </head>
 <body>
-  <div class="app">
-    <nav class="tabs" aria-label="学習メニュー">
-      <button class="tab-button" type="button" data-tab="quiz">単語クイズ</button>
-      <button class="tab-button active" type="button" data-tab="speaking">1秒スピーキング</button>
-      <button class="tab-button" type="button" data-tab="phrases">追加したフレーズ一覧</button>
-      <button class="tab-button" type="button" data-tab="add">問題追加</button>
+  <div id="scrim" class="scrim"></div>
+  <aside class="drawer" id="drawer" aria-label="メインメニュー">
+    <div class="brand"><div class="brand-mark">1s</div><div><strong>1秒スピーキング</strong><span>Spaced Review Edition</span></div></div>
+    <nav class="nav">
+      <button class="nav-button active" data-page="home"><span class="nav-icon">⌂</span>今日の復習</button>
+      <button class="nav-button" data-page="speaking"><span class="nav-icon">▶</span>1秒スピーキング</button>
+      <button class="nav-button" data-page="quiz"><span class="nav-icon">✓</span>単語クイズ</button>
+      <button class="nav-button" data-page="library"><span class="nav-icon">▤</span>フレーズまとめ</button>
+      <button class="nav-button" data-page="add"><span class="nav-icon">＋</span>フレーズ追加</button>
+      <button class="nav-button" data-page="settings"><span class="nav-icon">⚙</span>同期・設定</button>
     </nav>
-
-    <section id="quiz" class="panel" aria-label="単語クイズ">
-      <div class="row">
-        <button id="quizSpeakButton" class="secondary" type="button">問題を読む</button>
-        <button id="quizResetButton" class="secondary" type="button">最初から</button>
-        <span id="quizStatus" class="pill">0 / 0</span>
-      </div>
-      <div class="field">
-        <label for="quizTagFilter">タグで絞り込み</label>
-        <select id="quizTagFilter"></select>
-      </div>
-
-      <div class="card">
-        <p class="quiz-prompt">日本語に合う英語を選んでください</p>
-        <p id="quizQuestion" class="quiz-word">自業自得</p>
-        <div id="choices" class="choices">
-          <button class="choice" type="button">a taste of your own medicine</button>
-          <button class="choice" type="button">a piece of cake</button>
-          <button class="choice" type="button">on the same page</button>
-        </div>
-        <div id="quizFeedback" class="feedback" aria-live="polite"></div>
-        <div class="row">
-          <button id="nextQuizButton" class="primary" type="button" disabled>次の問題</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="speaking" class="panel active" aria-label="1秒スピーキング">
-      <div class="row">
-        <button id="playButton" class="primary" type="button">再生</button>
-        <button id="stopButton" class="secondary" type="button" disabled>停止</button>
-        <span id="speakingStatus" class="pill">待機中</span>
-      </div>
-
-      <div class="speaking-settings" aria-label="再生設定">
-        <div class="field">
-          <label>読み上げモード</label>
-          <div class="segmented">
-            <label>
-              <input type="radio" name="speakingMode" value="ja-en" checked>
-              日本語あり
-            </label>
-            <label>
-              <input type="radio" name="speakingMode" value="en-only">
-              英語のみ
-            </label>
-            <label>
-              <input type="radio" name="speakingMode" value="mid-pause">
-              英語途中停止
-            </label>
-          </div>
-        </div>
-        <div class="field">
-          <label for="repeatCount">英語の繰り返し回数</label>
-          <select id="repeatCount" aria-label="英語の繰り返し回数">
-            <option value="1" selected>1回</option>
-            <option value="2">2回</option>
-            <option value="3">3回</option>
-            <option value="4">4回</option>
-            <option value="5">5回</option>
-            <option value="6">6回</option>
-            <option value="7">7回</option>
-            <option value="8">8回</option>
-            <option value="9">9回</option>
-            <option value="10">10回</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="speakingRate">再生速度</label>
-          <select id="speakingRate" aria-label="再生速度">
-            <option value="0.75">0.75倍</option>
-            <option value="0.85">0.85倍</option>
-            <option value="0.92" selected>0.92倍</option>
-            <option value="1">1.0倍</option>
-            <option value="1.1">1.1倍</option>
-            <option value="1.2">1.2倍</option>
-          </select>
-          <span class="hint">聞き取りやすさ優先なら0.85〜0.92倍がおすすめです。</span>
-        </div>
-        <div class="field">
-          <label class="toggle-row" for="keepAwakeToggle">
-            <input id="keepAwakeToggle" type="checkbox">
-            画面を閉じにくくする
-          </label>
-          <span class="hint">対応ブラウザでは再生中に画面点灯を維持します。完全なバックグラウンド再生はスマホOSに制限される場合があります。</span>
-        </div>
-        <div class="field">
-          <label for="voicePreference">読み上げ音声</label>
-          <select id="voicePreference" aria-label="読み上げ音声">
-            <option value="default" selected>ブラウザ標準</option>
-            <option value="male">男性風（低音補正）</option>
-            <option value="female">女性優先</option>
-          </select>
-          <span class="hint">音質を優先する場合はブラウザ標準がおすすめです。男性風は低音補正のため音質が変わることがあります。</span>
-        </div>
-        <div class="field">
-          <label for="speakingTagFilter">タグで絞り込み</label>
-          <select id="speakingTagFilter"></select>
-        </div>
-      </div>
-
-      <div class="speaking-display" aria-live="polite">
-        <p id="phase" class="phase">Ready</p>
-        <div id="sentenceArea">
-          <p class="empty">再生ボタンを押してください。</p>
-        </div>
-        <div id="currentPhraseActions" class="current-phrase-actions" hidden>
-          <label class="current-phrase-check" for="currentPhraseExcluded">
-            <input id="currentPhraseExcluded" type="checkbox">
-            次のループから除外
-          </label>
-          <button id="currentPhraseMasterButton" class="primary" type="button">定着した</button>
-          <button id="currentPhraseEditButton" class="secondary" type="button">内容を編集</button>
-        </div>
-      </div>
-
-      <ul id="problemList" class="problem-list" aria-label="再生する問題"></ul>
-      <section class="excluded-section" aria-label="除外したフレーズ">
-        <h2>除外したフレーズ</h2>
-        <ul id="excludedProblemList" class="problem-list"></ul>
-      </section>
-      <section class="mastered-section" aria-label="定着したフレーズ">
-        <h2>定着したフレーズ</h2>
-        <p class="hint">定着したフレーズは通常再生から外れます。必要になったら再生対象へ戻せます。</p>
-        <ul id="masteredProblemList" class="problem-list"></ul>
-      </section>
-    </section>
-
-    <section id="phrases" class="panel" aria-label="追加したフレーズ一覧">
-      <section class="card" aria-label="追加したフレーズ一覧">
-        <h2>追加したフレーズ一覧</h2>
-        <p class="hint">自分で追加した1秒スピーキング用フレーズをここで確認できます。日本語・英語を単体で再生できます。</p>
-        <div id="addedPhraseList" class="added-phrase-list"></div>
-      </section>
-    </section>
-
-    <section id="add" class="panel" aria-label="問題追加">
-      <div class="row">
-        <span id="syncStatus" class="pill">同期準備中</span>
-        <button id="syncNowButton" class="secondary" type="button">今すぐ同期</button>
-      </div>
-      <form id="itemForm" class="form-grid">
-        <input id="editingId" type="hidden">
-        <div class="field">
-          <label for="jaInput">日本語文（必須）</label>
-          <textarea id="jaInput" class="phrase-textarea" required placeholder="例: 彼らは新しいマーケティング戦略を実行する予定です。"></textarea>
-        </div>
-        <div class="field">
-          <label for="enInput">英語文（必須）</label>
-          <textarea id="enInput" class="phrase-textarea" required placeholder="例: They will implement a new marketing strategy."></textarea>
-        </div>
-        <div class="field">
-          <label for="tagSelect">タグ</label>
-          <select id="tagSelect" class="tag-picker" multiple size="4"></select>
-          <span id="selectedTagPreview" class="selected-tags">タグ未選択</span>
-          <span class="hint">使うタグを選択してください。複数選ぶ場合は Ctrl キーを押しながら選択できます。</span>
-        </div>
-        <div class="field">
-          <label for="newTagInput">新しいタグを追加</label>
-          <div class="tag-actions">
-            <input id="newTagInput" type="text" placeholder="例: 授業">
-            <button id="addTagButton" class="secondary" type="button">追加</button>
-            <button id="deleteTagButton" class="danger" type="button">選択タグを削除</button>
-          </div>
-          <span class="hint">一度追加したタグは、次回から上の一覧で選べます。削除すると追加済み問題からもそのタグを外します。</span>
-          <div id="tagMessage" class="feedback" aria-live="polite"></div>
-        </div>
-        <div class="field">
-          <label for="promptInput">クイズ用の日本語ヒント</label>
-          <input id="promptInput" type="text" placeholder="例: 実行する">
-          <span class="hint">空欄の場合は1秒スピーキングだけに追加します。</span>
-        </div>
-        <div class="field">
-          <label for="answerInput">クイズ正解</label>
-          <input id="answerInput" type="text" placeholder="例: implement">
-        </div>
-        <div class="field">
-          <label for="choiceAInput">クイズ選択肢1</label>
-          <input id="choiceAInput" type="text" placeholder="例: imagine">
-        </div>
-        <div class="field">
-          <label for="choiceBInput">クイズ選択肢2</label>
-          <input id="choiceBInput" type="text" placeholder="例: interrupt">
-        </div>
-        <div class="row">
-          <button id="saveItemButton" class="primary" type="submit">問題を保存</button>
-          <button id="clearFormButton" class="secondary" type="button">入力をクリア</button>
-        </div>
-        <div id="formMessage" class="feedback" aria-live="polite"></div>
-      </form>
-
-      <section class="card" aria-label="CSV一括追加">
-        <div class="form-grid">
-          <div class="field">
-            <label for="csvInput">CSV一括追加</label>
-            <textarea id="csvInput" class="csv-box" placeholder="日本語,英語,タグ,クイズヒント,正解,選択肢1,選択肢2&#10;彼らは新しい戦略を実行します,They will implement a new strategy,仕事,実行する,implement,imagine,interrupt"></textarea>
-            <span class="hint">1行目に見出しを書いてもOKです。タグやクイズ欄は空でも追加できます。</span>
-          </div>
-          <div class="row">
-            <button id="importCsvButton" class="primary" type="button">CSVを追加</button>
-            <button id="clearCsvButton" class="secondary" type="button">CSVをクリア</button>
-          </div>
-          <div id="csvMessage" class="feedback" aria-live="polite"></div>
-        </div>
-      </section>
-
-      <section class="card" aria-label="追加済み問題の編集">
-        <h2>追加済み問題の編集</h2>
-        <div id="itemManager" class="item-manager"></div>
-      </section>
-
-      <div class="sync-note">
-        <strong>スマホとPCで同じ問題を使うには</strong>
-        <span>下のSupabase設定を保存してください。スマホとPCで同じ <code>SYNC_KEY</code> を使うと、追加した問題とチェック状態が同期されます。未設定の間は、この端末だけに保存されます。</span>
-      </div>
-
-      <section class="card" aria-label="Supabase同期設定">
-        <div class="form-grid">
-          <div class="field">
-            <label for="supabaseUrlInput">Supabase Project URL</label>
-            <input id="supabaseUrlInput" type="url" placeholder="https://xxxx.supabase.co" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="supabaseAnonKeyInput">Supabase anon public key</label>
-            <input id="supabaseAnonKeyInput" type="password" placeholder="eyJ..." autocomplete="off">
-            <span class="hint">service role key は絶対に入れないでください。anon public keyだけを使います。</span>
-          </div>
-          <div class="field">
-            <label for="syncKeyInput">SYNC_KEY</label>
-            <input id="syncKeyInput" type="text" placeholder="例: english-my-private-sync-2026" autocomplete="off">
-            <span class="hint">スマホとPCで同じ文字列にしてください。推測されにくい長めの文字列がおすすめです。</span>
-          </div>
-          <div class="row">
-            <button id="saveSyncSettingsButton" class="primary" type="button">同期設定を保存</button>
-            <button id="clearSyncSettingsButton" class="secondary" type="button">同期設定を消去</button>
-          </div>
-          <div id="syncSettingsMessage" class="feedback" aria-live="polite"></div>
-        </div>
-      </section>
-    </section>
-    <noscript>
-      <p class="card">このアプリを使うにはJavaScriptを有効にしてください。SafariまたはChromeで開くと動きやすいです。</p>
-    </noscript>
-  </div>
-
-  <aside class="playback-bar" aria-label="再生コントロール">
-    <div class="playback-bar-inner">
-      <span id="playbackBarStatus" class="playback-bar-status">待機中</span>
-      <button id="previousPhraseButton" class="secondary" type="button" title="前のフレーズ"><span class="direction-symbol" aria-hidden="true">←</span><span>前へ</span></button>
-      <button id="barPlayButton" class="primary" type="button">再生</button>
-      <button id="barStopButton" class="secondary" type="button" disabled>停止</button>
-      <button id="nextPhraseButton" class="secondary" type="button" title="次のフレーズ"><span>次へ</span><span class="direction-symbol" aria-hidden="true">→</span></button>
-    </div>
+    <div class="drawer-foot">復習間隔は自己評価と定着率の目安から自動調整します。弱いフレーズほど早く、安定したフレーズほど間隔を広げます。</div>
   </aside>
 
-  <script>
-    const DEFAULT_SUPABASE_URL = "";
-    const DEFAULT_SUPABASE_ANON_KEY = "";
-    const DEFAULT_SYNC_KEY = "english-my-sync-key";
-    const SETTINGS_STORAGE_KEY = "english_sync_settings";
-    const USER_TAGS_STORAGE_KEY = "english_user_tags";
-    const VOICE_PREF_STORAGE_KEY = "english_voice_preference";
-    const SPEAKING_PROGRESS_STORAGE_KEY = "english_speaking_progress";
-    const SPEAKING_RATE_STORAGE_KEY = "english_speaking_rate";
-    const SPEAKING_MODE_STORAGE_KEY = "english_speaking_mode";
-    const SPEAKING_REPEAT_STORAGE_KEY = "english_speaking_repeat";
-    const KEEP_AWAKE_STORAGE_KEY = "english_keep_awake";
-    const SYNC_INTERVAL_MS = 10000;
-    const PHRASE_GROUP_SIZE = 20;
-
-    const INITIAL_SENTENCES = [
-      {
-        id: "builtin-sentence-1",
-        kind: "sentence",
-        ja: "どんな気分か分かったでしょう！自業自得だよ。",
-        en: "Now you see how it feels! It's a taste of your own medicine.",
-        tags: ["基本"],
-        excluded: false
-      },
-      {
-        id: "builtin-sentence-2",
-        kind: "sentence",
-        ja: "電車を乗り過ごした、というわけだ。",
-        en: "We missed the train, so there you go.",
-        tags: ["基本"],
-        excluded: false
-      },
-      {
-        id: "builtin-sentence-3",
-        kind: "sentence",
-        ja: "彼らは新しいマーケティング戦略を実行する予定です。",
-        en: "They will implement a new marketing strategy.",
-        tags: ["仕事"],
-        excluded: false
-      }
-    ];
-
-    const INITIAL_QUIZZES = [
-      {
-        id: "builtin-quiz-1",
-        kind: "quiz",
-        prompt: "自業自得",
-        answer: "a taste of your own medicine",
-        tags: ["基本"],
-        choices: ["a taste of your own medicine", "a piece of cake", "on the same page"]
-      },
-      {
-        id: "builtin-quiz-2",
-        kind: "quiz",
-        prompt: "電車に乗り遅れる / 乗り過ごす",
-        answer: "miss the train",
-        tags: ["基本"],
-        choices: ["miss the train", "take a break", "catch a cold"]
-      },
-      {
-        id: "builtin-quiz-3",
-        kind: "quiz",
-        prompt: "というわけだ / ほらね",
-        answer: "there you go",
-        tags: ["基本"],
-        choices: ["there you go", "by the way", "not at all"]
-      },
-      {
-        id: "builtin-quiz-4",
-        kind: "quiz",
-        prompt: "実行する",
-        answer: "implement",
-        tags: ["仕事"],
-        choices: ["implement", "imagine", "interrupt"]
-      },
-      {
-        id: "builtin-quiz-5",
-        kind: "quiz",
-        prompt: "マーケティング戦略",
-        answer: "marketing strategy",
-        tags: ["仕事"],
-        choices: ["marketing strategy", "morning routine", "meeting schedule"]
-      }
-    ];
-
-    let customItems = [];
-    let userTags = [];
-    let sentencePairs = [];
-    let quizItems = [];
-    let syncConfig = {
-      supabaseUrl: DEFAULT_SUPABASE_URL,
-      supabaseAnonKey: DEFAULT_SUPABASE_ANON_KEY,
-      syncKey: DEFAULT_SYNC_KEY
-    };
-
-    const tabs = document.querySelectorAll(".tab-button");
-    const panels = document.querySelectorAll(".panel");
-    const quizQuestion = document.getElementById("quizQuestion");
-    const choicesEl = document.getElementById("choices");
-    const quizTagFilter = document.getElementById("quizTagFilter");
-    const quizFeedback = document.getElementById("quizFeedback");
-    const quizStatus = document.getElementById("quizStatus");
-    const nextQuizButton = document.getElementById("nextQuizButton");
-    const quizResetButton = document.getElementById("quizResetButton");
-    const quizSpeakButton = document.getElementById("quizSpeakButton");
-
-    const playButton = document.getElementById("playButton");
-    const stopButton = document.getElementById("stopButton");
-    const barPlayButton = document.getElementById("barPlayButton");
-    const barStopButton = document.getElementById("barStopButton");
-    const previousPhraseButton = document.getElementById("previousPhraseButton");
-    const nextPhraseButton = document.getElementById("nextPhraseButton");
-    const playbackBarStatus = document.getElementById("playbackBarStatus");
-    const speakingStatus = document.getElementById("speakingStatus");
-    const phaseEl = document.getElementById("phase");
-    const sentenceArea = document.getElementById("sentenceArea");
-    const currentPhraseActions = document.getElementById("currentPhraseActions");
-    const currentPhraseExcluded = document.getElementById("currentPhraseExcluded");
-    const currentPhraseMasterButton = document.getElementById("currentPhraseMasterButton");
-    const currentPhraseEditButton = document.getElementById("currentPhraseEditButton");
-    const problemList = document.getElementById("problemList");
-    const excludedProblemList = document.getElementById("excludedProblemList");
-    const masteredProblemList = document.getElementById("masteredProblemList");
-    const repeatCount = document.getElementById("repeatCount");
-    const speakingRate = document.getElementById("speakingRate");
-    const keepAwakeToggle = document.getElementById("keepAwakeToggle");
-    const voicePreference = document.getElementById("voicePreference");
-    const speakingTagFilter = document.getElementById("speakingTagFilter");
-    const speakingModeInputs = document.querySelectorAll('input[name="speakingMode"]');
-    const syncStatus = document.getElementById("syncStatus");
-    const syncNowButton = document.getElementById("syncNowButton");
-    const supabaseUrlInput = document.getElementById("supabaseUrlInput");
-    const supabaseAnonKeyInput = document.getElementById("supabaseAnonKeyInput");
-    const syncKeyInput = document.getElementById("syncKeyInput");
-    const saveSyncSettingsButton = document.getElementById("saveSyncSettingsButton");
-    const clearSyncSettingsButton = document.getElementById("clearSyncSettingsButton");
-    const syncSettingsMessage = document.getElementById("syncSettingsMessage");
-    const itemForm = document.getElementById("itemForm");
-    const editingId = document.getElementById("editingId");
-    const jaInput = document.getElementById("jaInput");
-    const enInput = document.getElementById("enInput");
-    const tagSelect = document.getElementById("tagSelect");
-    const selectedTagPreview = document.getElementById("selectedTagPreview");
-    const newTagInput = document.getElementById("newTagInput");
-    const addTagButton = document.getElementById("addTagButton");
-    const deleteTagButton = document.getElementById("deleteTagButton");
-    const tagMessage = document.getElementById("tagMessage");
-    const promptInput = document.getElementById("promptInput");
-    const answerInput = document.getElementById("answerInput");
-    const choiceAInput = document.getElementById("choiceAInput");
-    const choiceBInput = document.getElementById("choiceBInput");
-    const clearFormButton = document.getElementById("clearFormButton");
-    const formMessage = document.getElementById("formMessage");
-    const addedPhraseList = document.getElementById("addedPhraseList");
-    const itemManager = document.getElementById("itemManager");
-    const csvInput = document.getElementById("csvInput");
-    const importCsvButton = document.getElementById("importCsvButton");
-    const clearCsvButton = document.getElementById("clearCsvButton");
-    const csvMessage = document.getElementById("csvMessage");
-
-    let quizIndex = 0;
-    let score = 0;
-    let answered = false;
-    let isPlaying = false;
-    let pauseTimer = null;
-    let currentLoop = [];
-    let currentPosition = 0;
-    let syncTimer = null;
-    let isSyncing = false;
-    let speechRunId = 0;
-    let playbackGeneration = 0;
-    let activeUtterance = null;
-    let warmupUtterance = null;
-    let wakeLock = null;
-    const phraseGroupOpenState = new Map();
-
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    function canUseSpeech() {
-      return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
-    }
-
-    function getVoicePreference() {
-      return voicePreference ? voicePreference.value : "default";
-    }
-
-    function loadVoicePreference() {
-      const saved = localStorage.getItem(VOICE_PREF_STORAGE_KEY);
-      voicePreference.value = saved === "female" ? "female" : "default";
-      localStorage.setItem(VOICE_PREF_STORAGE_KEY, voicePreference.value);
-    }
-
-    function saveVoicePreference() {
-      localStorage.setItem(VOICE_PREF_STORAGE_KEY, getVoicePreference());
-    }
-
-    function loadSpeakingControls() {
-      const savedRate = localStorage.getItem(SPEAKING_RATE_STORAGE_KEY);
-      const rateOptions = [].slice.call(speakingRate.options).map((option) => option.value);
-      if (savedRate && rateOptions.includes(savedRate)) {
-        speakingRate.value = savedRate;
-      }
-      const savedRepeat = localStorage.getItem(SPEAKING_REPEAT_STORAGE_KEY);
-      const repeatOptions = [].slice.call(repeatCount.options).map((option) => option.value);
-      if (savedRepeat && repeatOptions.includes(savedRepeat)) {
-        repeatCount.value = savedRepeat;
-      }
-      const savedMode = localStorage.getItem(SPEAKING_MODE_STORAGE_KEY);
-      if (savedMode) {
-        const modeInput = [].slice.call(speakingModeInputs).find((input) => input.value === savedMode);
-        if (modeInput) {
-          modeInput.checked = true;
-        }
-      }
-      keepAwakeToggle.checked = localStorage.getItem(KEEP_AWAKE_STORAGE_KEY) === "true";
-    }
-
-    function saveSpeakingControls() {
-      localStorage.setItem(SPEAKING_RATE_STORAGE_KEY, speakingRate.value);
-      localStorage.setItem(SPEAKING_REPEAT_STORAGE_KEY, repeatCount.value);
-      localStorage.setItem(SPEAKING_MODE_STORAGE_KEY, getSpeakingMode());
-      localStorage.setItem(KEEP_AWAKE_STORAGE_KEY, keepAwakeToggle.checked ? "true" : "false");
-    }
-
-    function getSpeakingRate() {
-      const rate = Number(speakingRate.value);
-      if (!Number.isFinite(rate)) {
-        return 0.92;
-      }
-      return Math.min(Math.max(rate, 0.5), 1.5);
-    }
-
-    function getPreferredPitch() {
-      const preference = getVoicePreference();
-      if (preference === "male") return 0.68;
-      if (preference === "female") return 1.06;
-      return 1;
-    }
-
-    function getPreferredRate() {
-      const preference = getVoicePreference();
-      let baseRate = 1;
-      if (preference === "male") baseRate = 0.94;
-      if (preference === "female") baseRate = 1;
-      return Math.min(Math.max(baseRate * getSpeakingRate(), 0.5), 1.5);
-    }
-
-    function choosePreferredVoice(lang) {
-      const preference = getVoicePreference();
-      if (preference === "default" || !canUseSpeech()) {
-        return null;
-      }
-
-      const voices = window.speechSynthesis.getVoices();
-      const langPrefix = String(lang || "").split("-")[0].toLowerCase();
-      const candidates = voices.filter((voice) => {
-        const voiceLang = String(voice.lang || "").toLowerCase();
-        return voiceLang === String(lang || "").toLowerCase() || voiceLang.startsWith(`${langPrefix}-`);
-      });
-      const usableVoices = candidates.length > 0 ? candidates : voices;
-      const maleWords = ["male", "man", "david", "mark", "daniel", "alex", "george", "guy", "ryan", "ichiro", "keita", "otoya"];
-      const femaleWords = ["female", "woman", "zira", "susan", "samantha", "karen", "victoria", "haruka", "nanami", "ayumi", "kyoko"];
-      const goodWords = preference === "male" ? maleWords : femaleWords;
-      const badWords = preference === "male" ? femaleWords : maleWords;
-
-      const scored = usableVoices.map((voice) => {
-        const name = `${voice.name || ""} ${voice.voiceURI || ""}`.toLowerCase();
-        const good = goodWords.some((word) => name.includes(word)) ? 2 : 0;
-        const bad = badWords.some((word) => name.includes(word)) ? -2 : 0;
-        const local = voice.localService ? 0.3 : 0;
-        return { voice, score: good + bad + local };
-      }).sort((a, b) => b.score - a.score);
-
-      return scored.length > 0 && scored[0].score > 0 ? scored[0].voice : null;
-    }
-
-    function warmupSpeech(lang, runId) {
-      return new Promise((resolve) => {
-        if (!canUseSpeech()) {
-          resolve();
-          return;
-        }
-
-        let done = false;
-        const finish = () => {
-          if (done) return;
-          done = true;
-          resolve();
-        };
-
-        try {
-          warmupUtterance = new SpeechSynthesisUtterance(".");
-          warmupUtterance.lang = lang;
-          warmupUtterance.volume = 0;
-          warmupUtterance.rate = 10;
-          const preferredVoice = choosePreferredVoice(lang);
-          if (preferredVoice) {
-            warmupUtterance.voice = preferredVoice;
-          }
-          warmupUtterance.onend = finish;
-          warmupUtterance.onerror = finish;
-          window.speechSynthesis.speak(warmupUtterance);
-          window.setTimeout(finish, 220);
-        } catch (error) {
-          finish();
-        }
-      }).then(() => {
-        if (runId !== speechRunId) {
-          return Promise.reject(new Error("speech stopped"));
-        }
-        return new Promise((resolve) => window.setTimeout(resolve, 90));
-      });
-    }
-
-    function speak(text, lang) {
-      return new Promise((resolve) => {
-        if (!canUseSpeech()) {
-          wait(Math.min(Math.max(String(text).length * 70, 900), 2400)).then(resolve);
-          return;
-        }
-
-        try {
-          speechRunId += 1;
-          const runId = speechRunId;
-          let finished = false;
-          const finish = () => {
-            if (finished) return;
-            finished = true;
-            resolve();
-          };
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = lang;
-          utterance.rate = getPreferredRate();
-          utterance.pitch = getPreferredPitch();
-          const preferredVoice = choosePreferredVoice(lang);
-          if (preferredVoice) {
-            utterance.voice = preferredVoice;
-          }
-          utterance.onend = finish;
-          utterance.onerror = finish;
-          activeUtterance = utterance;
-          warmupSpeech(lang, runId).then(() => {
-            if (runId !== speechRunId) {
-              finish();
-              return;
-            }
-            try {
-              if (typeof window.speechSynthesis.resume === "function") {
-                window.speechSynthesis.resume();
-              }
-              window.speechSynthesis.speak(utterance);
-            } catch (error) {
-              finish();
-            }
-          }).catch(finish);
-        } catch (error) {
-          wait(Math.min(Math.max(String(text).length * 70, 900), 2400)).then(resolve);
-        }
-      });
-    }
-
-    function readText(text, lang, fallbackMessage) {
-      if (!canUseSpeech() && fallbackMessage) {
-        quizFeedback.textContent = fallbackMessage;
-      }
-      return speak(text, lang);
-    }
-
-    function warmUpVoices() {
-      if (!canUseSpeech()) {
-        return;
-      }
-
-      try {
-        window.speechSynthesis.getVoices();
-      } catch (error) {
-        // Some mobile WebViews throw here. Text-only playback still works.
-      }
-    }
-
-    function isSupabaseConfigured() {
-      return Boolean(syncConfig.supabaseUrl.trim() && syncConfig.supabaseAnonKey.trim());
-    }
-
-    function nowIso() {
-      return new Date().toISOString();
-    }
-
-    function makeId(prefix) {
-      return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    }
-
-    function cleanText(value) {
-      return String(value || "").trim();
-    }
-
-    function normalizeSplitPart(value) {
-      return cleanText(value).replace(/^[\s/／|｜・、。:：-]+|[\s/／|｜・、。:：-]+$/g, "");
-    }
-
-    function hasJapaneseText(value) {
-      return /[ぁ-んァ-ヶ一-龯々〆ヵヶ]/.test(value);
-    }
-
-    function hasEnglishText(value) {
-      return /[A-Za-z]/.test(value);
-    }
-
-    function splitByLanguageLabels(value) {
-      const text = cleanText(value);
-      const jaMatch = /(?:日本語|和文|ja|japanese)\s*[:：]/i.exec(text);
-      const enMatch = /(?:英語|英文|en|english)\s*[:：]/i.exec(text);
-      if (!jaMatch || !enMatch) {
-        return null;
-      }
-
-      const jaStart = jaMatch.index + jaMatch[0].length;
-      const enStart = enMatch.index + enMatch[0].length;
-      const jaEnd = jaMatch.index < enMatch.index ? enMatch.index : text.length;
-      const enEnd = enMatch.index < jaMatch.index ? jaMatch.index : text.length;
-      const ja = normalizeSplitPart(text.slice(jaStart, jaEnd));
-      const en = normalizeSplitPart(text.slice(enStart, enEnd));
-      return ja && en ? { ja, en } : null;
-    }
-
-    function splitByLanguageParts(value) {
-      const parts = cleanText(value)
-        .split(/\r?\n|\/|／|\||｜/)
-        .map(normalizeSplitPart)
-        .filter(Boolean);
-      if (parts.length < 2) {
-        return null;
-      }
-
-      const jaParts = [];
-      const enParts = [];
-      parts.forEach((part) => {
-        if (hasJapaneseText(part)) {
-          jaParts.push(part);
-        } else if (hasEnglishText(part)) {
-          enParts.push(part);
-        }
-      });
-
-      const ja = jaParts.join(" ");
-      const en = enParts.join(" ");
-      return ja && en ? { ja, en } : null;
-    }
-
-    function splitMixedLanguageText(value) {
-      const text = cleanText(value);
-      if (!hasJapaneseText(text) || !hasEnglishText(text)) {
-        return null;
-      }
-
-      return splitByLanguageLabels(text) || splitByLanguageParts(text);
-    }
-
-    function distributeMixedLanguageInput(sourceInput) {
-      const result = splitMixedLanguageText(sourceInput.value);
-      if (!result) {
-        return;
-      }
-
-      const keepExistingJa = sourceInput !== jaInput && Boolean(cleanText(jaInput.value));
-      const keepExistingEn = sourceInput !== enInput && Boolean(cleanText(enInput.value));
-      if (keepExistingJa && keepExistingEn) {
-        return;
-      }
-
-      if (!keepExistingJa) {
-        jaInput.value = result.ja;
-      }
-      if (!keepExistingEn) {
-        enInput.value = result.en;
-      }
-      resizePhraseTextarea(jaInput);
-      resizePhraseTextarea(enInput);
-      formMessage.textContent = keepExistingJa || keepExistingEn
-        ? "既に入力済みの欄は残して、自動で振り分けました。"
-        : "日本語文と英語文に自動で振り分けました。";
-    }
-
-    function parseTags(value) {
-      return String(value || "")
-        .split(/[,\u3001]/)
-        .map(cleanText)
-        .filter((tag, index, array) => tag && array.indexOf(tag) === index);
-    }
-
-    function getSelectedTags() {
-      return Array.from(tagSelect.selectedOptions || []).map((option) => option.value).filter(Boolean);
-    }
-
-    function updateSelectedTagPreview() {
-      const tags = getSelectedTags();
-      selectedTagPreview.textContent = tags.length > 0 ? `選択中: ${tags.join(" / ")}` : "タグ未選択";
-    }
-
-    function setSelectedTags(tags) {
-      const selected = new Set(tags || []);
-      Array.from(tagSelect.options || []).forEach((option) => {
-        option.selected = selected.has(option.value);
-      });
-      updateSelectedTagPreview();
-    }
-
-    function loadUserTags() {
-      try {
-        userTags = parseTags((JSON.parse(localStorage.getItem(USER_TAGS_STORAGE_KEY) || "[]") || []).join(","));
-      } catch (error) {
-        userTags = [];
-      }
-    }
-
-    function saveUserTags() {
-      localStorage.setItem(USER_TAGS_STORAGE_KEY, JSON.stringify(userTags));
-    }
-
-    function addTagsToUserList(tags) {
-      const merged = userTags.concat(tags || []);
-      userTags = merged.filter((tag, index, array) => tag && array.indexOf(tag) === index).sort();
-      saveUserTags();
-    }
-
-    function removeTagsFromItems(tags) {
-      let changed = false;
-      customItems = customItems.map((item) => {
-        const currentTags = item.tags || [];
-        const nextTags = currentTags.filter((tag) => !tags.includes(tag));
-        if (nextTags.length === currentTags.length) {
-          return item;
-        }
-        changed = true;
-        return Object.assign({}, item, {
-          tags: nextTags,
-          updated_at: nowIso(),
-          dirty: true
-        });
-      });
-      if (changed) {
-        saveLocalItems();
-        syncWithCloud("tags");
-      }
-      return changed;
-    }
-
-    function matchesTag(item, selectedTag) {
-      if (!selectedTag) return true;
-      return Array.isArray(item.tags) && item.tags.includes(selectedTag);
-    }
-
-    function getAllTags() {
-      const tags = userTags.slice();
-      sentencePairs.concat(quizItems).forEach((item) => {
-        (item.tags || []).forEach((tag) => {
-          if (tags.indexOf(tag) === -1) tags.push(tag);
-        });
-      });
-      return tags.sort();
-    }
-
-    function updateTagFilters() {
-      const currentQuizTag = quizTagFilter.value;
-      const currentSpeakingTag = speakingTagFilter.value;
-      const currentFormTags = getSelectedTags();
-      const tags = getAllTags();
-      const html = ['<option value="">すべて</option>']
-        .concat(tags.map((tag) => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`))
-        .join("");
-      quizTagFilter.innerHTML = html;
-      speakingTagFilter.innerHTML = html;
-      quizTagFilter.value = tags.includes(currentQuizTag) ? currentQuizTag : "";
-      speakingTagFilter.value = tags.includes(currentSpeakingTag) ? currentSpeakingTag : "";
-      tagSelect.innerHTML = tags.map((tag) => `<option value="${escapeHtml(tag)}">${escapeHtml(tag)}</option>`).join("");
-      setSelectedTags(currentFormTags.filter((tag) => tags.includes(tag)));
-    }
-
-    function getVisibleQuizItems() {
-      return quizItems.filter((item) => matchesTag(item, quizTagFilter.value));
-    }
-
-    function getStorageKey() {
-      return `english_items_${syncConfig.syncKey || DEFAULT_SYNC_KEY}`;
-    }
-
-    function loadSyncConfig() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY) || "{}");
-        syncConfig = {
-          supabaseUrl: cleanText(saved.supabaseUrl || DEFAULT_SUPABASE_URL),
-          supabaseAnonKey: cleanText(saved.supabaseAnonKey || DEFAULT_SUPABASE_ANON_KEY),
-          syncKey: cleanText(saved.syncKey || DEFAULT_SYNC_KEY)
-        };
-      } catch (error) {
-        syncConfig = {
-          supabaseUrl: DEFAULT_SUPABASE_URL,
-          supabaseAnonKey: DEFAULT_SUPABASE_ANON_KEY,
-          syncKey: DEFAULT_SYNC_KEY
-        };
-      }
-      renderSyncSettings();
-    }
-
-    function saveSyncConfig() {
-      const nextSyncKey = cleanText(syncKeyInput.value) || DEFAULT_SYNC_KEY;
-      const previousItems = customItems.map((item) => Object.assign({}, item, {
-        sync_key: nextSyncKey,
-        updated_at: nowIso(),
-        dirty: true
-      }));
-
-      syncConfig = {
-        supabaseUrl: cleanText(supabaseUrlInput.value),
-        supabaseAnonKey: cleanText(supabaseAnonKeyInput.value),
-        syncKey: nextSyncKey
-      };
-      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(syncConfig));
-      loadLocalItems();
-
-      const byId = new Map(customItems.map((item) => [item.id, item]));
-      previousItems.forEach((item) => {
-        byId.set(item.id, normalizeItem(item));
-      });
-      customItems = Array.from(byId.values());
-      saveLocalItems();
-
-      syncSettingsMessage.textContent = "同期設定を保存しました。端末内の追加問題も同期対象にしました。";
-      renderAll();
-      syncWithCloud("settings");
-    }
-
-    function clearSyncConfig() {
-      localStorage.removeItem(SETTINGS_STORAGE_KEY);
-      syncConfig = {
-        supabaseUrl: DEFAULT_SUPABASE_URL,
-        supabaseAnonKey: DEFAULT_SUPABASE_ANON_KEY,
-        syncKey: DEFAULT_SYNC_KEY
-      };
-      renderSyncSettings();
-      loadLocalItems();
-      renderAll();
-      setSyncStatus("ローカル保存中（Supabase未設定）", true);
-      syncSettingsMessage.textContent = "同期設定を消去しました。";
-    }
-
-    function renderSyncSettings() {
-      supabaseUrlInput.value = syncConfig.supabaseUrl || "";
-      supabaseAnonKeyInput.value = syncConfig.supabaseAnonKey || "";
-      syncKeyInput.value = syncConfig.syncKey || DEFAULT_SYNC_KEY;
-    }
-
-    function normalizeItem(item) {
-      const normalized = {
-        id: item.id,
-        sync_key: item.sync_key || syncConfig.syncKey || DEFAULT_SYNC_KEY,
-        kind: item.kind,
-        ja: item.ja || "",
-        en: item.en || "",
-        prompt: item.prompt || "",
-        answer: item.answer || "",
-        choices: Array.isArray(item.choices) ? item.choices.filter(Boolean) : [],
-        tags: Array.isArray(item.tags) ? item.tags.filter(Boolean) : parseTags(item.tags),
-        excluded: Boolean(item.excluded),
-        mastered: Boolean(item.mastered),
-        position: Number.isFinite(Number(item.position)) ? Number(item.position) : Date.now(),
-        updated_at: item.updated_at || nowIso(),
-        deleted_at: item.deleted_at || null,
-        dirty: Boolean(item.dirty)
-      };
-      return normalized;
-    }
-
-    function loadLocalItems() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(getStorageKey()) || "[]");
-        customItems = Array.isArray(saved) ? saved.map(normalizeItem) : [];
-      } catch (error) {
-        customItems = [];
-        setSyncStatus("ローカル保存の読み込みに失敗しました", true);
-      }
-    }
-
-    function saveLocalItems() {
-      localStorage.setItem(getStorageKey(), JSON.stringify(customItems));
-    }
-
-    function setSyncStatus(message, warning = false) {
-      syncStatus.textContent = message;
-      syncStatus.style.background = warning ? "var(--bad-bg)" : "var(--soft)";
-      syncStatus.style.color = warning ? "var(--bad)" : "#3730a3";
-    }
-
-    function rebuildLearningData() {
-      const sentenceMap = new Map(INITIAL_SENTENCES.map((item) => [item.id, Object.assign({}, item)]));
-      const quizMap = new Map(INITIAL_QUIZZES.map((item) => [item.id, Object.assign({}, item)]));
-
-      customItems
-        .filter((item) => !item.deleted_at)
-        .sort((a, b) => a.position - b.position)
-        .forEach((item) => {
-          if (item.kind === "sentence" && item.ja && item.en) {
-            sentenceMap.set(item.id, Object.assign({}, sentenceMap.get(item.id) || {}, item));
-          }
-          if (item.kind === "quiz" && item.prompt && item.answer && item.choices.length > 0) {
-            const choices = item.choices.includes(item.answer) ? item.choices : [item.answer].concat(item.choices);
-            quizMap.set(item.id, Object.assign({}, item, { choices: choices.slice(0, 4) }));
-          }
-        });
-
-      sentencePairs = Array.from(sentenceMap.values()).sort((a, b) => {
-        const aInitial = INITIAL_SENTENCES.findIndex((item) => item.id === a.id);
-        const bInitial = INITIAL_SENTENCES.findIndex((item) => item.id === b.id);
-        const aPos = aInitial >= 0 ? aInitial : a.position;
-        const bPos = bInitial >= 0 ? bInitial : b.position;
-        return aPos - bPos;
-      });
-      quizItems = Array.from(quizMap.values()).sort((a, b) => {
-        const aInitial = INITIAL_QUIZZES.findIndex((item) => item.id === a.id);
-        const bInitial = INITIAL_QUIZZES.findIndex((item) => item.id === b.id);
-        const aPos = aInitial >= 0 ? aInitial : a.position;
-        const bPos = bInitial >= 0 ? bInitial : b.position;
-        return aPos - bPos;
-      });
-    }
-
-    function renderAll() {
-      rebuildLearningData();
-      if (quizIndex >= quizItems.length) {
-        quizIndex = 0;
-        score = 0;
-      }
-      updateTagFilters();
-      renderQuiz();
-      renderProblemList();
-      if (!isPlaying) {
-        updateSpeakingStatus();
-      }
-      renderAddedPhraseList();
-      renderItemManager();
-    }
-
-    function supabaseEndpoint(query = "") {
-      return `${syncConfig.supabaseUrl.replace(/\/$/, "")}/rest/v1/osaru_items${query}`;
-    }
-
-    function supabaseHeaders(extra = {}) {
-      return Object.assign({
-        apikey: syncConfig.supabaseAnonKey,
-        Authorization: `Bearer ${syncConfig.supabaseAnonKey}`,
-        "Content-Type": "application/json"
-      }, extra);
-    }
-
-    async function supabaseRequest(path, options = {}) {
-      const response = await fetch(supabaseEndpoint(path), Object.assign({}, options, {
-        headers: supabaseHeaders(options.headers || {})
-      }));
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || `Supabase error ${response.status}`);
-      }
-      if (response.status === 204) {
-        return [];
-      }
-      return response.json();
-    }
-
-    function mergeRemoteItems(remoteItems) {
-      const byId = new Map(customItems.map((item) => [item.id, item]));
-
-      remoteItems.map(normalizeItem).forEach((remoteItem) => {
-        const localItem = byId.get(remoteItem.id);
-        if (!localItem) {
-          byId.set(remoteItem.id, Object.assign({}, remoteItem, { dirty: false }));
-          return;
-        }
-
-        const localTime = new Date(localItem.updated_at || 0).getTime();
-        const remoteTime = new Date(remoteItem.updated_at || 0).getTime();
-        if (!localItem.dirty || remoteTime >= localTime) {
-          byId.set(remoteItem.id, Object.assign({}, remoteItem, { dirty: false }));
-        }
-      });
-
-      customItems = Array.from(byId.values()).map(normalizeItem);
-      saveLocalItems();
-    }
-
-    async function pushDirtyItems() {
-      const dirtyItems = customItems.filter((item) => item.dirty);
-      if (dirtyItems.length === 0) {
-        return;
-      }
-
-      const rows = dirtyItems.map((item) => ({
-        id: item.id,
-        sync_key: syncConfig.syncKey,
-        kind: item.kind,
-        ja: item.ja,
-        en: item.en,
-        prompt: item.prompt,
-        answer: item.answer,
-        choices: item.choices,
-        tags: item.tags || [],
-        excluded: item.excluded,
-        mastered: item.mastered,
-        position: item.position,
-        updated_at: item.updated_at,
-        deleted_at: item.deleted_at
-      }));
-
-      await supabaseRequest("?on_conflict=id", {
-        method: "POST",
-        headers: { Prefer: "resolution=merge-duplicates,return=representation" },
-        body: JSON.stringify(rows)
-      });
-
-      const syncedIds = new Set(dirtyItems.map((item) => item.id));
-      customItems = customItems.map((item) => {
-        if (!syncedIds.has(item.id)) {
-          return item;
-        }
-        return Object.assign({}, item, { dirty: false });
-      });
-      saveLocalItems();
-    }
-
-    async function pullRemoteItems() {
-      const query = `?sync_key=eq.${encodeURIComponent(syncConfig.syncKey)}&order=position.asc`;
-      const remoteItems = await supabaseRequest(query);
-      mergeRemoteItems(remoteItems);
-    }
-
-    async function syncWithCloud(reason = "manual") {
-      if (isSyncing) {
-        return;
-      }
-
-      if (!isSupabaseConfigured()) {
-        saveLocalItems();
-        setSyncStatus("ローカル保存中（Supabase未設定）", true);
-        renderAll();
-        return;
-      }
-
-      isSyncing = true;
-      setSyncStatus(reason === "auto" ? "自動同期中..." : "同期中...");
-      try {
-        await pushDirtyItems();
-        await pullRemoteItems();
-        setSyncStatus(`同期済み ${new Date().toLocaleTimeString()}`);
-        renderAll();
-      } catch (error) {
-        saveLocalItems();
-        setSyncStatus("オフライン保存中（再接続で同期）", true);
-      } finally {
-        isSyncing = false;
-      }
-    }
-
-    function scheduleSync() {
-      if (syncTimer !== null) {
-        window.clearInterval(syncTimer);
-      }
-      syncTimer = window.setInterval(() => syncWithCloud("auto"), SYNC_INTERVAL_MS);
-    }
-
-    function upsertLocalItem(item, syncNow = true) {
-      const normalized = normalizeItem(Object.assign({}, item, {
-        sync_key: syncConfig.syncKey,
-        updated_at: nowIso(),
-        dirty: true
-      }));
-      const index = customItems.findIndex((existing) => existing.id === normalized.id);
-      if (index >= 0) {
-        customItems[index] = Object.assign({}, customItems[index], normalized);
-      } else {
-        customItems.push(normalized);
-      }
-      saveLocalItems();
-      renderAll();
-      if (syncNow) {
-        syncWithCloud("save");
-      }
-    }
-
-    function softDeleteLocalItem(id) {
-      const item = customItems.find((existing) => existing.id === id);
-      if (!item) {
-        return;
-      }
-      item.deleted_at = nowIso();
-      item.updated_at = item.deleted_at;
-      item.dirty = true;
-      saveLocalItems();
-      renderAll();
-      syncWithCloud("delete");
-    }
-
-    function updateSentenceExcluded(id, excluded) {
-      const playbackAnchor = capturePlaybackAnchor();
-      const wasCurrent = playbackAnchor && playbackAnchor.currentId === id;
-      const base = sentencePairs.find((item) => item.id === id);
-      const existing = customItems.find((item) => item.id === id);
-      const item = Object.assign({}, base || existing, existing || {}, {
-        id,
-        kind: "sentence",
-        excluded,
-        position: base && base.position ? base.position : Date.now()
-      });
-      upsertLocalItem(item);
-      if (wasCurrent && excluded) {
-        continuePlaybackAfterRemovedPhrase(playbackAnchor);
-      }
-    }
-
-    function updateSentenceMastered(id, mastered) {
-      const playbackAnchor = capturePlaybackAnchor();
-      const wasCurrent = playbackAnchor && playbackAnchor.currentId === id;
-      const base = sentencePairs.find((item) => item.id === id);
-      const existing = customItems.find((item) => item.id === id);
-      const item = Object.assign({}, base || existing, existing || {}, {
-        id,
-        kind: "sentence",
-        mastered,
-        excluded: false,
-        position: base && base.position ? base.position : Date.now()
-      });
-      upsertLocalItem(item);
-      if (wasCurrent && mastered) {
-        continuePlaybackAfterRemovedPhrase(playbackAnchor);
-      }
-    }
-
-    function clearForm() {
-      editingId.value = "";
-      jaInput.value = "";
-      enInput.value = "";
-      resetPhraseTextarea(jaInput);
-      resetPhraseTextarea(enInput);
-      setSelectedTags([]);
-      newTagInput.value = "";
-      tagMessage.textContent = "";
-      promptInput.value = "";
-      answerInput.value = "";
-      choiceAInput.value = "";
-      choiceBInput.value = "";
-      formMessage.textContent = "";
-      document.getElementById("saveItemButton").textContent = "問題を保存";
-    }
-
-    function resizePhraseTextarea(textarea) {
-      textarea.style.height = "auto";
-      const maxHeight = Math.round(window.innerHeight * 0.45);
-      const nextHeight = Math.min(Math.max(textarea.scrollHeight, 190), maxHeight);
-      textarea.style.height = `${nextHeight}px`;
-    }
-
-    function resetPhraseTextarea(textarea) {
-      textarea.style.height = "";
-    }
-
-    function setupExpandableTextarea(textarea) {
-      textarea.addEventListener("focus", () => resizePhraseTextarea(textarea));
-      textarea.addEventListener("input", () => {
-        resizePhraseTextarea(textarea);
-        distributeMixedLanguageInput(textarea);
-      });
-      textarea.addEventListener("blur", () => resetPhraseTextarea(textarea));
-    }
-
-    function scrollToPageTop() {
-      window.requestAnimationFrame(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    }
-
-    function handleAddTag() {
-      const currentTags = getSelectedTags();
-      const tags = parseTags(newTagInput.value);
-      if (tags.length === 0) {
-        tagMessage.textContent = "追加するタグ名を入力してください。";
-        return;
-      }
-
-      addTagsToUserList(tags);
-      updateTagFilters();
-      setSelectedTags(currentTags.concat(tags).filter((tag, index, array) => tag && array.indexOf(tag) === index));
-      newTagInput.value = "";
-      tagMessage.textContent = "タグを追加しました。";
-    }
-
-    function handleDeleteSelectedTags() {
-      const tags = getSelectedTags();
-      if (tags.length === 0) {
-        tagMessage.textContent = "削除するタグを上の一覧から選択してください。";
-        return;
-      }
-
-      userTags = userTags.filter((tag) => !tags.includes(tag));
-      saveUserTags();
-      const changedItems = removeTagsFromItems(tags);
-      updateTagFilters();
-      setSelectedTags([]);
-      renderAll();
-      tagMessage.textContent = changedItems
-        ? `タグ「${tags.join(" / ")}」を削除し、追加済み問題からも外しました。`
-        : `タグ「${tags.join(" / ")}」を削除しました。`;
-    }
-
-    function getFormQuizValues() {
-      const prompt = cleanText(promptInput.value);
-      const answer = cleanText(answerInput.value);
-      const choiceA = cleanText(choiceAInput.value);
-      const choiceB = cleanText(choiceBInput.value);
-      const anyQuizValue = Boolean(prompt || answer || choiceA || choiceB);
-
-      if (!anyQuizValue) {
-        return null;
-      }
-
-      if (!prompt || !answer || !choiceA || !choiceB) {
-        throw new Error("クイズも追加する場合は、ヒント・正解・選択肢2つをすべて入力してください。");
-      }
-
-      const choices = [answer, choiceA, choiceB]
-        .map(cleanText)
-        .filter((value, index, array) => value && array.indexOf(value) === index);
-
-      return { prompt, answer, choices };
-    }
-
-    function handleFormSubmit(event) {
-      event.preventDefault();
-
-      const ja = cleanText(jaInput.value);
-      const en = cleanText(enInput.value);
-      const tags = getSelectedTags();
-      if (!ja || !en) {
-        formMessage.textContent = "日本語文と英語文を入力してください。";
-        return;
-      }
-
-      let quizValues = null;
-      try {
-        quizValues = getFormQuizValues();
-      } catch (error) {
-        formMessage.textContent = error.message;
-        return;
-      }
-
-      const editId = editingId.value;
-      if (editId) {
-        const existing = customItems.find((item) => item.id === editId)
-          || sentencePairs.find((item) => item.id === editId)
-          || quizItems.find((item) => item.id === editId);
-        if (!existing) {
-          formMessage.textContent = "編集対象が見つかりません。";
-          return;
-        }
-
-        if (existing.kind === "quiz") {
-          if (!quizValues) {
-            formMessage.textContent = "クイズを編集する場合は、クイズ欄も入力してください。";
-            return;
-          }
-          upsertLocalItem(Object.assign({}, existing, quizValues, { ja, en, tags }));
-        } else {
-          upsertLocalItem(Object.assign({}, existing, { ja, en, tags }));
-        }
-        clearForm();
-        formMessage.textContent = "編集内容を保存しました。";
-        return;
-      }
-
-      const baseId = makeId("item");
-      const position = Date.now();
-      upsertLocalItem({
-        id: `${baseId}-sentence`,
-        kind: "sentence",
-        ja,
-        en,
-        tags,
-        excluded: false,
-        position
-      }, false);
-
-      if (quizValues) {
-        upsertLocalItem(Object.assign({}, quizValues, {
-          id: `${baseId}-quiz`,
-          kind: "quiz",
-          ja,
-          en,
-          tags,
-          excluded: false,
-          position: position + 1
-        }), false);
-      }
-
-      saveLocalItems();
-      renderAll();
-      syncWithCloud("save");
-      clearForm();
-      formMessage.textContent = quizValues ? "1秒スピーキングとクイズに追加しました。" : "1秒スピーキングに追加しました。";
-      scrollToPageTop();
-    }
-
-    function editItem(id) {
-      const item = customItems.find((existing) => existing.id === id && !existing.deleted_at);
-      if (!item) {
-        return;
-      }
-
-      editingId.value = item.id;
-      jaInput.value = item.ja || "";
-      enInput.value = item.en || "";
-      addTagsToUserList(item.tags || []);
-      updateTagFilters();
-      setSelectedTags(item.tags || []);
-      promptInput.value = item.prompt || "";
-      answerInput.value = item.answer || "";
-      const extraChoices = (item.choices || []).filter((choice) => choice !== item.answer);
-      choiceAInput.value = extraChoices[0] || "";
-      choiceBInput.value = extraChoices[1] || "";
-      formMessage.textContent = `${item.kind === "quiz" ? "クイズ" : "1秒スピーキング"}を編集中です。`;
-      document.getElementById("saveItemButton").textContent = "編集を保存";
-      document.querySelector('[data-tab="add"]').click();
-      jaInput.focus();
-    }
-
-    function editSentenceFromList(id) {
-      const item = sentencePairs.find((existing) => existing.id === id && !existing.deleted_at);
-      if (!item) {
-        return;
-      }
-
-      editingId.value = item.id;
-      jaInput.value = item.ja || "";
-      enInput.value = item.en || "";
-      addTagsToUserList(item.tags || []);
-      updateTagFilters();
-      setSelectedTags(item.tags || []);
-      promptInput.value = "";
-      answerInput.value = "";
-      choiceAInput.value = "";
-      choiceBInput.value = "";
-      formMessage.textContent = "フレーズ内容を編集中です。";
-      document.getElementById("saveItemButton").textContent = "編集を保存";
-      document.querySelector('[data-tab="add"]').click();
-      resizePhraseTextarea(jaInput);
-      resizePhraseTextarea(enInput);
-      jaInput.focus();
-    }
-
-    function makeGroupTitle(startIndex, endIndex, total) {
-      return `${startIndex + 1}-${endIndex}件 / 全${total}件`;
-    }
-
-    function appendGroupedItems(container, items, createItem, options = {}) {
-      const stateKey = options.stateKey || "default";
-      for (let start = 0; start < items.length; start += PHRASE_GROUP_SIZE) {
-        const chunk = items.slice(start, start + PHRASE_GROUP_SIZE);
-        const end = start + chunk.length;
-        const details = document.createElement("details");
-        details.className = "phrase-group";
-        const groupKey = `${stateKey}:${start}`;
-        details.open = phraseGroupOpenState.has(groupKey) ? phraseGroupOpenState.get(groupKey) : start === 0;
-        details.addEventListener("toggle", () => {
-          phraseGroupOpenState.set(groupKey, details.open);
-        });
-
-        const summary = document.createElement("summary");
-        summary.textContent = makeGroupTitle(start, end, items.length);
-        details.appendChild(summary);
-
-        const body = document.createElement(options.bodyTag || "div");
-        body.className = options.bodyClass || "phrase-group-body";
-        chunk.forEach((item, offset) => body.appendChild(createItem(item, start + offset)));
-        details.appendChild(body);
-
-        if (options.wrapInListItem) {
-          const li = document.createElement("li");
-          li.className = "phrase-group-item";
-          li.appendChild(details);
-          container.appendChild(li);
-        } else {
-          container.appendChild(details);
-        }
-      }
-    }
-
-    function createAddedPhraseCard(item) {
-      const div = document.createElement("div");
-      div.className = "added-phrase";
-      div.innerHTML = `
-        <strong>${escapeHtml(item.en || "")}</strong>
-        <span>${escapeHtml(item.ja || "")}</span>
-        <span class="hint">タグ: ${escapeHtml((item.tags || []).join(" / ") || "なし")}</span>
-        <div class="phrase-actions">
-          <button class="secondary" type="button" data-action="play-ja" data-id="${escapeHtml(item.id)}">日本語を再生</button>
-          <button class="secondary" type="button" data-action="play-en" data-id="${escapeHtml(item.id)}">英語を再生</button>
-          <button class="primary" type="button" data-action="start-from" data-id="${escapeHtml(item.id)}">ここから順に再生</button>
-          <button class="secondary" type="button" data-action="edit-sentence" data-id="${escapeHtml(item.id)}">内容を編集</button>
+  <main class="main">
+    <header class="topbar"><button id="menuButton" class="menu-btn" aria-label="メニューを開く">☰</button><div class="topbar-title" id="mobileTitle">今日の復習</div></header>
+    <div class="content">
+      <section id="home" class="page active">
+        <div class="page-head"><div><h1>今日の復習</h1><p>忘れかけるタイミングで再度アウトプット。評価するほど、次の復習日が自動で調整されます。</p></div><div class="page-actions"><button id="homeSpeakButton" class="ghost">英語を再生</button><button id="homeSkipButton" class="secondary">あとで</button></div></div>
+        <div class="grid stats">
+          <div class="stat"><div class="stat-label">今日の復習</div><div class="stat-value" id="dueCount">0</div><div class="stat-sub">期限到来・未学習</div></div>
+          <div class="stat"><div class="stat-label">定着が弱い</div><div class="stat-value" id="weakCount">0</div><div class="stat-sub">定着率 70%未満</div></div>
+          <div class="stat"><div class="stat-label">安定</div><div class="stat-value" id="stableCount">0</div><div class="stat-sub">定着率 85%以上</div></div>
+          <div class="stat"><div class="stat-label">総フレーズ</div><div class="stat-value" id="totalCount">0</div><div class="stat-sub">学習対象</div></div>
         </div>
-      `;
-      return div;
-    }
-
-    function renderAddedPhraseList() {
-      const phrases = customItems
-        .filter((item) => !item.deleted_at && !item.id.startsWith("builtin-") && item.kind === "sentence")
-        .sort((a, b) => a.position - b.position);
-
-      addedPhraseList.innerHTML = "";
-      if (phrases.length === 0) {
-        addedPhraseList.innerHTML = '<div class="sync-note">まだ追加したフレーズはありません。</div>';
-        return;
-      }
-
-      appendGroupedItems(addedPhraseList, phrases, createAddedPhraseCard, {
-        stateKey: "added"
-      });
-    }
-
-    function renderItemManager() {
-      const visibleItems = customItems
-        .filter((item) => !item.deleted_at && !item.id.startsWith("builtin-"))
-        .sort((a, b) => a.position - b.position);
-
-      itemManager.innerHTML = "";
-      if (visibleItems.length === 0) {
-        itemManager.innerHTML = '<div class="sync-note">まだ追加した問題はありません。</div>';
-        return;
-      }
-
-      visibleItems.forEach((item) => {
-        const div = document.createElement("div");
-        div.className = "manager-item";
-        const kindLabel = item.kind === "quiz" ? "単語クイズ" : "1秒スピーキング";
-        const body = item.kind === "quiz"
-          ? `<strong>${escapeHtml(kindLabel)}</strong><span>タグ: ${escapeHtml((item.tags || []).join(" / ") || "なし")}</span><span>ヒント: ${escapeHtml(item.prompt)}</span><span>答え: ${escapeHtml(item.answer)}</span><span>選択肢: ${escapeHtml(item.choices.join(" / "))}</span>`
-          : `<strong>${escapeHtml(kindLabel)}</strong><span>タグ: ${escapeHtml((item.tags || []).join(" / ") || "なし")}</span><span>日本語: ${escapeHtml(item.ja)}</span><span>英語: ${escapeHtml(item.en)}</span>`;
-
-        div.innerHTML = `
-          ${body}
-          <div class="hint">${item.dirty ? "未同期の変更があります" : "同期済みまたはローカル保存済み"}</div>
-          <div class="manager-actions">
-            <button class="secondary" type="button" data-action="edit" data-id="${escapeHtml(item.id)}">編集</button>
-            <button class="danger" type="button" data-action="delete" data-id="${escapeHtml(item.id)}">削除</button>
+        <div class="grid two-col">
+          <div class="panel review-card" id="reviewCard">
+            <div id="reviewContent"></div>
           </div>
-        `;
-        itemManager.appendChild(div);
+          <div class="grid">
+            <div class="panel"><div class="section-title"><h2>復習ルール</h2></div><div class="mini-list"><div class="mini-item"><strong>忘れた → 1日後</strong><span>定着率を大きく下げ、すぐ再登場。</span></div><div class="mini-item"><strong>あやしい → 短い間隔</strong><span>現在の間隔を縮めて再確認。</span></div><div class="mini-item"><strong>言えた → 徐々に延長</strong><span>3日→約1週間→2週間…と伸ばします。</span></div><div class="mini-item"><strong>余裕 → より大きく延長</strong><span>安定した表現は最大60日周期へ。</span></div></div></div>
+            <div class="panel"><div class="section-title"><h2>次に来る復習</h2></div><div id="upcomingList" class="mini-list"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="speaking" class="page">
+        <div class="page-head"><div><h1>1秒スピーキング</h1><p>従来の再生練習に、各フレーズの定着評価を直接追加しました。</p></div><div class="page-actions"><span id="speakingStatus" class="pill">待機中</span></div></div>
+        <div class="panel">
+          <div class="settings-grid">
+            <div class="field"><label for="speakingMode">読み上げモード</label><select id="speakingMode"><option value="ja-en">日本語 → 英語</option><option value="en-only">英語のみ</option><option value="mid-pause">英語途中停止</option></select></div>
+            <div class="field"><label for="repeatCount">英語の繰り返し</label><select id="repeatCount"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></div>
+            <div class="field"><label for="speakingRate">再生速度</label><select id="speakingRate"><option value="0.75">0.75倍</option><option value="0.85">0.85倍</option><option value="0.92">0.92倍</option><option value="1">1.0倍</option><option value="1.1">1.1倍</option><option value="1.2">1.2倍</option></select></div>
+            <div class="field"><label for="voicePreference">音声</label><select id="voicePreference"><option value="default">ブラウザ標準</option><option value="female">女性優先</option><option value="male">男性風</option></select></div>
+            <div class="field"><label for="speakingTagFilter">タグ</label><select id="speakingTagFilter"></select></div>
+            <label class="toggle"><input id="dueOnlyToggle" type="checkbox"> 復習対象のみ</label>
+          </div>
+          <div class="speaking-box">
+            <span id="speakingCounter" class="pill counter">0 / 0</span><p id="speakingPhase" class="speaking-phase">Ready</p><div id="speakingContent"><p class="hint">再生ボタンを押してください。</p></div>
+            <div id="currentActions" class="current-actions" hidden><button id="excludeCurrent" class="ghost">次回から除外</button><button id="editCurrent" class="ghost">編集</button><div class="grade-group"><button class="danger grade-btn" data-grade="again">忘れた</button><button class="secondary grade-btn" data-grade="hard">あやしい</button><button class="primary grade-btn" data-grade="good">言えた</button><button class="success grade-btn" data-grade="easy">余裕</button></div></div>
+          </div>
+          <div id="speakingList" class="list"></div>
+        </div>
+      </section>
+
+      <section id="quiz" class="page">
+        <div class="page-head"><div><h1>単語クイズ</h1><p>既存のクイズ問題をそのまま利用できます。</p></div><div class="page-actions"><select id="quizTagFilter" class="input-small"></select><span id="quizStatus" class="pill">0 / 0</span></div></div>
+        <div class="panel quiz-card"><p class="quiz-prompt">日本語に合う英語を選んでください</p><p id="quizQuestion" class="quiz-word">—</p><div id="choices" class="choices"></div><div id="quizFeedback" class="feedback"></div><div class="row"><button id="quizSpeakButton" class="ghost">問題を読む</button><button id="nextQuizButton" class="primary" disabled>次の問題</button><button id="quizResetButton" class="secondary">最初から</button></div></div>
+      </section>
+
+      <section id="library" class="page">
+        <div class="page-head"><div><h1>フレーズまとめ</h1><p>ポッドキャストの文字起こしと、覚えたいフレーズ・補足メモを左右に並べて整理できます。</p></div><div class="page-actions"><button id="newNoteButton" class="secondary">一般メモを追加</button></div></div>
+
+        <div class="panel">
+          <div class="section-title"><h2>ポッドキャスト学習ノート</h2><p>文字起こし → 1文ずつ整形 → 覚えたい文を右へ追加</p></div>
+          <div class="podcast-toolbar">
+            <div class="field"><label for="podcastSelect">保存済みポッドキャスト</label><select id="podcastSelect"><option value="">新規ポッドキャスト</option></select></div>
+            <div class="field"><label for="podcastTitleInput">ポッドキャスト / エピソード名</label><input id="podcastTitleInput" placeholder="例: The Daily - Sep 5 Episode"></div>
+            <div class="field"><label for="podcastFileInput">文字起こしファイルを添付</label><input id="podcastFileInput" type="file" accept=".txt,.srt,.vtt,text/plain,text/vtt"><span class="file-note">TXT / SRT / VTT。添付すると字幕番号・時間表示を除去して自動整形します。</span></div>
+          </div>
+          <div class="podcast-import">
+            <div class="field"><label for="transcriptInput">文字起こしを貼り付け</label><textarea id="transcriptInput" placeholder="文字起こし全文をここに貼り付けるか、上からファイルを添付してください。英文はピリオド・疑問符・感嘆符ごとに自動で1文ずつ改行します。"></textarea></div>
+            <div class="row" style="margin-top:9px"><button id="formatTranscriptButton" class="primary" type="button">自動整形して保存</button><button id="newPodcastButton" class="secondary" type="button">新規作成</button><button id="deletePodcastButton" class="danger" type="button" disabled>この文字起こしを削除</button><span id="transcriptStatus" class="hint"></span></div>
+          </div>
+
+          <div class="podcast-workspace">
+            <section class="podcast-pane" aria-label="文字起こし一覧">
+              <div class="podcast-pane-head"><h3>左：文字起こし全文</h3><span id="transcriptCount">0文</span></div>
+              <div class="podcast-pane-tools"><input id="transcriptSearch" type="search" placeholder="文字起こし内を検索"></div>
+              <div id="transcriptSentenceList" class="transcript-list"><div class="transcript-empty">文字起こしを添付または貼り付けると、ここに1文ずつ表示されます。</div></div>
+            </section>
+
+            <section class="podcast-pane" aria-label="覚えたいフレーズとメモ">
+              <div class="podcast-pane-head"><h3>右：覚えたいフレーズ / 補足メモ</h3><span id="podcastMemoCount">0件</span></div>
+              <form id="podcastMemoForm" class="podcast-memo-form form-grid"><input id="podcastMemoEditingId" type="hidden"><div class="field"><label for="podcastMemoPhrase">覚えたい・メモしたい文章</label><textarea id="podcastMemoPhrase" class="selected-phrase-box" required placeholder="左側の「→ メモへ」を押すと、その文章がここに入ります。手入力もできます。"></textarea></div><div class="field"><label for="podcastMemoBody">補足メモ（任意）</label><textarea id="podcastMemoBody" placeholder="意味、ニュアンス、文法、使う場面、類義語など"></textarea></div><div class="row"><button id="savePodcastMemoButton" class="primary" type="submit">このフレーズを追加</button><button id="cancelPodcastMemoButton" class="secondary" type="button">入力をクリア</button></div></form>
+              <div id="podcastMemoList" class="podcast-memo-list"><div class="transcript-empty">左側から覚えたい文章を追加すると、ここに追加した順番で並びます。</div></div>
+            </section>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:14px">
+          <div class="section-title"><h2>登録済みフレーズ</h2><p>教材・テーマ・タグで分類</p></div>
+          <div class="searchbar"><input id="librarySearch" type="search" placeholder="日本語・英語・メモを検索"><select id="materialFilter"></select><select id="themeFilter"></select><select id="libraryTagFilter"></select></div>
+          <div id="libraryGroups" class="grid"></div>
+        </div>
+
+        <details class="legacy-notes">
+          <summary>一般の教材・テーマ別メモ</summary>
+          <div class="panel">
+            <div class="section-title"><h2>一般メモ</h2><p>従来のメモもそのまま利用できます</p></div>
+            <form id="noteForm" class="form-grid" hidden><input id="noteEditingId" type="hidden"><div class="form-grid cols2"><div class="field"><label for="noteMaterial">教材</label><input id="noteMaterial" placeholder="例: Tom Holland Interview"></div><div class="field"><label for="noteTheme">テーマ</label><input id="noteTheme" placeholder="例: 日常会話 / come around"></div></div><div class="field"><label for="noteTitle">メモのタイトル</label><input id="noteTitle" required placeholder="例: Section 3 重要フレーズ"></div><div class="field"><label for="noteBody">メモ</label><textarea id="noteBody" required placeholder="ニュアンス、使う場面、文法などを自由にメモ"></textarea></div><div class="field"><label for="notePhraseLinks">関連フレーズ</label><select id="notePhraseLinks" multiple size="5"></select><span class="hint">Ctrl / Command を押しながら複数選択できます。</span></div><div class="row"><button class="primary" type="submit">メモを保存</button><button id="cancelNoteButton" class="secondary" type="button">キャンセル</button></div></form>
+            <div id="notesList" class="grid" style="margin-top:12px"></div>
+          </div>
+        </details>
+      </section>
+
+      <section id="add" class="page">
+        <div class="page-head"><div><h1>フレーズ追加</h1><p>教材・テーマを付けて登録すると、「フレーズまとめ」で自動的に分類されます。</p></div></div>
+        <div class="grid two-col">
+          <div class="panel"><form id="itemForm" class="form-grid"><input id="editingId" type="hidden"><div class="field"><label for="jaInput">日本語文（必須）</label><textarea id="jaInput" required></textarea></div><div class="field"><label for="enInput">英語文（必須）</label><textarea id="enInput" required></textarea></div><div class="form-grid cols2"><div class="field"><label for="materialInput">教材</label><input id="materialInput" placeholder="例: Tom Holland Interview"></div><div class="field"><label for="themeInput">テーマ</label><input id="themeInput" placeholder="例: 日常会話"></div></div><div class="field"><label for="tagsInput">タグ</label><input id="tagsInput" placeholder="例: B1, フレーズ動詞, インタビュー"><span class="hint">カンマ区切り。教材・テーマは別欄で管理されます。</span></div>
+          <div class="field"><label for="phraseImageInput">イメージ画像（任意）</label><div class="image-upload"><input id="phraseImageInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><span class="hint">写真・イラストを1枚添付できます。大きな画像は自動で縮小・圧縮して、この端末のブラウザ内に保存します。</span><div id="phraseImagePreview" class="image-preview"><img id="phraseImagePreviewImg" alt="添付画像のプレビュー"><div class="image-preview-bar"><span id="phraseImagePreviewName" class="image-preview-name">画像</span><button id="removePhraseImageButton" class="danger" type="button">画像を削除</button></div></div><span class="hint">※画像は現在この端末内のみ保存され、Supabaseのフレーズ同期には含まれません。</span></div></div>
+          <div class="divider"></div><h3 class="subhead">単語クイズにも追加する（任意）</h3><div class="field"><label for="promptInput">日本語ヒント</label><input id="promptInput"></div><div class="field"><label for="answerInput">正解</label><input id="answerInput"></div><div class="form-grid cols2"><div class="field"><label for="choiceAInput">誤答1</label><input id="choiceAInput"></div><div class="field"><label for="choiceBInput">誤答2</label><input id="choiceBInput"></div></div><div class="row"><button class="primary" type="submit">保存</button><button id="clearFormButton" class="secondary" type="button">入力をクリア</button></div><div id="formMessage" class="feedback"></div></form></div>
+          <div class="grid"><div class="panel"><div class="section-title"><h2>CSV一括追加</h2></div><div class="field"><textarea id="csvInput" style="min-height:160px" placeholder="日本語,英語,教材,テーマ,タグ,クイズヒント,正解,誤答1,誤答2"></textarea><span class="hint">旧形式（日本語,英語,タグ,クイズヒント,正解,選択肢1,選択肢2）も読み込めます。</span></div><div class="row" style="margin-top:9px"><button id="importCsvButton" class="primary">CSVを追加</button><button id="clearCsvButton" class="secondary">クリア</button></div><div id="csvMessage" class="feedback"></div></div><div class="panel"><div class="section-title"><h2>追加済みデータ</h2></div><div id="itemManager" class="manager"></div></div></div>
+        </div>
+      </section>
+
+      <section id="settings" class="page">
+        <div class="page-head"><div><h1>同期・設定</h1><p>現在のSupabase方式を維持しています。既存の追加フレーズも同じ保存先から読み込みます。</p></div><div class="page-actions"><span id="syncStatus" class="pill">同期準備中</span><button id="syncNowButton" class="secondary">今すぐ同期</button></div></div>
+        <div class="grid two-col">
+          <div class="panel"><div class="section-title"><h2>Supabase同期</h2></div><div class="sync-note">既存の <code>osaru_items</code> テーブルをそのまま使用します。新しい復習履歴とまとめメモも、既存カラムだけを使う互換形式で保存するため、テーブル変更は不要です。</div><div class="form-grid" style="margin-top:12px"><div class="field"><label for="supabaseUrlInput">Supabase Project URL</label><input id="supabaseUrlInput" type="url" placeholder="https://xxxx.supabase.co"></div><div class="field"><label for="supabaseAnonKeyInput">Supabase anon public key</label><input id="supabaseAnonKeyInput" type="password" placeholder="eyJ..."><span class="hint">service role key は入力しないでください。</span></div><div class="field"><label for="syncKeyInput">SYNC_KEY</label><input id="syncKeyInput" placeholder="english-my-private-sync-2026"></div><div class="row"><button id="saveSyncSettingsButton" class="primary">同期設定を保存</button><button id="clearSyncSettingsButton" class="danger">同期設定を消去</button></div><div id="syncSettingsMessage" class="feedback"></div></div></div>
+          <div class="panel"><div class="section-title"><h2>学習設定</h2></div><div class="form-grid"><label class="toggle"><input id="keepAwakeToggle" type="checkbox"> 再生中に画面を閉じにくくする</label><div class="field"><label for="reviewDailyLimit">1日に表示する復習数の目安</label><select id="reviewDailyLimit"><option>10</option><option selected>20</option><option>30</option><option>50</option><option value="9999">制限なし</option></select></div><div class="row"><button id="resetReviewButton" class="danger">復習履歴をリセット</button></div><span class="hint">フレーズ自体は削除されません。定着率と次回復習日のみ初期化します。</span></div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <aside id="playbar" class="playbar" hidden><div class="playbar-inner"><div id="playbarStatus" class="playbar-status">待機中</div><button id="previousPhraseButton" class="ghost">← 前へ</button><button id="barPlayButton" class="primary">再生</button><button id="barStopButton" class="secondary" disabled>停止</button><button id="nextPhraseButton" class="ghost">次へ →</button></div></aside>
+  <div id="toast" class="toast"></div>
+
+  <script>
+  (()=>{
+    'use strict';
+    const DEFAULT_SUPABASE_URL='';
+    const DEFAULT_SUPABASE_ANON_KEY='';
+    const DEFAULT_SYNC_KEY='english-my-sync-key';
+    const SETTINGS_STORAGE_KEY='english_sync_settings';
+    const USER_TAGS_STORAGE_KEY='english_user_tags';
+    const VOICE_PREF_STORAGE_KEY='english_voice_preference';
+    const SPEAKING_RATE_STORAGE_KEY='english_speaking_rate';
+    const SPEAKING_MODE_STORAGE_KEY='english_speaking_mode';
+    const SPEAKING_REPEAT_STORAGE_KEY='english_speaking_repeat';
+    const KEEP_AWAKE_STORAGE_KEY='english_keep_awake';
+    const DAILY_LIMIT_STORAGE_KEY='english_review_daily_limit_v2';
+    const SYNC_INTERVAL_MS=10000;
+    const MATERIAL_PREFIX='教材:';
+    const THEME_PREFIX='テーマ:';
+    const META_SRS_MARKER='__SRS_V2__';
+    const META_NOTE_MARKER='__NOTE_V2__';
+    const META_TRANSCRIPT_MARKER='__TRANSCRIPT_V1__';
+    const IMAGE_DB_NAME='english_phrase_images_v1';
+    const IMAGE_STORE_NAME='phrase_images';
+    let pendingImageRemoval=false;
+    let imagePreviewObjectUrl='';
+
+    const INITIAL_SENTENCES=[
+      {id:'builtin-sentence-1',kind:'sentence',ja:'どんな気分か分かったでしょう！自業自得だよ。',en:"Now you see how it feels! It's a taste of your own medicine.",tags:['基本'],excluded:false,mastered:false,position:1},
+      {id:'builtin-sentence-2',kind:'sentence',ja:'電車を乗り過ごした、というわけだ。',en:'We missed the train, so there you go.',tags:['基本'],excluded:false,mastered:false,position:2},
+      {id:'builtin-sentence-3',kind:'sentence',ja:'彼らは新しいマーケティング戦略を実行する予定です。',en:'They will implement a new marketing strategy.',tags:['仕事'],excluded:false,mastered:false,position:3}
+    ];
+    const INITIAL_QUIZZES=[
+      {id:'builtin-quiz-1',kind:'quiz',prompt:'自業自得',answer:'a taste of your own medicine',tags:['基本'],choices:['a taste of your own medicine','a piece of cake','on the same page'],position:1},
+      {id:'builtin-quiz-2',kind:'quiz',prompt:'電車に乗り遅れる / 乗り過ごす',answer:'miss the train',tags:['基本'],choices:['miss the train','take a break','catch a cold'],position:2},
+      {id:'builtin-quiz-3',kind:'quiz',prompt:'というわけだ / ほらね',answer:'there you go',tags:['基本'],choices:['there you go','by the way','not at all'],position:3},
+      {id:'builtin-quiz-4',kind:'quiz',prompt:'実行する',answer:'implement',tags:['仕事'],choices:['implement','imagine','interrupt'],position:4},
+      {id:'builtin-quiz-5',kind:'quiz',prompt:'マーケティング戦略',answer:'marketing strategy',tags:['仕事'],choices:['marketing strategy','market research','sales target'],position:5}
+    ];
+
+    const $=id=>document.getElementById(id);
+    let syncConfig={supabaseUrl:'',supabaseAnonKey:'',syncKey:DEFAULT_SYNC_KEY};
+    let customItems=[],sentencePairs=[],quizItems=[],userTags=[];
+    let isSyncing=false,syncTimer=null,toastTimer=null,wakeLock=null;
+    let speakingQueue=[],speakingIndex=0,isPlaying=false,playRun=0;
+    let quizIndex=0,quizAnswered=false,quizScore=0;
+    let reviewQueue=[],reviewIndex=0;
+    let activePodcastId='';
+
+    function nowIso(){return new Date().toISOString()}
+    function todayKey(date=new Date()){return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`}
+    function addDays(dateString,days){const d=dateString?new Date(`${dateString}T12:00:00`):new Date();d.setDate(d.getDate()+days);return todayKey(d)}
+    function clean(v){return String(v??'').trim()}
+    function makeId(prefix){return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,9)}`}
+    function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+    function parseTags(v){return String(v||'').split(/[,、]/).map(clean).filter((x,i,a)=>x&&a.indexOf(x)===i)}
+    function uniq(a){return [...new Set(a.filter(Boolean))]}
+    function isMetaItem(item){return Boolean(item&&item.kind==='quiz'&&(item.ja===META_SRS_MARKER||item.ja===META_NOTE_MARKER||item.ja===META_TRANSCRIPT_MARKER))}
+    function parseNoteRow(row){try{const data=JSON.parse(row.en||'{}');return {title:clean(data.title),body:clean(data.body),links:Array.isArray(data.links)?data.links:[],sourceText:clean(data.sourceText||data.title),podcastId:clean(data.podcastId)}}catch{return {title:'',body:'',links:[],sourceText:'',podcastId:''}}}
+    function parseTranscriptRow(row){try{const data=JSON.parse(row.en||'{}');const sentences=Array.isArray(data.sentences)?data.sentences.map(clean).filter(Boolean):[];return {title:clean(data.title||row.prompt),raw:clean(data.raw),formatted:clean(data.formatted),sentences}}catch{return {title:clean(row?.prompt),raw:'',formatted:'',sentences:[]}}}
+    function isReservedTag(t){return t.startsWith(MATERIAL_PREFIX)||t.startsWith(THEME_PREFIX)}
+    function regularTags(item){return (item.tags||[]).filter(t=>!isReservedTag(t))}
+    function getMaterial(item){const t=(item.tags||[]).find(x=>x.startsWith(MATERIAL_PREFIX));return t?clean(t.slice(MATERIAL_PREFIX.length)):'未分類'}
+    function getTheme(item){const t=(item.tags||[]).find(x=>x.startsWith(THEME_PREFIX));return t?clean(t.slice(THEME_PREFIX.length)):'未分類'}
+    function composeTags(tags,material,theme){const out=parseTags(tags).filter(t=>!isReservedTag(t));if(clean(material))out.push(MATERIAL_PREFIX+clean(material));if(clean(theme))out.push(THEME_PREFIX+clean(theme));return uniq(out)}
+    function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
+    function formatDate(v){if(!v)return'未設定';const d=new Date(`${v}T12:00:00`);return `${d.getMonth()+1}/${d.getDate()}`}
+    function formatRelativeDue(v){if(!v)return'今日';const today=new Date(`${todayKey()}T12:00:00`),d=new Date(`${v}T12:00:00`);const diff=Math.round((d-today)/86400000);if(diff<0)return`${Math.abs(diff)}日遅れ`;if(diff===0)return'今日';if(diff===1)return'明日';return`${diff}日後`}
+
+    function openImageDb(){return new Promise((resolve,reject)=>{if(!('indexedDB'in window)){reject(new Error('このブラウザは画像保存に対応していません。'));return}const req=indexedDB.open(IMAGE_DB_NAME,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(IMAGE_STORE_NAME))db.createObjectStore(IMAGE_STORE_NAME,{keyPath:'id'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('画像データベースを開けませんでした。'))})}
+    async function getPhraseImage(id){try{const db=await openImageDb();return await new Promise((resolve,reject)=>{const tx=db.transaction(IMAGE_STORE_NAME,'readonly'),req=tx.objectStore(IMAGE_STORE_NAME).get(id);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error)});}catch(e){console.warn(e);return null}}
+    async function putPhraseImage(id,dataUrl,name,type){const db=await openImageDb();return new Promise((resolve,reject)=>{const tx=db.transaction(IMAGE_STORE_NAME,'readwrite');tx.objectStore(IMAGE_STORE_NAME).put({id,dataUrl,name:name||'image',type:type||'image/webp',updatedAt:nowIso()});tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)})}
+    async function deletePhraseImage(id){try{const db=await openImageDb();return await new Promise((resolve,reject)=>{const tx=db.transaction(IMAGE_STORE_NAME,'readwrite');tx.objectStore(IMAGE_STORE_NAME).delete(id);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)})}catch(e){console.warn(e)}}
+    function fileToDataUrl(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error||new Error('画像を読み込めませんでした。'));r.readAsDataURL(file)})}
+    async function compressImageFile(file){if(!file||!file.type.startsWith('image/'))throw new Error('画像ファイルを選択してください。');if(file.size>15*1024*1024)throw new Error('画像は15MB以下にしてください。');const source=await fileToDataUrl(file);if(file.type==='image/gif')return source;const img=await new Promise((resolve,reject)=>{const el=new Image();el.onload=()=>resolve(el);el.onerror=()=>reject(new Error('画像を開けませんでした。'));el.src=source});const max=1280,scale=Math.min(1,max/Math.max(img.naturalWidth||img.width,img.naturalHeight||img.height));const w=Math.max(1,Math.round((img.naturalWidth||img.width)*scale)),h=Math.max(1,Math.round((img.naturalHeight||img.height)*scale));const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,w,h);let out=canvas.toDataURL('image/webp',.82);if(!out.startsWith('data:image/webp'))out=canvas.toDataURL('image/jpeg',.84);return out}
+    function imageSlot(id,thumb=false){return `<div class="phrase-image-slot" data-phrase-image="${escapeHtml(id)}" data-thumb="${thumb?'1':'0'}"></div>`}
+    async function hydratePhraseImages(root=document){const slots=[...root.querySelectorAll('[data-phrase-image]')];await Promise.all(slots.map(async slot=>{const id=slot.dataset.phraseImage;if(!id)return;const stored=await getPhraseImage(id);if(!stored?.dataUrl){slot.innerHTML='';return}slot.innerHTML=`<img class="phrase-image${slot.dataset.thumb==='1'?' thumb':''}" src="${stored.dataUrl}" alt="フレーズのイメージ画像" loading="lazy">`}))}
+    function clearImagePreview(){if(imagePreviewObjectUrl){URL.revokeObjectURL(imagePreviewObjectUrl);imagePreviewObjectUrl=''}$('phraseImagePreview').classList.remove('show');$('phraseImagePreviewImg').removeAttribute('src');$('phraseImagePreviewName').textContent='画像'}
+    function showImagePreview(src,name='画像',isObjectUrl=false){clearImagePreview();if(isObjectUrl)imagePreviewObjectUrl=src;$('phraseImagePreviewImg').src=src;$('phraseImagePreviewName').textContent=name;$('phraseImagePreview').classList.add('show')}
+    async function loadImagePreview(id){pendingImageRemoval=false;$('phraseImageInput').value='';const stored=await getPhraseImage(id);if(stored?.dataUrl)showImagePreview(stored.dataUrl,stored.name||'保存済み画像');else clearImagePreview()}
+    function previewSelectedImage(file){pendingImageRemoval=false;if(!file){clearImagePreview();return}if(!file.type.startsWith('image/')){$('formMessage').textContent='画像ファイルを選択してください。';$('phraseImageInput').value='';clearImagePreview();return}if(file.size>15*1024*1024){$('formMessage').textContent='画像は15MB以下にしてください。';$('phraseImageInput').value='';clearImagePreview();return}showImagePreview(URL.createObjectURL(file),file.name,true)}
+    async function saveSelectedPhraseImage(id){const file=$('phraseImageInput').files?.[0];if(file){const dataUrl=await compressImageFile(file);await putPhraseImage(id,dataUrl,file.name,file.type);pendingImageRemoval=false;return}if(pendingImageRemoval){await deletePhraseImage(id);pendingImageRemoval=false}}
+    function normalizeItem(item){return {id:item.id||makeId('item'),sync_key:item.sync_key||syncConfig.syncKey||DEFAULT_SYNC_KEY,kind:item.kind||'sentence',ja:item.ja||'',en:item.en||'',prompt:item.prompt||'',answer:item.answer||'',choices:Array.isArray(item.choices)?item.choices.filter(Boolean):[],tags:Array.isArray(item.tags)?item.tags.filter(Boolean):parseTags(item.tags),excluded:Boolean(item.excluded),mastered:Boolean(item.mastered),position:Number.isFinite(Number(item.position))?Number(item.position):Date.now(),updated_at:item.updated_at||nowIso(),deleted_at:item.deleted_at||null,dirty:Boolean(item.dirty)}}
+    function getStorageKey(){return `english_items_${syncConfig.syncKey||DEFAULT_SYNC_KEY}`}
+    function loadLocalItems(){try{const saved=JSON.parse(localStorage.getItem(getStorageKey())||'[]');customItems=Array.isArray(saved)?saved.map(normalizeItem):[]}catch{customItems=[]}}
+    function saveLocalItems(){localStorage.setItem(getStorageKey(),JSON.stringify(customItems))}
+    function loadUserTags(){try{userTags=parseTags((JSON.parse(localStorage.getItem(USER_TAGS_STORAGE_KEY)||'[]')||[]).join(','))}catch{userTags=[]}}
+    function saveUserTags(){localStorage.setItem(USER_TAGS_STORAGE_KEY,JSON.stringify(userTags))}
+    function loadSyncConfig(){try{const saved=JSON.parse(localStorage.getItem(SETTINGS_STORAGE_KEY)||'{}');syncConfig={supabaseUrl:clean(saved.supabaseUrl||DEFAULT_SUPABASE_URL),supabaseAnonKey:clean(saved.supabaseAnonKey||DEFAULT_SUPABASE_ANON_KEY),syncKey:clean(saved.syncKey||DEFAULT_SYNC_KEY)}}catch{syncConfig={supabaseUrl:'',supabaseAnonKey:'',syncKey:DEFAULT_SYNC_KEY}}renderSyncSettings()}
+    function renderSyncSettings(){$('supabaseUrlInput').value=syncConfig.supabaseUrl;$('supabaseAnonKeyInput').value=syncConfig.supabaseAnonKey;$('syncKeyInput').value=syncConfig.syncKey}
+    function isSupabaseConfigured(){return Boolean(syncConfig.supabaseUrl&&syncConfig.supabaseAnonKey)}
+    function setSyncStatus(msg,warn=false){const el=$('syncStatus');el.textContent=msg;el.className='pill'+(warn?' bad':'')}
+
+    function rebuildLearningData(){
+      const sentenceMap=new Map(INITIAL_SENTENCES.map(x=>[x.id,{...x}]));const quizMap=new Map(INITIAL_QUIZZES.map(x=>[x.id,{...x}]));
+      customItems.filter(x=>!x.deleted_at&&!isMetaItem(x)).sort((a,b)=>a.position-b.position).forEach(item=>{
+        if(item.kind==='sentence'&&item.ja&&item.en)sentenceMap.set(item.id,{...(sentenceMap.get(item.id)||{}),...item});
+        if(item.kind==='quiz'&&item.prompt&&item.answer){const ch=uniq([item.answer,...(item.choices||[])]).slice(0,4);quizMap.set(item.id,{...item,choices:ch})}
       });
+      sentencePairs=[...sentenceMap.values()].sort((a,b)=>(a.position??999999)-(b.position??999999));quizItems=[...quizMap.values()].sort((a,b)=>(a.position??999999)-(b.position??999999));
     }
 
-    function parseCsvLine(line) {
-      const values = [];
-      let current = "";
-      let inQuotes = false;
-      for (let i = 0; i < line.length; i += 1) {
-        const char = line[i];
-        const next = line[i + 1];
-        if (char === '"' && next === '"') {
-          current += '"';
-          i += 1;
-        } else if (char === '"') {
-          inQuotes = !inQuotes;
-        } else if (char === "," && !inQuotes) {
-          values.push(cleanText(current));
-          current = "";
-        } else {
-          current += char;
-        }
-      }
-      values.push(cleanText(current));
-      return values;
+    function getSrsRow(phraseId){return customItems.find(x=>!x.deleted_at&&x.kind==='quiz'&&x.ja===META_SRS_MARKER&&x.answer===phraseId)}
+    function defaultSrs(){return {retention:50,streak:0,reviews:0,interval:0,due:todayKey(),last:null,lastGrade:null}}
+    function readSrs(phraseId){const row=getSrsRow(phraseId);if(!row)return defaultSrs();try{return {...defaultSrs(),...JSON.parse(row.en||'{}')}}catch{return defaultSrs()}}
+    function calculateSrs(prev,grade){const scores={again:20,hard:55,good:88,easy:100};const score=scores[grade];const retention=prev.reviews?Math.round(prev.retention*.65+score*.35):score;let streak=prev.streak||0;if(grade==='good'||grade==='easy')streak+=1;else if(grade==='hard')streak=Math.max(0,streak-1);else streak=0;let interval;if(grade==='again')interval=1;else if(grade==='hard')interval=prev.interval?Math.max(1,Math.round(prev.interval*.55)):2;else if(grade==='good')interval=prev.interval?Math.ceil(prev.interval*1.8):3;else interval=prev.interval?Math.ceil(prev.interval*2.6):7;const cap=retention<40?2:retention<60?4:retention<75?7:retention<85?14:retention<93?30:60;interval=Math.max(1,Math.min(interval,cap));return {retention,streak,reviews:(prev.reviews||0)+1,interval,due:addDays(todayKey(),interval),last:todayKey(),lastGrade:grade}}
+    function saveSrs(phraseId,state){const existing=getSrsRow(phraseId);upsertLocalItem({...(existing||{}),id:existing?.id||`meta-srs-${phraseId}`,kind:'quiz',ja:META_SRS_MARKER,en:JSON.stringify(state),prompt:'',answer:phraseId,choices:[],position:Date.now(),tags:[]},false);scheduleQuickSync()}
+    function gradePhrase(phraseId,grade){const next=calculateSrs(readSrs(phraseId),grade);saveSrs(phraseId,next);showToast(`定着率 ${next.retention}%・次回 ${formatDate(next.due)}`);renderAll();if($('home').classList.contains('active')){buildReviewQueue(true);renderHomeReview()}}
+    function resetAllSrs(){customItems=customItems.map(x=>(x.kind==='quiz'&&x.ja===META_SRS_MARKER)?{...x,deleted_at:nowIso(),updated_at:nowIso(),dirty:true}:x);saveLocalItems();renderAll();scheduleQuickSync();showToast('復習履歴をリセットしました')}
+    function isDue(item){const s=readSrs(item.id);return !item.excluded&&!item.mastered&&(!s.due||s.due<=todayKey())}
+
+    function getAllTags(){return uniq(userTags.concat(sentencePairs.flatMap(x=>regularTags(x))).concat(quizItems.flatMap(x=>regularTags(x)))).sort()}
+    function getMaterials(){return uniq(sentencePairs.map(getMaterial).concat(generalNoteItems().map(n=>clean(n.prompt)||'未分類'))).sort((a,b)=>a==='未分類'?1:b==='未分類'?-1:a.localeCompare(b,'ja'))}
+    function getThemes(){return uniq(sentencePairs.map(getTheme).concat(generalNoteItems().map(n=>clean(n.answer)||'未分類'))).sort((a,b)=>a==='未分類'?1:b==='未分類'?-1:a.localeCompare(b,'ja'))}
+    function fillSelect(el,values,label='すべて'){const cur=el.value;el.innerHTML=`<option value="">${label}</option>`+values.map(v=>`<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');if(values.includes(cur))el.value=cur}
+    function updateFilters(){const tags=getAllTags();fillSelect($('speakingTagFilter'),tags);fillSelect($('quizTagFilter'),tags);fillSelect($('libraryTagFilter'),tags);fillSelect($('materialFilter'),getMaterials());fillSelect($('themeFilter'),getThemes())}
+
+    function upsertLocalItem(item,syncNow=true){const normalized=normalizeItem({...item,sync_key:syncConfig.syncKey,updated_at:nowIso(),dirty:true});const i=customItems.findIndex(x=>x.id===normalized.id);if(i>=0)customItems[i]={...customItems[i],...normalized};else customItems.push(normalized);saveLocalItems();if(syncNow)scheduleQuickSync();return normalized}
+    function softDeleteLocalItem(id){const item=customItems.find(x=>x.id===id);if(!item)return;deletePhraseImage(id);item.deleted_at=nowIso();item.updated_at=item.deleted_at;item.dirty=true;saveLocalItems();scheduleQuickSync();renderAll()}
+    let quickSyncTimer=null;function scheduleQuickSync(){clearTimeout(quickSyncTimer);quickSyncTimer=setTimeout(()=>syncWithCloud('save'),700)}
+
+    function supabaseEndpoint(query=''){return `${syncConfig.supabaseUrl.replace(/\/$/,'')}/rest/v1/osaru_items${query}`}
+    function supabaseHeaders(extra={}){return {apikey:syncConfig.supabaseAnonKey,Authorization:`Bearer ${syncConfig.supabaseAnonKey}`,'Content-Type':'application/json',...extra}}
+    async function supabaseRequest(path,options={}){const r=await fetch(supabaseEndpoint(path),{...options,headers:supabaseHeaders(options.headers||{})});if(!r.ok)throw new Error(await r.text()||`Supabase error ${r.status}`);if(r.status===204)return[];return r.json()}
+    function mergeRemoteItems(remoteItems){const byId=new Map(customItems.map(x=>[x.id,x]));remoteItems.map(normalizeItem).forEach(remote=>{const local=byId.get(remote.id);if(!local){byId.set(remote.id,{...remote,dirty:false});return}const lt=new Date(local.updated_at||0).getTime(),rt=new Date(remote.updated_at||0).getTime();if(!local.dirty||rt>=lt)byId.set(remote.id,{...remote,dirty:false})});customItems=[...byId.values()].map(normalizeItem);saveLocalItems()}
+    async function pushDirtyItems(){const dirty=customItems.filter(x=>x.dirty);if(!dirty.length)return;const rows=dirty.map(x=>({id:x.id,sync_key:syncConfig.syncKey,kind:x.kind,ja:x.ja,en:x.en,prompt:x.prompt,answer:x.answer,choices:x.choices,tags:x.tags||[],excluded:x.excluded,mastered:x.mastered,position:x.position,updated_at:x.updated_at,deleted_at:x.deleted_at}));await supabaseRequest('?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});const ids=new Set(dirty.map(x=>x.id));customItems=customItems.map(x=>ids.has(x.id)?{...x,dirty:false}:x);saveLocalItems()}
+    async function pullRemoteItems(){const q=`?sync_key=eq.${encodeURIComponent(syncConfig.syncKey)}&order=position.asc`;mergeRemoteItems(await supabaseRequest(q))}
+    async function syncWithCloud(reason='manual'){if(isSyncing)return;if(!isSupabaseConfigured()){saveLocalItems();setSyncStatus('ローカル保存中（Supabase未設定）',true);return}isSyncing=true;setSyncStatus('同期中...');try{await pushDirtyItems();await pullRemoteItems();setSyncStatus(`同期済み ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);renderAll()}catch(e){console.warn(e);setSyncStatus('オフライン保存中（再接続で同期）',true)}finally{isSyncing=false}}
+    function saveSyncConfig(){const nextKey=clean($('syncKeyInput').value)||DEFAULT_SYNC_KEY;const previous=customItems.map(x=>({...x,sync_key:nextKey,updated_at:nowIso(),dirty:true}));syncConfig={supabaseUrl:clean($('supabaseUrlInput').value),supabaseAnonKey:clean($('supabaseAnonKeyInput').value),syncKey:nextKey};localStorage.setItem(SETTINGS_STORAGE_KEY,JSON.stringify(syncConfig));loadLocalItems();const byId=new Map(customItems.map(x=>[x.id,x]));previous.forEach(x=>byId.set(x.id,normalizeItem(x)));customItems=[...byId.values()];saveLocalItems();$('syncSettingsMessage').textContent='同期設定を保存しました。';renderAll();syncWithCloud('settings')}
+    function clearSyncConfig(){localStorage.removeItem(SETTINGS_STORAGE_KEY);syncConfig={supabaseUrl:'',supabaseAnonKey:'',syncKey:DEFAULT_SYNC_KEY};renderSyncSettings();loadLocalItems();renderAll();setSyncStatus('ローカル保存中（Supabase未設定）',true);$('syncSettingsMessage').textContent='同期設定を消去しました。'}
+
+    function canUseSpeech(){return 'speechSynthesis'in window&&'SpeechSynthesisUtterance'in window}
+    function chooseVoice(lang){if(!canUseSpeech())return null;const voices=speechSynthesis.getVoices();const base=(lang||'en').slice(0,2).toLowerCase();const candidates=voices.filter(v=>(v.lang||'').toLowerCase().startsWith(base));const pref=$('voicePreference').value;if(pref==='female')return candidates.find(v=>/female|samantha|zira|victoria|karen|moira/i.test(v.name))||candidates[0]||null;if(pref==='male')return candidates.find(v=>/male|daniel|alex|david|mark|fred/i.test(v.name))||candidates[0]||null;return candidates[0]||null}
+    function speak(text,lang='en-US'){return new Promise(resolve=>{if(!clean(text)){resolve();return}if(!canUseSpeech()){setTimeout(resolve,700);return}const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=Number($('speakingRate').value||.92);u.pitch=$('voicePreference').value==='male'?.86:1;const v=chooseVoice(lang);if(v)u.voice=v;u.onend=resolve;u.onerror=resolve;speechSynthesis.speak(u)})}
+    function stopSpeech(){playRun++;isPlaying=false;if(canUseSpeech())speechSynthesis.cancel();$('barStopButton').disabled=true;$('barPlayButton').disabled=false;$('speakingStatus').textContent='停止';$('playbarStatus').textContent='停止'}
+    function wait(ms){return new Promise(r=>setTimeout(r,ms))}
+    async function requestWakeLock(){if(!$('keepAwakeToggle').checked||!('wakeLock'in navigator))return;try{wakeLock=await navigator.wakeLock.request('screen')}catch{}}
+    async function releaseWakeLock(){try{if(wakeLock)await wakeLock.release()}catch{}wakeLock=null}
+
+    function getSpeakingQueue(){const tag=$('speakingTagFilter').value;return sentencePairs.filter(x=>!x.excluded&&!x.mastered&&(!tag||regularTags(x).includes(tag))&&(!$('dueOnlyToggle').checked||isDue(x)))}
+    function refreshSpeakingQueue(keepId=null){const old=keepId||speakingQueue[speakingIndex]?.id;speakingQueue=getSpeakingQueue();const idx=old?speakingQueue.findIndex(x=>x.id===old):-1;speakingIndex=idx>=0?idx:Math.min(speakingIndex,Math.max(0,speakingQueue.length-1));renderSpeakingCurrent()}
+    function renderSpeakingCurrent(){const item=speakingQueue[speakingIndex];$('speakingCounter').textContent=speakingQueue.length?`${speakingIndex+1} / ${speakingQueue.length}`:'0 / 0';if(!item){$('speakingPhase').textContent='Ready';$('speakingContent').innerHTML='<p class="hint">条件に合うフレーズがありません。</p>';$('currentActions').hidden=true;return}const s=readSrs(item.id);$('speakingPhase').textContent=`定着率 ${s.retention}% ・ 次回 ${formatRelativeDue(s.due)}`;$('speakingContent').innerHTML=`<p class="speaking-ja">${escapeHtml(item.ja)}</p><p class="speaking-en">${escapeHtml(item.en)}</p>${imageSlot(item.id)}`;hydratePhraseImages($('speakingContent'));$('currentActions').hidden=false;$('excludeCurrent').textContent=item.excluded?'再生対象へ戻す':'次回から除外'}
+    async function playCurrentPhrase(autoNext=true){const item=speakingQueue[speakingIndex];if(!item)return;const run=++playRun;isPlaying=true;$('barStopButton').disabled=false;$('barPlayButton').disabled=true;$('speakingStatus').textContent='再生中';$('playbarStatus').textContent=`${speakingIndex+1}/${speakingQueue.length} ${item.ja}`;await requestWakeLock();const mode=$('speakingMode').value,repeats=Number($('repeatCount').value||1);if(mode==='ja-en'){$('speakingPhase').textContent='Japanese';$('speakingContent').innerHTML=`<p class="speaking-ja">${escapeHtml(item.ja)}</p>${imageSlot(item.id)}`;hydratePhraseImages($('speakingContent'));await speak(item.ja,'ja-JP');if(run!==playRun)return;await wait(900)}if(mode==='mid-pause'){$('speakingPhase').textContent='English / Pause';$('speakingContent').innerHTML=`<p class="speaking-en">${escapeHtml(item.en)}</p>${imageSlot(item.id)}`;hydratePhraseImages($('speakingContent'));const words=item.en.split(/\s+/);const mid=Math.max(1,Math.floor(words.length/2));await speak(words.slice(0,mid).join(' '),'en-US');if(run!==playRun)return;await wait(1000);await speak(words.slice(mid).join(' '),'en-US')}else{for(let i=0;i<repeats;i++){$('speakingPhase').textContent=`English ${i+1}/${repeats}`;$('speakingContent').innerHTML=`<p class="speaking-en">${escapeHtml(item.en)}</p>${imageSlot(item.id)}`;hydratePhraseImages($('speakingContent'));await speak(item.en,'en-US');if(run!==playRun)return;if(i<repeats-1)await wait(350)}}if(run!==playRun)return;renderSpeakingCurrent();if(autoNext&&isPlaying&&speakingQueue.length){await wait(650);if(run!==playRun)return;speakingIndex=(speakingIndex+1)%speakingQueue.length;playCurrentPhrase(true)}else{isPlaying=false;$('barStopButton').disabled=true;$('barPlayButton').disabled=false;releaseWakeLock()}}
+    function moveSpeaking(delta){stopSpeech();if(!speakingQueue.length)return;speakingIndex=(speakingIndex+delta+speakingQueue.length)%speakingQueue.length;renderSpeakingCurrent();$('playbarStatus').textContent=`${speakingIndex+1}/${speakingQueue.length} ${speakingQueue[speakingIndex].ja}`}
+    function renderSpeakingList(){const items=getSpeakingQueue();$('speakingList').innerHTML=items.length?items.map(item=>{const s=readSrs(item.id);return `<div class="phrase-item"><div class="phrase-main"><div class="phrase-ja">${escapeHtml(item.ja)}</div><div class="phrase-en">${escapeHtml(item.en)}</div><div class="phrase-meta"><span class="pill">${escapeHtml(getMaterial(item))}</span><span class="pill">${escapeHtml(getTheme(item))}</span><span class="pill ${isDue(item)?'warn':'good'}">${isDue(item)?'復習対象':`次回 ${formatDate(s.due)}`}</span></div></div><div class="phrase-side"><div class="retention"><div class="progress-track"><div class="progress-fill" style="width:${s.retention}%"></div></div><b>${s.retention}%</b></div><div class="phrase-buttons"><button class="ghost jump-speaking" data-id="${escapeHtml(item.id)}">ここから再生</button></div></div></div>`}).join(''):'<div class="empty-state"><strong>対象フレーズがありません</strong>フィルター条件を変更してください。</div>'}
+
+    function buildReviewQueue(preserve=false){const limit=Number($('reviewDailyLimit').value||20);const oldId=preserve?reviewQueue[reviewIndex]?.id:null;reviewQueue=sentencePairs.filter(x=>isDue(x)).sort((a,b)=>{const sa=readSrs(a.id),sb=readSrs(b.id);return (sa.due||'').localeCompare(sb.due||'')||sa.retention-sb.retention}).slice(0,limit);const idx=oldId?reviewQueue.findIndex(x=>x.id===oldId):-1;reviewIndex=idx>=0?idx:Math.min(reviewIndex,Math.max(0,reviewQueue.length-1))}
+    function renderStats(){const active=sentencePairs.filter(x=>!x.excluded&&!x.mastered);$('dueCount').textContent=active.filter(isDue).length;$('weakCount').textContent=active.filter(x=>readSrs(x.id).retention<70).length;$('stableCount').textContent=active.filter(x=>readSrs(x.id).retention>=85).length;$('totalCount').textContent=active.length;const upcoming=active.filter(x=>!isDue(x)).sort((a,b)=>readSrs(a.id).due.localeCompare(readSrs(b.id).due)).slice(0,5);$('upcomingList').innerHTML=upcoming.length?upcoming.map(x=>{const s=readSrs(x.id);return `<div class="mini-item"><strong>${escapeHtml(x.en)}</strong><span>${formatDate(s.due)}（${formatRelativeDue(s.due)}）・定着率 ${s.retention}%</span></div>`}).join(''):'<div class="empty-state">予定されている復習はありません。</div>'}
+    function renderHomeReview(){const item=reviewQueue[reviewIndex];if(!item){$('reviewContent').innerHTML='<div class="empty-state"><strong>今日の復習は完了です</strong>新しいフレーズを追加するか、「1秒スピーキング」で自由練習できます。</div>';return}const s=readSrs(item.id);$('reviewContent').innerHTML=`<div class="review-meta"><span class="pill">${escapeHtml(getMaterial(item))}</span><span class="pill">${escapeHtml(getTheme(item))}</span><span class="pill warn">${formatRelativeDue(s.due)}</span></div><p class="review-ja">${escapeHtml(item.ja)}</p>${imageSlot(item.id)}<button id="revealAnswerButton" class="primary">英語を表示</button><div id="reviewAnswer" class="review-answer" hidden><p class="review-en">${escapeHtml(item.en)}</p><div class="retention" style="max-width:360px;margin:12px auto 0"><div class="progress-track"><div class="progress-fill" style="width:${s.retention}%"></div></div><b>${s.retention}%</b></div><div class="review-actions"><button data-review-grade="again">忘れた<br><small>1日〜</small></button><button data-review-grade="hard">あやしい<br><small>短め</small></button><button data-review-grade="good">言えた<br><small>延長</small></button><button data-review-grade="easy">余裕<br><small>大きく延長</small></button></div></div>`;hydratePhraseImages($('reviewContent'));$('revealAnswerButton').addEventListener('click',()=>{$('reviewAnswer').hidden=false;$('revealAnswerButton').hidden=true});document.querySelectorAll('[data-review-grade]').forEach(b=>b.addEventListener('click',()=>{gradePhrase(item.id,b.dataset.reviewGrade);buildReviewQueue(false);renderHomeReview()}))}
+
+    function getVisibleQuizItems(){const tag=$('quizTagFilter').value;return quizItems.filter(x=>!tag||regularTags(x).includes(tag))}
+    function shuffled(a){return a.map(v=>({v,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.v)}
+    function renderQuiz(){const items=getVisibleQuizItems();if(!items.length){$('quizQuestion').textContent='問題がありません';$('choices').innerHTML='';$('quizStatus').textContent='0 / 0';return}if(quizIndex>=items.length)quizIndex=0;const item=items[quizIndex];quizAnswered=false;$('quizQuestion').textContent=item.prompt;$('quizFeedback').textContent='';$('quizStatus').textContent=`${quizIndex+1} / ${items.length} ・ ${quizScore}点`;$('nextQuizButton').disabled=true;$('choices').innerHTML=shuffled(uniq([item.answer,...item.choices])).slice(0,4).map(c=>`<button class="choice" data-choice="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join('');document.querySelectorAll('.choice').forEach(btn=>btn.addEventListener('click',()=>answerQuiz(btn,item)))}
+    function answerQuiz(btn,item){if(quizAnswered)return;quizAnswered=true;const correct=btn.dataset.choice===item.answer;document.querySelectorAll('.choice').forEach(b=>{if(b.dataset.choice===item.answer)b.classList.add('correct')});if(!correct)btn.classList.add('wrong');else quizScore++;$('quizFeedback').textContent=correct?'正解！':`正解：${item.answer}`;$('nextQuizButton').disabled=false}
+
+    function libraryFilteredItems(){const q=clean($('librarySearch').value).toLowerCase(),m=$('materialFilter').value,t=$('themeFilter').value,tag=$('libraryTagFilter').value;return sentencePairs.filter(x=>{if(m&&getMaterial(x)!==m)return false;if(t&&getTheme(x)!==t)return false;if(tag&&!regularTags(x).includes(tag))return false;if(q&&!`${x.ja} ${x.en} ${getMaterial(x)} ${getTheme(x)} ${regularTags(x).join(' ')}`.toLowerCase().includes(q))return false;return true})}
+    function renderLibrary(){
+      const items=libraryFilteredItems(),groups=new Map();
+      items.forEach(x=>{const key=`${getMaterial(x)}|||${getTheme(x)}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(x)});
+      $('libraryGroups').innerHTML=groups.size?[...groups.entries()].map(([key,arr])=>{const [m,t]=key.split('|||');return `<details class="group" open><summary>${escapeHtml(m)} ／ ${escapeHtml(t)}（${arr.length}）</summary><div class="group-body">${arr.map(item=>{const s=readSrs(item.id);return `<div class="phrase-item"><div class="phrase-main"><div class="phrase-ja">${escapeHtml(item.ja)}</div><div class="phrase-en">${escapeHtml(item.en)}</div>${imageSlot(item.id,true)}<div class="phrase-meta">${regularTags(item).map(t=>`<span class="pill">${escapeHtml(t)}</span>`).join('')}<span class="pill ${isDue(item)?'warn':'good'}">定着 ${s.retention}%</span></div></div><div class="phrase-side"><div class="phrase-buttons"><button class="ghost library-speak" data-id="${escapeHtml(item.id)}">再生</button><button class="ghost library-edit" data-id="${escapeHtml(item.id)}">編集</button></div></div></div>`}).join('')}</div></details>`}).join(''):'<div class="empty-state"><strong>一致するフレーズがありません</strong>検索条件を変更してください。</div>';
+      hydratePhraseImages($('libraryGroups'));renderPodcastWorkspace();renderNotes();renderNotePhraseOptions();
     }
-
-    function importCsvItems() {
-      const lines = csvInput.value
-        .split(/\r?\n/)
-        .map((line) => line.trim())
-        .filter(Boolean);
-
-      if (lines.length === 0) {
-        csvMessage.textContent = "CSVを入力してください。";
-        return;
-      }
-
-      let imported = 0;
-      lines.forEach((line, lineIndex) => {
-        const cols = parseCsvLine(line);
-        if (lineIndex === 0 && /^(日本語|ja)$/i.test(cols[0] || "") && /^(英語|en)$/i.test(cols[1] || "")) {
-          return;
-        }
-
-        const ja = cleanText(cols[0]);
-        const en = cleanText(cols[1]);
-        if (!ja || !en) return;
-
-        const tags = parseTags(cols[2]);
-        const prompt = cleanText(cols[3]);
-        const answer = cleanText(cols[4]);
-        const choiceA = cleanText(cols[5]);
-        const choiceB = cleanText(cols[6]);
-        const baseId = makeId("csv");
-        const position = Date.now() + imported * 2;
-
-        upsertLocalItem({
-          id: `${baseId}-sentence`,
-          kind: "sentence",
-          ja,
-          en,
-          tags,
-          excluded: false,
-          position
-        }, false);
-
-        if (prompt && answer && choiceA && choiceB) {
-          upsertLocalItem({
-            id: `${baseId}-quiz`,
-            kind: "quiz",
-            ja,
-            en,
-            prompt,
-            answer,
-            choices: [answer, choiceA, choiceB].filter((value, index, array) => value && array.indexOf(value) === index),
-            tags,
-            excluded: false,
-            position: position + 1
-          }, false);
-        }
-        imported += 1;
-      });
-
-      saveLocalItems();
-      renderAll();
-      syncWithCloud("csv");
-      csvMessage.textContent = imported > 0 ? `${imported}件を追加しました。` : "追加できる行がありませんでした。";
-      if (imported > 0) {
-        scrollToPageTop();
-      }
+    function noteItems(){return customItems.filter(x=>x.kind==='quiz'&&x.ja===META_NOTE_MARKER&&!x.deleted_at)}
+    function generalNoteItems(){return noteItems().filter(row=>!parseNoteRow(row).podcastId).sort((a,b)=>b.position-a.position)}
+    function transcriptItems(){return customItems.filter(x=>x.kind==='quiz'&&x.ja===META_TRANSCRIPT_MARKER&&!x.deleted_at).sort((a,b)=>a.position-b.position)}
+    function currentTranscriptRow(){return transcriptItems().find(x=>x.id===activePodcastId)||null}
+    function currentTranscriptData(){const row=currentTranscriptRow();return row?parseTranscriptRow(row):{title:'',raw:'',formatted:'',sentences:[]}}
+    function cleanTranscriptSource(raw){
+      return String(raw||'').replace(/^\uFEFF/,'').replace(/\r/g,'\n').split('\n').map(line=>line.trim()).filter(line=>{
+        if(!line)return false;if(/^WEBVTT$/i.test(line))return false;if(/^\d+$/.test(line))return false;if(/^(NOTE|STYLE|REGION)(\s|$)/i.test(line))return false;if(/\d{1,2}:\d{2}(?::\d{2})?[.,]\d{3}\s*-->\s*\d{1,2}:\d{2}(?::\d{2})?[.,]\d{3}/.test(line))return false;return true;
+      }).map(line=>line.replace(/<[^>]+>/g,'')).join(' ').replace(/\s+/g,' ').trim();
     }
-
-    function wait(ms) {
-      return new Promise((resolve) => {
-        pauseTimer = window.setTimeout(() => {
-          pauseTimer = null;
-          resolve();
-        }, ms);
-      });
+    function splitTranscriptIntoSentences(raw){
+      let text=cleanTranscriptSource(raw);if(!text)return[];
+      const dot='∯';
+      text=text.replace(/\b(Mr|Mrs|Ms|Dr|Prof|Sr|Jr|St|Mt|vs|etc)\./gi,m=>m.replace(/\./g,dot))
+        .replace(/\b(e\.g|i\.e|U\.S|U\.K)\./gi,m=>m.replace(/\./g,dot))
+        .replace(/(\d)\.(\d)/g,`$1${dot}$2`);
+      const parts=text.match(/[^.!?。！？]+(?:[.!?。！？]+["'”’)]*|$)/g)||[text];
+      return parts.map(x=>x.replaceAll(dot,'.').trim()).filter(Boolean);
     }
-
-    function cancelSpeechAndTimer() {
-      if (pauseTimer !== null) {
-        window.clearTimeout(pauseTimer);
-        pauseTimer = null;
-      }
-      playbackGeneration += 1;
-      speechRunId += 1;
-      activeUtterance = null;
-      warmupUtterance = null;
-      if (canUseSpeech()) {
-        window.speechSynthesis.cancel();
-      }
+    function formatTranscriptText(raw){return splitTranscriptIntoSentences(raw).join('\n')}
+    function renderPodcastSelector(){
+      const rows=transcriptItems();if(activePodcastId&&!rows.some(x=>x.id===activePodcastId))activePodcastId='';
+      $('podcastSelect').innerHTML='<option value="">新規ポッドキャスト</option>'+rows.map(row=>`<option value="${escapeHtml(row.id)}">${escapeHtml(parseTranscriptRow(row).title||row.prompt||'名称未設定')}</option>`).join('');
+      $('podcastSelect').value=activePodcastId;
+      $('deletePodcastButton').disabled=!activePodcastId;
     }
-
-    async function requestWakeLock() {
-      if (!keepAwakeToggle.checked || !("wakeLock" in navigator) || document.visibilityState !== "visible") {
-        return;
-      }
-
-      try {
-        wakeLock = await navigator.wakeLock.request("screen");
-        wakeLock.addEventListener("release", () => {
-          wakeLock = null;
-        });
-      } catch (error) {
-        wakeLock = null;
-      }
+    function resetPodcastEditor(){activePodcastId='';$('podcastTitleInput').value='';$('podcastFileInput').value='';$('transcriptInput').value='';$('transcriptSearch').value='';clearPodcastMemoForm();renderPodcastWorkspace();$('podcastTitleInput').focus()}
+    function loadPodcastIntoEditor(id){activePodcastId=id||'';const row=currentTranscriptRow(),data=row?parseTranscriptRow(row):{title:'',formatted:''};$('podcastTitleInput').value=data.title||'';$('transcriptInput').value=data.formatted||data.raw||'';$('transcriptSearch').value='';clearPodcastMemoForm();renderPodcastWorkspace()}
+    function renderTranscriptSentences(){
+      const data=currentTranscriptData(),query=clean($('transcriptSearch').value).toLowerCase(),memoed=new Set(podcastMemoItems().map(({data})=>data.sourceText));
+      const all=data.sentences||[],shown=all.map((text,index)=>({text,index})).filter(x=>!query||x.text.toLowerCase().includes(query));
+      $('transcriptCount').textContent=query?`${shown.length} / ${all.length}文`:`${all.length}文`;
+      $('transcriptSentenceList').innerHTML=shown.length?shown.map(({text,index})=>`<div class="transcript-sentence${memoed.has(text)?' memoed':''}"><span class="transcript-number">${index+1}</span><div class="transcript-text">${escapeHtml(text)}</div><button class="ghost transcript-add" type="button" data-index="${index}">${memoed.has(text)?'メモ済':'→ メモへ'}</button></div>`).join(''):`<div class="transcript-empty">${all.length?'検索に一致する文章がありません。':'文字起こしを添付または貼り付けると、ここに1文ずつ表示されます。'}</div>`;
     }
-
-    function releaseWakeLock() {
-      if (!wakeLock) {
-        return;
-      }
-
-      wakeLock.release().catch(() => {});
-      wakeLock = null;
+    function podcastMemoItems(){
+      if(!activePodcastId)return[];return noteItems().map(row=>({row,data:parseNoteRow(row)})).filter(x=>x.data.podcastId===activePodcastId).sort((a,b)=>a.row.position-b.row.position);
     }
-
-    function saveSpeakingProgress(phase = "ready") {
-      const loopLength = currentLoop.length;
-      const sentenceIndex = loopLength > 0 ? currentLoop[Math.min(currentPosition, loopLength - 1)] : null;
-      const problem = Number.isInteger(sentenceIndex) ? sentencePairs[sentenceIndex] : null;
-      if (!problem) {
-        return;
-      }
-
-      const payload = {
-        problemId: problem.id,
-        position: Math.min(currentPosition, Math.max(loopLength - 1, 0)),
-        total: loopLength,
-        tag: speakingTagFilter.value || "",
-        mode: getSpeakingMode(),
-        repeatCount: getEnglishRepeatCount(),
-        rate: getSpeakingRate(),
-        phase,
-        savedAt: new Date().toISOString()
-      };
-      localStorage.setItem(SPEAKING_PROGRESS_STORAGE_KEY, JSON.stringify(payload));
+    function renderPodcastMemos(){
+      const notes=podcastMemoItems();$('podcastMemoCount').textContent=`${notes.length}件`;
+      $('podcastMemoList').innerHTML=notes.length?notes.map(({row,data},i)=>`<article class="podcast-memo-card"><div class="memo-index">${i+1}</div><div class="memo-phrase">${escapeHtml(data.sourceText||data.title)}</div>${data.body?`<div class="memo-body">${escapeHtml(data.body)}</div>`:''}<div class="note-actions"><button class="ghost podcast-memo-speak" type="button" data-id="${escapeHtml(row.id)}">再生</button><button class="ghost podcast-memo-edit" type="button" data-id="${escapeHtml(row.id)}">編集</button><button class="danger podcast-memo-delete" type="button" data-id="${escapeHtml(row.id)}">削除</button></div></article>`).join(''):'<div class="transcript-empty">左側から覚えたい文章を追加すると、ここに追加した順番で並びます。</div>';
     }
-
-    function loadSpeakingProgress() {
-      try {
-        return JSON.parse(localStorage.getItem(SPEAKING_PROGRESS_STORAGE_KEY) || "null");
-      } catch (error) {
-        return null;
-      }
+    function renderPodcastWorkspace(){
+      renderPodcastSelector();const row=currentTranscriptRow(),data=currentTranscriptData();
+      if(row){if(document.activeElement!==$('podcastTitleInput'))$('podcastTitleInput').value=data.title||'';if(document.activeElement!==$('transcriptInput'))$('transcriptInput').value=data.formatted||data.raw||'';$('transcriptStatus').textContent=`保存済み：${data.sentences.length}文`;}else if(!$('transcriptInput').value){$('transcriptStatus').textContent='文字起こしを添付するか貼り付けてください。'}
+      renderTranscriptSentences();renderPodcastMemos();
     }
-
-    function getResumePosition(loop) {
-      const saved = loadSpeakingProgress();
-      if (!saved || !saved.problemId || loop.length === 0) {
-        return 0;
-      }
-
-      if ((saved.tag || "") && !(speakingTagFilter.value || "")) {
-        speakingTagFilter.value = saved.tag;
-        renderProblemList();
-        loop.splice(0, loop.length, ...getPlayableIndexes());
-      }
-
-      const resumeIndex = loop.findIndex((index) => sentencePairs[index] && sentencePairs[index].id === saved.problemId);
-      return resumeIndex >= 0 ? resumeIndex : 0;
+    async function saveTranscriptFromInput(auto=false){
+      const title=clean($('podcastTitleInput').value)||'名称未設定のポッドキャスト',source=$('transcriptInput').value,sentences=splitTranscriptIntoSentences(source);
+      if(!sentences.length){$('transcriptStatus').textContent='文字起こし本文を入力してください。';return}
+      const formatted=sentences.join('\n'),existing=currentTranscriptRow(),id=existing?.id||makeId('meta-transcript');
+      activePodcastId=id;$('transcriptInput').value=formatted;
+      upsertLocalItem({...(existing||{}),id,kind:'quiz',ja:META_TRANSCRIPT_MARKER,en:JSON.stringify({title,raw:cleanTranscriptSource(source),formatted,sentences}),prompt:title,answer:'transcript',choices:[],position:existing?.position||Date.now()});
+      $('transcriptStatus').textContent=`${sentences.length}文に自動整形して保存しました。`;renderPodcastWorkspace();if(!auto)showToast('文字起こしを保存しました');
     }
+    function clearPodcastMemoForm(){$('podcastMemoForm').reset();$('podcastMemoEditingId').value='';$('savePodcastMemoButton').textContent='このフレーズを追加'}
+    function selectTranscriptSentence(index){const data=currentTranscriptData(),text=data.sentences[index];if(!text)return;$('podcastMemoEditingId').value='';$('podcastMemoPhrase').value=text;$('podcastMemoBody').value='';$('savePodcastMemoButton').textContent='このフレーズを追加';$('podcastMemoBody').focus()}
+    function editPodcastMemo(id){const row=noteItems().find(x=>x.id===id);if(!row)return;const data=parseNoteRow(row);$('podcastMemoEditingId').value=id;$('podcastMemoPhrase').value=data.sourceText||data.title;$('podcastMemoBody').value=data.body;$('savePodcastMemoButton').textContent='メモを更新';$('podcastMemoPhrase').focus()}
+    function renderNotePhraseOptions(){const selected=[...$('notePhraseLinks').selectedOptions].map(o=>o.value);$('notePhraseLinks').innerHTML=sentencePairs.map(x=>`<option value="${escapeHtml(x.id)}">${escapeHtml(x.en)} ｜ ${escapeHtml(x.ja)}</option>`).join('');[...$('notePhraseLinks').options].forEach(o=>o.selected=selected.includes(o.value))}
+    function renderNotes(){const q=clean($('librarySearch').value).toLowerCase(),m=$('materialFilter').value,t=$('themeFilter').value;const notes=generalNoteItems().map(row=>({row,data:parseNoteRow(row)})).filter(({row,data})=>(!m||row.prompt===m)&&(!t||row.answer===t)&&(!q||`${data.title} ${data.body} ${row.prompt} ${row.answer}`.toLowerCase().includes(q)));$('notesList').innerHTML=notes.length?notes.map(({row:n,data})=>`<div class="note-card"><div class="phrase-meta"><span class="pill">${escapeHtml(n.prompt||'未分類')}</span><span class="pill">${escapeHtml(n.answer||'未分類')}</span></div><h3>${escapeHtml(data.title)}</h3><p>${escapeHtml(data.body)}</p><div class="note-links">${data.links.map(id=>{const p=sentencePairs.find(x=>x.id===id);return p?`<span class="pill">${escapeHtml(p.en)}</span>`:''}).join('')}</div><div class="note-actions"><button class="ghost note-edit" data-id="${escapeHtml(n.id)}">編集</button><button class="danger note-delete" data-id="${escapeHtml(n.id)}">削除</button></div></div>`).join(''):'<div class="empty-state">一般メモはまだありません。</div>'}
+    function openNoteForm(note=null){const data=note?parseNoteRow(note):{title:'',body:'',links:[]};$('noteForm').hidden=false;$('noteEditingId').value=note?.id||'';$('noteMaterial').value=note?.prompt||($('materialFilter').value==='未分類'?'':$('materialFilter').value);$('noteTheme').value=note?.answer||($('themeFilter').value==='未分類'?'':$('themeFilter').value);$('noteTitle').value=data.title;$('noteBody').value=data.body;renderNotePhraseOptions();const links=new Set(data.links);[...$('notePhraseLinks').options].forEach(o=>o.selected=links.has(o.value));$('noteTitle').focus()}
+    function closeNoteForm(){$('noteForm').reset();$('noteEditingId').value='';$('noteForm').hidden=true}
 
-    function getProgressLabel(progress) {
-      return progress ? `フレーズ ${progress}` : "";
+    function clearItemForm(){$('itemForm').reset();$('editingId').value='';$('formMessage').textContent='';pendingImageRemoval=false;clearImagePreview()}
+    function editSentence(id){const item=sentencePairs.find(x=>x.id===id);if(!item)return;switchPage('add');$('editingId').value=id;$('jaInput').value=item.ja;$('enInput').value=item.en;$('materialInput').value=getMaterial(item)==='未分類'?'':getMaterial(item);$('themeInput').value=getTheme(item)==='未分類'?'':getTheme(item);$('tagsInput').value=regularTags(item).join(', ');loadImagePreview(id);window.scrollTo({top:0,behavior:'smooth'})}
+    function renderItemManager(){const rows=customItems.filter(x=>!x.deleted_at&&!isMetaItem(x)&&(x.kind==='sentence'||x.kind==='quiz')).sort((a,b)=>b.position-a.position);$('itemManager').innerHTML=rows.length?rows.slice(0,60).map(x=>`<div class="manager-row"><div><strong>${escapeHtml(x.kind==='sentence'?x.en:x.answer)}</strong><span>${escapeHtml(x.kind==='sentence'?x.ja:x.prompt)} ・ ${x.kind==='sentence'?'スピーキング':'クイズ'}</span></div><div class="manager-actions">${x.kind==='sentence'?`<button class="ghost manager-edit" data-id="${escapeHtml(x.id)}">編集</button>`:''}<button class="danger manager-delete" data-id="${escapeHtml(x.id)}">削除</button></div></div>`).join(''):'<div class="empty-state">追加済みデータはありません。</div>'}
+    function parseCsv(text){const rows=[];let row=[],field='',quoted=false;for(let i=0;i<text.length;i++){const c=text[i],next=text[i+1];if(c==='"'){if(quoted&&next==='"'){field+='"';i++}else quoted=!quoted}else if(c===','&&!quoted){row.push(field);field=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&next==='\n')i++;row.push(field);if(row.some(x=>clean(x)))rows.push(row);row=[];field=''}else field+=c}row.push(field);if(row.some(x=>clean(x)))rows.push(row);return rows}
+    function importCsv(){const rows=parseCsv($('csvInput').value);if(!rows.length){$('csvMessage').textContent='CSVを入力してください。';return}let start=0;if(/日本語|英語|japanese|english/i.test(rows[0].join(' ')))start=1;let count=0;for(let i=start;i<rows.length;i++){const r=rows[i].map(clean);let ja,en,material='',theme='',tags='',prompt='',answer='',a='',b='';if(r.length>=9){[ja,en,material,theme,tags,prompt,answer,a,b]=r}else{[ja,en,tags,prompt,answer,a,b]=r}if(!ja||!en)continue;const sentenceId=makeId('sentence');upsertLocalItem({id:sentenceId,kind:'sentence',ja,en,tags:composeTags(tags,material,theme),position:Date.now()+i},false);if(prompt&&answer){upsertLocalItem({id:makeId('quiz'),kind:'quiz',prompt,answer,choices:uniq([answer,a,b]),tags:composeTags(tags,material,theme),position:Date.now()+i+.1},false)}count++}saveLocalItems();scheduleQuickSync();$('csvMessage').textContent=`${count}件のフレーズを追加しました。`;renderAll()}
+
+    function renderAll(){rebuildLearningData();updateFilters();refreshSpeakingQueue();renderSpeakingList();renderStats();buildReviewQueue(true);renderHomeReview();renderQuiz();renderLibrary();renderItemManager();renderPlaybarVisibility()}
+    function renderPlaybarVisibility(){$('playbar').hidden=!$('speaking').classList.contains('active')}
+    function switchPage(id){stopSpeech();document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav-button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$('mobileTitle').textContent=document.querySelector(`.nav-button[data-page="${id}"]`)?.textContent.trim()||'1秒スピーキング';document.body.classList.remove('drawer-open');renderPlaybarVisibility();if(id==='speaking'){refreshSpeakingQueue();renderSpeakingList()}if(id==='home'){buildReviewQueue(true);renderStats();renderHomeReview()}if(id==='library')renderLibrary();window.scrollTo({top:0})}
+
+    function bindEvents(){
+      $('menuButton').addEventListener('click',()=>document.body.classList.toggle('drawer-open'));$('scrim').addEventListener('click',()=>document.body.classList.remove('drawer-open'));document.querySelectorAll('.nav-button').forEach(b=>b.addEventListener('click',()=>switchPage(b.dataset.page)));
+      $('barPlayButton').addEventListener('click',()=>{if(!isPlaying)playCurrentPhrase(true)});$('barStopButton').addEventListener('click',()=>{stopSpeech();releaseWakeLock()});$('previousPhraseButton').addEventListener('click',()=>moveSpeaking(-1));$('nextPhraseButton').addEventListener('click',()=>moveSpeaking(1));
+      ['speakingTagFilter','dueOnlyToggle'].forEach(id=>$(id).addEventListener('change',()=>{stopSpeech();refreshSpeakingQueue();renderSpeakingList()}));['speakingMode','repeatCount','speakingRate','voicePreference'].forEach(id=>$(id).addEventListener('change',saveLearningSettings));
+      $('keepAwakeToggle').addEventListener('change',saveLearningSettings);$('reviewDailyLimit').addEventListener('change',()=>{localStorage.setItem(DAILY_LIMIT_STORAGE_KEY,$('reviewDailyLimit').value);buildReviewQueue();renderHomeReview()});
+      $('excludeCurrent').addEventListener('click',()=>{const item=speakingQueue[speakingIndex];if(!item)return;const existing=customItems.find(x=>x.id===item.id);upsertLocalItem({...item,...existing,id:item.id,kind:'sentence',excluded:!item.excluded,position:item.position||Date.now()});renderAll()});$('editCurrent').addEventListener('click',()=>{const item=speakingQueue[speakingIndex];if(item)editSentence(item.id)});document.querySelectorAll('.grade-btn').forEach(b=>b.addEventListener('click',()=>{const item=speakingQueue[speakingIndex];if(item)gradePhrase(item.id,b.dataset.grade)}));
+      $('speakingList').addEventListener('click',e=>{const b=e.target.closest('.jump-speaking');if(!b)return;const idx=speakingQueue.findIndex(x=>x.id===b.dataset.id);if(idx>=0){stopSpeech();speakingIndex=idx;renderSpeakingCurrent();window.scrollTo({top:0,behavior:'smooth'})}});
+      $('homeSpeakButton').addEventListener('click',()=>{const item=reviewQueue[reviewIndex];if(item)speak(item.en,'en-US')});$('homeSkipButton').addEventListener('click',()=>{if(!reviewQueue.length)return;reviewIndex=(reviewIndex+1)%reviewQueue.length;renderHomeReview()});
+      $('quizTagFilter').addEventListener('change',()=>{quizIndex=0;quizScore=0;renderQuiz()});$('nextQuizButton').addEventListener('click',()=>{const items=getVisibleQuizItems();if(items.length)quizIndex=(quizIndex+1)%items.length;renderQuiz()});$('quizResetButton').addEventListener('click',()=>{quizIndex=0;quizScore=0;renderQuiz()});$('quizSpeakButton').addEventListener('click',()=>{const item=getVisibleQuizItems()[quizIndex];if(item)speak(item.prompt,'ja-JP')});
+      ['librarySearch','materialFilter','themeFilter','libraryTagFilter'].forEach(id=>$(id).addEventListener(id==='librarySearch'?'input':'change',renderLibrary));$('libraryGroups').addEventListener('click',e=>{const sp=e.target.closest('.library-speak');if(sp){const p=sentencePairs.find(x=>x.id===sp.dataset.id);if(p)speak(p.en,'en-US');return}const ed=e.target.closest('.library-edit');if(ed)editSentence(ed.dataset.id)});
+      $('podcastSelect').addEventListener('change',()=>loadPodcastIntoEditor($('podcastSelect').value));
+      $('newPodcastButton').addEventListener('click',resetPodcastEditor);
+      $('formatTranscriptButton').addEventListener('click',()=>saveTranscriptFromInput(false));
+      $('podcastFileInput').addEventListener('change',async()=>{const file=$('podcastFileInput').files?.[0];if(!file)return;try{const text=await file.text();if(!clean($('podcastTitleInput').value))$('podcastTitleInput').value=file.name.replace(/\.(txt|srt|vtt)$/i,'');$('transcriptInput').value=formatTranscriptText(text);$('transcriptStatus').textContent='ファイルを読み込み、自動整形しています…';await saveTranscriptFromInput(true);showToast('文字起こしを自動整形しました')}catch(err){$('transcriptStatus').textContent=`ファイルを読み込めませんでした: ${err.message||err}`}});
+      $('deletePodcastButton').addEventListener('click',()=>{const row=currentTranscriptRow();if(!row)return;if(!confirm('この文字起こしと、それに紐づく右側のメモを削除しますか？'))return;podcastMemoItems().forEach(({row:n})=>{const item=customItems.find(x=>x.id===n.id);if(item){item.deleted_at=nowIso();item.updated_at=item.deleted_at;item.dirty=true}});const target=customItems.find(x=>x.id===row.id);if(target){target.deleted_at=nowIso();target.updated_at=target.deleted_at;target.dirty=true}saveLocalItems();activePodcastId='';renderAll();scheduleQuickSync();showToast('ポッドキャストノートを削除しました')});
+      $('transcriptSearch').addEventListener('input',renderTranscriptSentences);
+      $('transcriptSentenceList').addEventListener('click',e=>{const btn=e.target.closest('.transcript-add');if(btn)selectTranscriptSentence(Number(btn.dataset.index))});
+      $('podcastMemoForm').addEventListener('submit',e=>{e.preventDefault();const transcript=currentTranscriptRow();if(!transcript){$('transcriptStatus').textContent='先に文字起こしを保存してください。';return}const phrase=clean($('podcastMemoPhrase').value);if(!phrase)return;const editing=$('podcastMemoEditingId').value,existing=editing?noteItems().find(x=>x.id===editing):null,data=currentTranscriptData();upsertLocalItem({...(existing||{}),id:editing||makeId('meta-note'),kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:phrase,sourceText:phrase,body:clean($('podcastMemoBody').value),links:[],podcastId:activePodcastId}),prompt:data.title||transcript.prompt,answer:'Podcastメモ',choices:[],position:existing?.position||Date.now()});clearPodcastMemoForm();renderPodcastWorkspace();showToast(editing?'メモを更新しました':'フレーズを追加しました')});
+      $('cancelPodcastMemoButton').addEventListener('click',clearPodcastMemoForm);
+      $('podcastMemoList').addEventListener('click',e=>{const speakBtn=e.target.closest('.podcast-memo-speak');if(speakBtn){const row=noteItems().find(x=>x.id===speakBtn.dataset.id);if(row)speak(parseNoteRow(row).sourceText,'en-US');return}const edit=e.target.closest('.podcast-memo-edit');if(edit){editPodcastMemo(edit.dataset.id);return}const del=e.target.closest('.podcast-memo-delete');if(del&&confirm('このフレーズメモを削除しますか？')){softDeleteLocalItem(del.dataset.id);renderPodcastWorkspace()}});
+      $('newNoteButton').addEventListener('click',()=>{document.querySelector('.legacy-notes').open=true;openNoteForm()});$('cancelNoteButton').addEventListener('click',closeNoteForm);$('noteForm').addEventListener('submit',e=>{e.preventDefault();const id=$('noteEditingId').value||makeId('meta-note');const links=[...$('notePhraseLinks').selectedOptions].map(o=>o.value);upsertLocalItem({id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:clean($('noteTitle').value),body:clean($('noteBody').value),links,podcastId:''}),prompt:clean($('noteMaterial').value),answer:clean($('noteTheme').value),choices:[],position:Date.now()});closeNoteForm();renderAll();showToast('メモを保存しました')});$('notesList').addEventListener('click',e=>{const ed=e.target.closest('.note-edit');if(ed){const n=customItems.find(x=>x.id===ed.dataset.id);if(n){document.querySelector('.legacy-notes').open=true;openNoteForm(n)}return}const del=e.target.closest('.note-delete');if(del&&confirm('このメモを削除しますか？'))softDeleteLocalItem(del.dataset.id)});
+      $('phraseImageInput').addEventListener('change',()=>previewSelectedImage($('phraseImageInput').files?.[0]));$('removePhraseImageButton').addEventListener('click',()=>{pendingImageRemoval=true;$('phraseImageInput').value='';clearImagePreview();$('formMessage').textContent='画像を削除対象にしました。保存すると反映されます。'});
+      $('itemForm').addEventListener('submit',async e=>{e.preventDefault();const editing=$('editingId').value;const ja=clean($('jaInput').value),en=clean($('enInput').value);if(!ja||!en)return;const tags=composeTags($('tagsInput').value,$('materialInput').value,$('themeInput').value);userTags=uniq(userTags.concat(regularTags({tags})));saveUserTags();const existing=editing?(customItems.find(x=>x.id===editing)||sentencePairs.find(x=>x.id===editing)):null;const sentence=upsertLocalItem({...existing,id:editing||makeId('sentence'),kind:'sentence',ja,en,tags,position:existing?.position||Date.now()});try{await saveSelectedPhraseImage(sentence.id)}catch(err){$('formMessage').textContent=`フレーズは保存しましたが、画像保存に失敗しました: ${err.message||err}`;renderAll();return}const prompt=clean($('promptInput').value),answer=clean($('answerInput').value);if(prompt&&answer)upsertLocalItem({id:makeId('quiz'),kind:'quiz',prompt,answer,choices:uniq([answer,clean($('choiceAInput').value),clean($('choiceBInput').value)]),tags,position:Date.now()+.1});$('formMessage').textContent=editing?'フレーズと画像を更新しました。':'フレーズを追加しました。';if(!editing)clearItemForm();else await loadImagePreview(sentence.id);renderAll();showToast(editing?'更新しました':'追加しました')});$('clearFormButton').addEventListener('click',clearItemForm);$('importCsvButton').addEventListener('click',importCsv);$('clearCsvButton').addEventListener('click',()=>{$('csvInput').value='';$('csvMessage').textContent=''});$('itemManager').addEventListener('click',e=>{const ed=e.target.closest('.manager-edit');if(ed){editSentence(ed.dataset.id);return}const del=e.target.closest('.manager-delete');if(del&&confirm('このデータを削除しますか？'))softDeleteLocalItem(del.dataset.id)});
+      $('saveSyncSettingsButton').addEventListener('click',saveSyncConfig);$('clearSyncSettingsButton').addEventListener('click',clearSyncConfig);$('syncNowButton').addEventListener('click',()=>syncWithCloud('manual'));$('resetReviewButton').addEventListener('click',()=>{if(confirm('復習履歴をリセットしますか？'))resetAllSrs()});
+      document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&$('keepAwakeToggle').checked&&isPlaying)requestWakeLock()});
     }
-
-    async function playSingleSentence(id, part) {
-      const problem = sentencePairs.find((item) => item.id === id);
-      if (!problem) {
-        return;
-      }
-
-      if (isPlaying) {
-        stopSpeaking();
-      } else {
-        cancelSpeechAndTimer();
-      }
-
-      if (part === "ja") {
-        showJa(problem);
-        speakingStatus.textContent = "単体再生: 日本語";
-        await speak(problem.ja, "ja-JP");
-      } else {
-        showEn(problem);
-        speakingStatus.textContent = "単体再生: 英語";
-        await speak(problem.en, "en-US");
-      }
-
-      if (!isPlaying) {
-        speakingStatus.textContent = "単体再生完了";
-      }
-    }
-
-    tabs.forEach((button) => {
-      button.addEventListener("click", () => {
-        const tabName = button.dataset.tab;
-        tabs.forEach((tab) => tab.classList.toggle("active", tab === button));
-        panels.forEach((panel) => panel.classList.toggle("active", panel.id === tabName));
-      });
-    });
-
-    function renderQuiz() {
-      const visibleQuizItems = getVisibleQuizItems();
-      if (quizIndex >= visibleQuizItems.length) {
-        quizIndex = 0;
-        score = 0;
-      }
-      if (visibleQuizItems.length === 0) {
-        quizQuestion.textContent = "クイズがありません";
-        quizFeedback.textContent = "";
-        quizStatus.textContent = "0 / 0";
-        nextQuizButton.disabled = true;
-        choicesEl.innerHTML = "";
-        return;
-      }
-
-      const item = visibleQuizItems[quizIndex];
-      answered = false;
-      quizQuestion.textContent = item.prompt;
-      quizFeedback.textContent = "";
-      quizStatus.textContent = `${quizIndex + 1} / ${visibleQuizItems.length} 正解 ${score}`;
-      nextQuizButton.disabled = true;
-      choicesEl.innerHTML = "";
-
-      item.choices.forEach((choice) => {
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "choice";
-        button.textContent = choice;
-        button.addEventListener("click", () => answerQuiz(choice, button));
-        choicesEl.appendChild(button);
-      });
-    }
-
-    function answerQuiz(choice, selectedButton) {
-      if (answered) return;
-      answered = true;
-      const item = getVisibleQuizItems()[quizIndex];
-      const correct = choice === item.answer;
-
-      if (correct) {
-        score += 1;
-        quizFeedback.textContent = `正解: ${item.answer}`;
-        selectedButton.classList.add("correct");
-        readText(item.answer, "en-US", "このブラウザでは音声なしで進めます。SafariまたはChromeで開くと音声が使える場合があります。");
-      } else {
-        quizFeedback.textContent = `答え: ${item.answer}`;
-        selectedButton.classList.add("wrong");
-      }
-
-      [].slice.call(choicesEl.children).forEach((button) => {
-        button.disabled = true;
-        if (button.textContent === item.answer) {
-          button.classList.add("correct");
-        }
-      });
-
-      quizStatus.textContent = `${quizIndex + 1} / ${getVisibleQuizItems().length} 正解 ${score}`;
-      nextQuizButton.disabled = false;
-    }
-
-    nextQuizButton.addEventListener("click", () => {
-      const visibleQuizItems = getVisibleQuizItems();
-      quizIndex = (quizIndex + 1) % visibleQuizItems.length;
-      if (quizIndex === 0) {
-        score = 0;
-      }
-      renderQuiz();
-    });
-
-    quizResetButton.addEventListener("click", () => {
-      score = 0;
-      quizIndex = 0;
-      renderQuiz();
-    });
-
-    quizSpeakButton.addEventListener("click", () => {
-      if (quizItems.length === 0) {
-        return;
-      }
-      const item = getVisibleQuizItems()[quizIndex];
-      if (!item) return;
-      readText(item.prompt, "ja-JP", "このブラウザでは音声なしで進めます。SafariまたはChromeで開くと音声が使える場合があります。");
-    });
-
-    itemForm.addEventListener("submit", handleFormSubmit);
-    clearFormButton.addEventListener("click", clearForm);
-    setupExpandableTextarea(jaInput);
-    setupExpandableTextarea(enInput);
-    voicePreference.addEventListener("change", saveVoicePreference);
-    repeatCount.addEventListener("change", saveSpeakingControls);
-    speakingRate.addEventListener("change", saveSpeakingControls);
-    [].slice.call(speakingModeInputs).forEach((input) => {
-      input.addEventListener("change", saveSpeakingControls);
-    });
-    keepAwakeToggle.addEventListener("change", () => {
-      saveSpeakingControls();
-      if (isPlaying) {
-        if (keepAwakeToggle.checked) {
-          requestWakeLock();
-        } else {
-          releaseWakeLock();
-        }
-      }
-    });
-    tagSelect.addEventListener("change", updateSelectedTagPreview);
-    addTagButton.addEventListener("click", handleAddTag);
-    deleteTagButton.addEventListener("click", handleDeleteSelectedTags);
-    newTagInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        handleAddTag();
-      }
-    });
-    importCsvButton.addEventListener("click", importCsvItems);
-    clearCsvButton.addEventListener("click", () => {
-      csvInput.value = "";
-      csvMessage.textContent = "";
-    });
-    quizTagFilter.addEventListener("change", () => {
-      quizIndex = 0;
-      score = 0;
-      renderQuiz();
-    });
-    speakingTagFilter.addEventListener("change", () => {
-      if (!isPlaying) {
-        renderProblemList();
-        updateSpeakingStatus();
-      }
-    });
-    syncNowButton.addEventListener("click", () => syncWithCloud("manual"));
-    saveSyncSettingsButton.addEventListener("click", saveSyncConfig);
-    clearSyncSettingsButton.addEventListener("click", clearSyncConfig);
-    itemManager.addEventListener("click", (event) => {
-      const button = event.target.closest("button");
-      if (!button) {
-        return;
-      }
-
-      const id = button.dataset.id;
-      if (button.dataset.action === "edit") {
-        editItem(id);
-      }
-      if (button.dataset.action === "delete") {
-        softDeleteLocalItem(id);
-      }
-    });
-
-    function handleSinglePlayClick(event) {
-      const button = event.target.closest("button");
-      if (!button || !button.dataset.id) {
-        return;
-      }
-
-      if (button.dataset.action === "play-ja") {
-        playSingleSentence(button.dataset.id, "ja");
-      }
-      if (button.dataset.action === "play-en") {
-        playSingleSentence(button.dataset.id, "en");
-      }
-      if (button.dataset.action === "start-from") {
-        startSpeakingFromId(button.dataset.id);
-      }
-      if (button.dataset.action === "mark-mastered") {
-        updateSentenceMastered(button.dataset.id, true);
-      }
-      if (button.dataset.action === "unmaster") {
-        updateSentenceMastered(button.dataset.id, false);
-      }
-      if (button.dataset.action === "edit-sentence") {
-        editSentenceFromList(button.dataset.id);
-      }
-    }
-
-    problemList.addEventListener("click", handleSinglePlayClick);
-    excludedProblemList.addEventListener("click", handleSinglePlayClick);
-    masteredProblemList.addEventListener("click", handleSinglePlayClick);
-    addedPhraseList.addEventListener("click", handleSinglePlayClick);
-
-    function renderProblemList() {
-      problemList.innerHTML = "";
-      excludedProblemList.innerHTML = "";
-      masteredProblemList.innerHTML = "";
-
-      const selectedTag = speakingTagFilter.value;
-      const activeProblems = sentencePairs.filter((problem) => !problem.excluded && !problem.mastered && matchesTag(problem, selectedTag));
-      const excludedProblems = sentencePairs.filter((problem) => problem.excluded && !problem.mastered && matchesTag(problem, selectedTag));
-      const masteredProblems = sentencePairs.filter((problem) => problem.mastered && matchesTag(problem, selectedTag));
-
-      if (activeProblems.length === 0) {
-        problemList.innerHTML = '<li class="sync-note">再生対象のフレーズがありません。</li>';
-      }
-
-      if (excludedProblems.length === 0) {
-        excludedProblemList.innerHTML = '<li class="sync-note">除外したフレーズはありません。</li>';
-      }
-
-      if (masteredProblems.length === 0) {
-        masteredProblemList.innerHTML = '<li class="sync-note">定着したフレーズはまだありません。</li>';
-      }
-
-      appendGroupedItems(problemList, activeProblems, (problem, index) => createProblemListItem(problem, index, "active"), {
-        bodyTag: "ul",
-        bodyClass: "problem-list phrase-group-body",
-        wrapInListItem: true,
-        stateKey: "active"
-      });
-
-      appendGroupedItems(excludedProblemList, excludedProblems, (problem, index) => createProblemListItem(problem, index, "excluded"), {
-        bodyTag: "ul",
-        bodyClass: "problem-list phrase-group-body",
-        wrapInListItem: true,
-        stateKey: "excluded"
-      });
-
-      appendGroupedItems(masteredProblemList, masteredProblems, (problem, index) => createProblemListItem(problem, index, "mastered"), {
-        bodyTag: "ul",
-        bodyClass: "problem-list phrase-group-body",
-        wrapInListItem: true,
-        stateKey: "mastered"
-      });
-    }
-
-    function createProblemListItem(problem, index, section) {
-        const isExcluded = section === "excluded";
-        const isMastered = section === "mastered";
-        const li = document.createElement("li");
-        li.className = `problem${problem.excluded || problem.mastered ? " checked" : ""}`;
-
-        const label = document.createElement(isMastered ? "div" : "label");
-        if (isMastered) {
-          label.textContent = `${index + 1}件目: 通常再生から外れています`;
-        } else {
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.checked = problem.excluded;
-          checkbox.setAttribute("aria-label", `${index + 1}問目を次のループから除外`);
-          checkbox.addEventListener("change", () => {
-            updateSentenceExcluded(problem.id, checkbox.checked);
-            li.classList.toggle("checked", checkbox.checked);
-            if (!isPlaying) updateSpeakingStatus();
-          });
-
-          const title = document.createElement("span");
-          title.textContent = isExcluded
-            ? `${index + 1}件目: チェックを外すと再生対象に戻ります`
-            : `${index + 1}問目を次のループから除外`;
-          label.appendChild(checkbox);
-          label.appendChild(title);
-        }
-
-        const text = document.createElement("div");
-        text.className = "problem-text";
-        text.innerHTML = `
-          <span><strong>タグ:</strong> ${escapeHtml((problem.tags || []).join(" / ") || "なし")}</span>
-          <span><strong>日本語:</strong> ${escapeHtml(problem.ja)}</span>
-          <span><strong>英語:</strong> ${escapeHtml(problem.en)}</span>
-        `;
-
-        li.appendChild(label);
-        li.appendChild(text);
-        const actions = document.createElement("div");
-        actions.className = "phrase-actions";
-        const startButton = section === "active"
-          ? `<button class="primary" type="button" data-action="start-from" data-id="${escapeHtml(problem.id)}">ここから順に再生</button>`
-          : "";
-        const masteryButton = section === "active"
-          ? `<button class="secondary" type="button" data-action="mark-mastered" data-id="${escapeHtml(problem.id)}">定着した</button>`
-          : (isMastered
-            ? `<button class="primary" type="button" data-action="unmaster" data-id="${escapeHtml(problem.id)}">再生対象へ戻す</button>`
-            : "");
-        actions.innerHTML = `
-          <button class="secondary" type="button" data-action="play-ja" data-id="${escapeHtml(problem.id)}">日本語を再生</button>
-          <button class="secondary" type="button" data-action="play-en" data-id="${escapeHtml(problem.id)}">英語を再生</button>
-          ${startButton}
-          ${masteryButton}
-          <button class="secondary" type="button" data-action="edit-sentence" data-id="${escapeHtml(problem.id)}">内容を編集</button>
-        `;
-        li.appendChild(actions);
-        return li;
-    }
-
-    function getPlayableIndexes() {
-      return sentencePairs
-        .map((item, index) => item.excluded || item.mastered || !matchesTag(item, speakingTagFilter.value) ? null : index)
-        .filter((index) => index !== null);
-    }
-
-    function capturePlaybackAnchor() {
-      if (!isPlaying || currentPosition < 0 || currentPosition >= currentLoop.length) {
-        return null;
-      }
-      const loopIds = currentLoop
-        .map((index) => sentencePairs[index] && sentencePairs[index].id)
-        .filter(Boolean);
-      const currentId = loopIds[currentPosition];
-      if (!currentId) {
-        return null;
-      }
-      return {
-        currentId,
-        nextIds: loopIds.slice(currentPosition + 1),
-        wrappedIds: loopIds.slice(0, currentPosition)
-      };
-    }
-
-    function continuePlaybackAfterRemovedPhrase(anchor) {
-      const playable = getPlayableIndexes();
-      if (playable.length === 0) {
-        stopSpeaking("すべて除外されています", true);
-        return;
-      }
-
-      const playableById = new Map(playable.map((index) => [sentencePairs[index].id, index]));
-      const nextId = anchor.nextIds.concat(anchor.wrappedIds).find((id) => playableById.has(id));
-      const nextIndex = nextId ? playableById.get(nextId) : playable[0];
-      cancelSpeechAndTimer();
-      currentLoop = playable;
-      currentPosition = currentLoop.indexOf(nextIndex);
-      saveSpeakingProgress("filter-change");
-      requestWakeLock();
-      playCurrentProblem();
-    }
-
-    function renderPlaybackBar() {
-      const playable = getPlayableIndexes();
-      const hasCurrent = currentLoop.length > 0 && currentPosition >= 0 && currentPosition < currentLoop.length;
-      const saved = loadSpeakingProgress();
-      const savedPosition = saved && saved.problemId
-        ? playable.findIndex((index) => sentencePairs[index] && sentencePairs[index].id === saved.problemId)
-        : -1;
-      const currentIndex = hasCurrent ? currentLoop[currentPosition] : (savedPosition >= 0 ? playable[savedPosition] : playable[0]);
-      const problem = Number.isInteger(currentIndex) ? sentencePairs[currentIndex] : null;
-      const progress = hasCurrent
-        ? `${currentPosition + 1}/${currentLoop.length}`
-        : (savedPosition >= 0 ? `${savedPosition + 1}/${playable.length}` : (problem ? `1/${playable.length}` : "-"));
-
-      playbackBarStatus.textContent = problem ? `フレーズ ${progress}: ${problem.en}` : "再生対象のフレーズがありません";
-      previousPhraseButton.disabled = playable.length === 0;
-      nextPhraseButton.disabled = playable.length === 0;
-      barPlayButton.disabled = isPlaying || playable.length === 0;
-      barStopButton.disabled = !isPlaying;
-    }
-
-    function updateSpeakingStatus() {
-      const count = getPlayableIndexes().length;
-      const saved = loadSpeakingProgress();
-      const savedProblem = saved && saved.problemId ? sentencePairs.find((item) => item.id === saved.problemId) : null;
-      if (count === 0) {
-        speakingStatus.textContent = "すべて除外されています";
-      } else if (savedProblem && !savedProblem.excluded) {
-        speakingStatus.textContent = `待機中: ${count}問・続きあり`;
-      } else {
-        speakingStatus.textContent = `待機中: ${count}問`;
-      }
-      renderPlaybackBar();
-    }
-
-    function showSpeakingMessage(message, warning = false) {
-      phaseEl.textContent = "Ready";
-      sentenceArea.innerHTML = `<p class="empty" style="${warning ? "color: var(--bad);" : ""}">${escapeHtml(message)}</p>`;
-      currentPhraseActions.hidden = true;
-      currentPhraseExcluded.removeAttribute("data-id");
-      currentPhraseMasterButton.removeAttribute("data-id");
-    }
-
-    function renderCurrentPhraseControls(problem) {
-      if (!problem) {
-        currentPhraseActions.hidden = true;
-        currentPhraseExcluded.removeAttribute("data-id");
-        currentPhraseMasterButton.removeAttribute("data-id");
-        return;
-      }
-
-      currentPhraseActions.hidden = false;
-      currentPhraseExcluded.dataset.id = problem.id;
-      currentPhraseExcluded.checked = Boolean(problem.excluded);
-      currentPhraseMasterButton.dataset.id = problem.id;
-      currentPhraseMasterButton.disabled = Boolean(problem.mastered);
-      currentPhraseMasterButton.textContent = problem.mastered ? "定着済み" : "定着した";
-      currentPhraseEditButton.dataset.id = problem.id;
-    }
-
-    function renderCounter(label) {
-      return label ? `<span class="phrase-counter">${escapeHtml(label)}</span>` : "";
-    }
-
-    function showJa(problem, counterLabel = "") {
-      phaseEl.textContent = "Japanese";
-      renderCurrentPhraseControls(problem);
-      sentenceArea.innerHTML = `
-        <p class="big-ja">${escapeHtml(problem.ja)}</p>
-        ${renderCounter(counterLabel)}
-      `;
-    }
-
-    function showPause(problem, counterLabel = "") {
-      phaseEl.innerHTML = '<span class="pause-badge">2秒ポーズ</span>';
-      renderCurrentPhraseControls(problem);
-      sentenceArea.innerHTML = `
-        <p class="big-ja">${escapeHtml(problem.ja)}</p>
-        <p class="empty">今、英語で言ってみましょう。</p>
-        ${renderCounter(counterLabel)}
-      `;
-    }
-
-    function showEn(problem, counterLabel = "") {
-      phaseEl.textContent = "English";
-      renderCurrentPhraseControls(problem);
-      sentenceArea.innerHTML = `
-        <p class="big-en">${escapeHtml(problem.en)}</p>
-        ${renderCounter(counterLabel)}
-      `;
-    }
-
-    function showMidPhrasePause(problem, firstPart, counterLabel = "") {
-      phaseEl.innerHTML = '<span class="pause-badge">続き思い出し 2秒</span>';
-      renderCurrentPhraseControls(problem);
-      sentenceArea.innerHTML = `
-        <p class="big-en">${escapeHtml(firstPart)}</p>
-        <p class="empty">この続きの英語を思い出してみましょう。</p>
-        ${renderCounter(counterLabel)}
-      `;
-    }
-
-    function splitEnglishPhrase(text) {
-      const words = cleanText(text).split(/\s+/).filter(Boolean);
-      if (words.length < 2) {
-        return [cleanText(text), ""];
-      }
-
-      const middle = Math.floor(words.length / 2);
-      let splitAt = middle;
-      let closestDistance = Number.POSITIVE_INFINITY;
-      words.forEach((word, index) => {
-        const position = index + 1;
-        if (position <= 0 || position >= words.length || !/[,:;!?]$/.test(word)) {
-          return;
-        }
-        const distance = Math.abs(position - middle);
-        if (distance < closestDistance) {
-          closestDistance = distance;
-          splitAt = position;
-        }
-      });
-
-      return [words.slice(0, splitAt).join(" "), words.slice(splitAt).join(" ")];
-    }
-
-    function getSpeakingMode() {
-      const selected = document.querySelector('input[name="speakingMode"]:checked');
-      return selected ? selected.value : "ja-en";
-    }
-
-    function getEnglishRepeatCount() {
-      const count = Number(repeatCount.value);
-      if (!Number.isFinite(count)) {
-        return 1;
-      }
-      return Math.min(Math.max(Math.round(count), 1), 10);
-    }
-
-    function setSpeakingButtons(playing) {
-      playButton.disabled = playing;
-      stopButton.disabled = !playing;
-      repeatCount.disabled = playing;
-      [].slice.call(speakingModeInputs).forEach((input) => {
-        input.disabled = playing;
-      });
-      renderPlaybackBar();
-    }
-
-    async function speakEnglishRepeats(problem, progress, repeatTotal, mode, generation) {
-      const counterLabel = getProgressLabel(progress);
-      for (let repeatIndex = 1; repeatIndex <= repeatTotal; repeatIndex += 1) {
-        if (!isPlaying || generation !== playbackGeneration) return;
-
-        const modeLabel = mode === "en-only" ? "英語のみ" : (mode === "mid-pause" ? "途中ポーズ" : "英語");
-        if (mode === "mid-pause") {
-          const [firstPart, secondPart] = splitEnglishPhrase(problem.en);
-          speakingStatus.textContent = `${modeLabel}: ${progress}・前半・${repeatIndex}回目/${repeatTotal}回`;
-          showEn(Object.assign({}, problem, { en: firstPart }), counterLabel);
-          saveSpeakingProgress(`${modeLabel} 前半`);
-          await speak(firstPart, "en-US");
-          if (!isPlaying || generation !== playbackGeneration) return;
-
-          if (secondPart) {
-            speakingStatus.textContent = `${modeLabel}: ${progress}・思い出し中`;
-            showMidPhrasePause(problem, firstPart, counterLabel);
-            await wait(2000);
-            if (!isPlaying || generation !== playbackGeneration) return;
-
-            speakingStatus.textContent = `${modeLabel}: ${progress}・後半・${repeatIndex}回目/${repeatTotal}回`;
-            showEn(problem, counterLabel);
-            saveSpeakingProgress(`${modeLabel} 後半`);
-            await speak(secondPart, "en-US");
-          }
-        } else {
-          speakingStatus.textContent = `${modeLabel}: ${progress}・${repeatIndex}回目/${repeatTotal}回`;
-          showEn(problem, counterLabel);
-          saveSpeakingProgress(`${modeLabel} ${repeatIndex}/${repeatTotal}`);
-          await speak(problem.en, "en-US");
-        }
-        if (!isPlaying || generation !== playbackGeneration) return;
-      }
-    }
-
-    async function playCurrentProblem(generation = playbackGeneration) {
-      if (!isPlaying || generation !== playbackGeneration) return;
-
-      if (currentPosition >= currentLoop.length) {
-        startNextLoop(generation);
-        return;
-      }
-
-      const problem = sentencePairs[currentLoop[currentPosition]];
-      const progress = `${currentPosition + 1}/${currentLoop.length}`;
-      const counterLabel = getProgressLabel(progress);
-      const mode = getSpeakingMode();
-      const repeatTotal = getEnglishRepeatCount();
-      saveSpeakingProgress("start");
-      renderPlaybackBar();
-
-      if (mode === "ja-en") {
-        speakingStatus.textContent = `日本語: ${progress}`;
-        showJa(problem, counterLabel);
-        saveSpeakingProgress("日本語");
-        await speak(problem.ja, "ja-JP");
-        if (!isPlaying || generation !== playbackGeneration) return;
-
-        speakingStatus.textContent = `ポーズ: ${progress}`;
-        showPause(problem, counterLabel);
-        saveSpeakingProgress("ポーズ");
-        await wait(2000);
-        if (!isPlaying || generation !== playbackGeneration) return;
-      }
-
-      await speakEnglishRepeats(problem, progress, repeatTotal, mode, generation);
-      if (!isPlaying || generation !== playbackGeneration) return;
-
-      currentPosition += 1;
-      if (currentPosition < currentLoop.length) {
-        saveSpeakingProgress("next");
-      }
-      playCurrentProblem(generation);
-    }
-
-    function startNextLoop(generation = playbackGeneration) {
-      if (generation !== playbackGeneration || !isPlaying) {
-        return;
-      }
-      currentLoop = getPlayableIndexes();
-      currentPosition = 0;
-
-      if (currentLoop.length === 0) {
-        stopSpeaking("すべて除外されています", true);
-        return;
-      }
-
-      playCurrentProblem(generation);
-    }
-
-    function startPlaybackAt(position) {
-      currentLoop = getPlayableIndexes();
-      currentPosition = Math.min(Math.max(position, 0), Math.max(currentLoop.length - 1, 0));
-
-      if (currentLoop.length === 0) {
-        stopSpeaking("すべて除外されています", true);
-        return;
-      }
-
-      saveSpeakingProgress("resume");
-      requestWakeLock();
-      playCurrentProblem();
-    }
-
-    function startSpeakingFromId(id) {
-      const selectedIndex = sentencePairs.findIndex((item) => item.id === id);
-      if (selectedIndex < 0) {
-        return;
-      }
-
-      const selectedProblem = sentencePairs[selectedIndex];
-      document.querySelector('[data-tab="speaking"]').click();
-
-      if (selectedProblem.excluded) {
-        stopSpeaking("このフレーズは除外中です。チェックを外すと再生できます。", true);
-        return;
-      }
-
-      if (!matchesTag(selectedProblem, speakingTagFilter.value)) {
-        speakingTagFilter.value = "";
-        renderProblemList();
-      }
-
-      currentLoop = getPlayableIndexes();
-      const startPosition = currentLoop.indexOf(selectedIndex);
-      if (startPosition < 0) {
-        stopSpeaking("このフレーズは再生対象外です。", true);
-        return;
-      }
-
-      cancelSpeechAndTimer();
-      isPlaying = true;
-      currentPosition = startPosition;
-      setSpeakingButtons(true);
-      if (!canUseSpeech()) {
-        speakingStatus.textContent = "音声なしで表示再生";
-      }
-      saveSpeakingProgress("selected");
-      requestWakeLock();
-      playCurrentProblem();
-    }
-
-    function startSpeaking() {
-      cancelSpeechAndTimer();
-      isPlaying = true;
-      setSpeakingButtons(true);
-      if (!canUseSpeech()) {
-        speakingStatus.textContent = "音声なしで表示再生";
-      }
-      currentLoop = getPlayableIndexes();
-      const resumePosition = getResumePosition(currentLoop);
-      startPlaybackAt(resumePosition);
-    }
-
-    function navigatePhrase(delta) {
-      const playable = getPlayableIndexes();
-      if (playable.length === 0) {
-        stopSpeaking("すべて除外されています", true);
-        return;
-      }
-
-      const loopIsUsable = currentLoop.length > 0
-        && currentLoop.length === playable.length
-        && currentLoop.every((index) => playable.includes(index));
-      if (!loopIsUsable) {
-        currentLoop = playable;
-      }
-
-      let basePosition = currentPosition;
-      if (!loopIsUsable || basePosition < 0 || basePosition >= currentLoop.length) {
-        const saved = loadSpeakingProgress();
-        const savedIndex = saved && saved.problemId
-          ? currentLoop.findIndex((index) => sentencePairs[index] && sentencePairs[index].id === saved.problemId)
-          : -1;
-        basePosition = savedIndex >= 0 ? savedIndex : 0;
-      }
-
-      currentPosition = (basePosition + delta + currentLoop.length) % currentLoop.length;
-      cancelSpeechAndTimer();
-      isPlaying = true;
-      setSpeakingButtons(true);
-      saveSpeakingProgress(delta < 0 ? "previous" : "next");
-      requestWakeLock();
-      playCurrentProblem();
-    }
-
-    function stopSpeaking(message = "停止しました", warning = false) {
-      saveSpeakingProgress("stopped");
-      isPlaying = false;
-      cancelSpeechAndTimer();
-      releaseWakeLock();
-      setSpeakingButtons(false);
-      showSpeakingMessage(message, warning);
-      speakingStatus.textContent = warning ? message : "停止中";
-    }
-
-    currentPhraseExcluded.addEventListener("change", () => {
-      const id = currentPhraseExcluded.dataset.id;
-      if (!id) {
-        return;
-      }
-
-      updateSentenceExcluded(id, currentPhraseExcluded.checked);
-      const problem = sentencePairs.find((item) => item.id === id);
-      renderCurrentPhraseControls(problem);
-      if (!isPlaying) {
-        updateSpeakingStatus();
-      }
-    });
-
-    currentPhraseMasterButton.addEventListener("click", () => {
-      const id = currentPhraseMasterButton.dataset.id;
-      if (!id) {
-        return;
-      }
-      updateSentenceMastered(id, true);
-      const problem = sentencePairs.find((item) => item.id === id);
-      renderCurrentPhraseControls(problem);
-    });
-
-    currentPhraseEditButton.addEventListener("click", () => {
-      const id = currentPhraseEditButton.dataset.id;
-      if (!id) {
-        return;
-      }
-      if (isPlaying) {
-        stopSpeaking("編集のため停止しました");
-      }
-      editSentenceFromList(id);
-    });
-
-    playButton.addEventListener("click", startSpeaking);
-    stopButton.addEventListener("click", () => stopSpeaking());
-    barPlayButton.addEventListener("click", startSpeaking);
-    barStopButton.addEventListener("click", () => stopSpeaking());
-    previousPhraseButton.addEventListener("click", () => navigatePhrase(-1));
-    nextPhraseButton.addEventListener("click", () => navigatePhrase(1));
-
-    window.addEventListener("beforeunload", () => {
-      saveSpeakingProgress("leave");
-      cancelSpeechAndTimer();
-      releaseWakeLock();
-    });
-    document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "hidden") {
-        saveSpeakingProgress("background");
-        return;
-      }
-
-      if (isPlaying) {
-        requestWakeLock();
-        if (canUseSpeech() && typeof window.speechSynthesis.resume === "function") {
-          window.speechSynthesis.resume();
-        }
-      }
-    });
-    window.addEventListener("online", () => syncWithCloud("online"));
-
-    warmUpVoices();
-    loadVoicePreference();
-    loadSpeakingControls();
-    loadUserTags();
-    loadSyncConfig();
-    loadLocalItems();
-    renderAll();
-    syncWithCloud("startup");
-    scheduleSync();
+    function saveLearningSettings(){localStorage.setItem(SPEAKING_MODE_STORAGE_KEY,$('speakingMode').value);localStorage.setItem(SPEAKING_REPEAT_STORAGE_KEY,$('repeatCount').value);localStorage.setItem(SPEAKING_RATE_STORAGE_KEY,$('speakingRate').value);localStorage.setItem(VOICE_PREF_STORAGE_KEY,$('voicePreference').value);localStorage.setItem(KEEP_AWAKE_STORAGE_KEY,$('keepAwakeToggle').checked?'1':'0')}
+    function loadLearningSettings(){const mode=localStorage.getItem(SPEAKING_MODE_STORAGE_KEY)||'ja-en';if([...$('speakingMode').options].some(o=>o.value===mode))$('speakingMode').value=mode;const rep=localStorage.getItem(SPEAKING_REPEAT_STORAGE_KEY)||'1';$('repeatCount').value=rep;const rate=localStorage.getItem(SPEAKING_RATE_STORAGE_KEY)||'0.92';$('speakingRate').value=rate;const voice=localStorage.getItem(VOICE_PREF_STORAGE_KEY)||'default';$('voicePreference').value=voice;$('keepAwakeToggle').checked=localStorage.getItem(KEEP_AWAKE_STORAGE_KEY)==='1';$('reviewDailyLimit').value=localStorage.getItem(DAILY_LIMIT_STORAGE_KEY)||'20'}
+
+    function init(){loadSyncConfig();loadUserTags();loadLocalItems();loadLearningSettings();bindEvents();renderAll();setSyncStatus(isSupabaseConfigured()?'同期待機中':'ローカル保存中（Supabase未設定）',!isSupabaseConfigured());if(isSupabaseConfigured())syncWithCloud('startup');syncTimer=setInterval(()=>syncWithCloud('auto'),SYNC_INTERVAL_MS);if(canUseSpeech()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices()}catch{}}}
+    init();
+  })();
   </script>
 </body>
 </html>
