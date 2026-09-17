@@ -383,6 +383,7 @@
     function loadLocalItems(){try{const saved=JSON.parse(localStorage.getItem(getStorageKey())||'[]');customItems=Array.isArray(saved)?saved.map(normalizeItem):[]}catch{customItems=[]}}
     function saveLocalItems(){localStorage.setItem(getStorageKey(),JSON.stringify(customItems))}
     function stableScopeSuffix(){let hash=2166136261;for(const char of syncConfig.syncKey||DEFAULT_SYNC_KEY){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}return(hash>>>0).toString(36)}
+    function stableTextHash(text){let hash=2166136261;for(const char of String(text||'')){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}return(hash>>>0).toString(36)}
     function podcastGrammarText(entry){return clean(entry.g||BUILTIN_PODCAST_GRAMMAR[entry.n])}
     function podcastMemoText(entry){return `① 全体の文の構造\n${entry.s}\n\n② 使い方\n${entry.u}\n\n③ ニュアンス\n${entry.x}\n\n④ 時制と文法の解説\n${podcastGrammarText(entry)}`}
     function seedBuiltinPodcastPacks(){
@@ -399,6 +400,52 @@
         });
       });
       if(changed)saveLocalItems();
+    }
+    function parseNumberedPodcastEntry(entry){const match=clean(entry?.en).match(/^###\s*(\d+)\s+\*\*([^:*]+):\*\*\s*(.+)$/s);return match?{number:Number(match[1]),speaker:clean(match[2]),text:clean(match[3])}:null}
+    function section3Structure(text){
+      if(/^because\b/i.test(text))return'Because で始まる理由節です。前の発言を受ける会話上の断片で、「なぜなら〜だから」と理由を後から補っています。';
+      if(/^let(?:'|’)s\b/i.test(text))return"Let's＋動詞原形の勧誘文です。主語と助動詞をまとめた Let's で「一緒に〜しよう」と提案しています。";
+      if(/^(what|how)\b.*[!?]$/i.test(text))return'疑問詞で始まる疑問文、または What／How を使った感嘆文です。文頭の語が、尋ねたい内容や驚きの焦点を示します。';
+      if(/^(are|is|am|was|were|do|does|did|have|has|had|can|could|will|would|should)\b.*\?$/i.test(text))return'be動詞・助動詞を主語の前に置いた疑問文です。相手から確認や説明を引き出す語順になっています。';
+      if(/[.!?]\s+(?:And|But|So|Because)\b/i.test(text))return'複数の文を接続表現でつないでいます。前半で事実や反応を述べ、後半で追加・対比・理由を示す構成です。';
+      if(/\bbut\b/i.test(text))return'but が二つの内容を対比しています。前半の情報に対して、後半で意外な点や異なる見方を加える構造です。';
+      if(/\b(and|so)\b/i.test(text))return'中心となる主語＋動詞に、and／so で情報や結果を加えた構造です。長い文では接続語ごとに意味のまとまりを取ります。';
+      if(/\bthat\b/i.test(text))return'that節または関係節を含む文です。主節の後ろで、考え・事実の内容や直前の名詞を詳しく説明しています。';
+      if(/\b(when|where|while|if|since)\b/i.test(text))return'主節に時・場所・条件を表す従属節が加わっています。接続詞から後ろが、中心となる出来事の背景を説明します。';
+      if(text.split(/\s+/).length<=5)return'短い応答または省略表現です。主語や動詞の一部は会話の文脈から分かるため、省かれています。';
+      return'主語＋動詞を中心に情報を続ける基本構造です。まず「誰が・何が」と中心動詞を捉え、その後の目的語や補足を分けて読みます。';
+    }
+    function section3Usage(text){
+      const rules=[
+        [/\bwant to\b/i,'want to＋動詞原形で「〜したい」。意向を自然に伝える基本表現です。'],[/\bget to\b/i,'get to＋動詞原形で「〜する機会を得る／〜する段階になる」。文脈によって意味を選びます。'],[/\bthank you(?: so| very)? much\b/i,'Thank you very/so much. は感謝を強める定番表現です。so は感情的、very は落ち着いた丁寧さがあります。'],[/\bwhat a\b/i,'What a＋形容詞＋名詞! で「なんて〜な…だ」という感嘆を表します。'],[/\bhuge fan(?:s)? of\b/i,'be a huge fan of ... で「〜の大ファンだ」。人・作品・活動への強い好意を伝えます。'],[/\bas am I\b/i,'as am I は「私もそうです」。前の肯定内容を受け、倒置を使って簡潔に同意します。'],[/\bthe way\b/i,'the way＋主語＋動詞で「〜するやり方／姿勢」。方法や振る舞いをひとかたまりで述べられます。'],[/\bkind of\b/i,'kind of は「少し／なんというか」。断定を弱めたり、ぴったりの言葉を探したりするときに使います。'],[/\byou know\b/i,'you know は「ほら／分かるでしょう」。聞き手との共有感を作る会話のつなぎです。'],[/\bI mean\b/i,'I mean は「つまり／というか」。説明の補足や言い直しを始めるときに使います。'],[/\bI think\b/i,'I think ... は「〜だと思う」。意見を示しながら断定を柔らかくします。'],[/\bfeel like\b/i,'feel like＋節で「〜のように感じる」。feel like＋-ing なら「〜したい気分」です。'],[/\bused to\b/i,'used to＋動詞原形で「以前はよく〜した／以前は〜だった」。今との違いを含みます。'],[/\bkeen (?:to|for|on)\b/i,'be keen to ... は「ぜひ〜したい」、be keen on ... は「〜が好き」、be keen for 人 to ... は「人に〜してほしい」です。'],[/\bend(?:ed)? up\b/i,'end up＋-ing で「結局〜することになる」。予想外の最終結果を述べます。'],[/\bcome to realize\b/i,'come to realize で「次第に気づくようになる」。時間をかけた認識の変化を表します。'],[/\ba bit of\b/i,'a bit of ... は「少しの〜／ちょっとした〜」。評価や問題の強さを和らげます。'],[/\bas much as\b/i,'as much as ... は「〜と同じくらい」または「〜ではあるが」。周囲の文脈で比較か譲歩かを判断します。'],[/\bobsessed with\b/i,'be obsessed with ... は「〜に夢中／〜が気になって仕方ない」。強い関心を口語的に表します。'],[/\bhave to\b/i,'have to＋動詞原形で「〜しなければならない」。状況から生じる必要性を表します。'],[/\bbe supposed to\b/i,'be supposed to＋動詞原形で「〜することになっている／〜すべき」。予定や期待を表します。'],[/\blet it all go\b/i,'let it all go は「全部手放す／気にしないことにする」。管理や緊張をやめる感じがあります。'],[/\bmake(?:s| made)? me\b/i,'make＋人＋動詞原形で「人に〜させる」。感情や連想など、何かが引き起こす結果にも使います。'],[/\bget to know\b/i,'get to know＋人で「人を徐々に知るようになる」。一度の know ではなく関係の変化を表します。'],[/\bthere (?:is|are|was|were)\b/i,'There is/are ... で「〜がある／いる」。新しい話題や状況を会話へ導入します。'],[/\bshould\b/i,'should＋動詞原形で「〜したほうがよい」。助言のほか、控えめな自己反省にも使えます。']
+      ];
+      const hit=rules.find(([pattern])=>pattern.test(text));if(hit)return hit[1];
+      const words=text.replace(/[“”"'.,!?]/g,'').split(/\s+/).filter(Boolean).slice(0,6).join(' ');return `「${words}${text.split(/\s+/).length>6?' ...':''}」をひとかたまりで音読すると、会話で使う語順とリズムを身につけやすくなります。`;
+    }
+    function section3Nuance(text,speaker){
+      if(/\?$/.test(text))return`${speaker} が相手へ答えを促す問いかけです。語調によって、純粋な質問だけでなく確認・驚き・冗談の感じも加わります。`;
+      if(/\b(thank|sweet|love|happy)\b/i.test(text))return'好意や感謝を率直に伝える温かい表現です。強調語を加えることで、社交辞令ではない気持ちを示しています。';
+      if(/\b(probably|maybe|I think|kind of|a bit|you know|like)\b/i.test(text))return'断定を少し弱め、考えながら自然に話す口調です。インタビューらしい親しさと、相手への配慮が出ています。';
+      if(/^(oh|wow|yeah|okay|right|exactly|totally)\b/i.test(text))return'その場で生まれた短い反応です。内容そのものより、驚き・同意・会話を続ける姿勢を伝えています。';
+      if(text.split(/\s+/).length<=5)return'短く切ることでテンポとユーモアが生まれています。省略された意味は前後の会話から自然に補われます。';
+      return`${speaker} が体験や考えをくだけた会話調で伝えています。書き言葉よりも、接続語や強調語に話し手の感情が表れています。`;
+    }
+    function section3Grammar(text){
+      const points=[];
+      if(/\b(?:have|has)\s+(?:\w+ed|been|had|done|got|gotten|come|made|seen|known|thought|felt|left|moved|grown)\b/i.test(text))points.push('現在完了が使われ、過去の出来事と現在の状態・経験を結んでいます');
+      if(/\bhad\s+(?:\w+ed|been|done|got|come|made|seen|known|thought|felt|left|moved|grown)\b/i.test(text))points.push('過去完了が、過去の基準時より前の出来事を示しています');
+      if(/\b(?:am|is|are|was|were|'m|'s|'re)\s+\w+ing\b/i.test(text))points.push('進行形が、その時点で続いている動作・状況を描写しています');
+      if(/\b(?:was|were|is|are|been)\s+\w+(?:ed|en)\b/i.test(text))points.push('be動詞＋過去分詞の受動態が使われ、行為を受ける側に焦点があります');
+      const modal=(text.match(/\b(will|would|can|could|should|may|might|must)\b/i)||[])[1];if(modal)points.push(`${modal} は助動詞なので、後ろには動詞の原形が続きます`);
+      if(/\bto\s+\w+/i.test(text))points.push('to不定詞が、目的・希望・説明などを後ろから補っています');
+      if(/\b\w+ing\b/i.test(text)&&!points.some(x=>x.includes('進行形')))points.push('-ing形が、動作を名詞化するか名詞・状況を補足しています');
+      if(/\b(if|when|because|since|while|although|that|who|where)\b/i.test(text))points.push('接続詞・関係語が従属節を導き、主節へ背景や説明を加えています');
+      if(!points.length){if(/\b(?:was|were|did|had|went|got|came|thought|felt|made|said|took|grew|lived|wanted|loved)\b/i.test(text))points.push('単純過去が使われ、完了した出来事や当時の状態を回想しています');else points.push('単純現在を中心に、現在の事実・気持ち、または一般的な内容を述べています')}
+      return points.slice(0,2).join('。')+'。';
+    }
+    function section3MemoText(entry){const parsed=parseNumberedPodcastEntry(entry);if(!parsed)return'';return `① 全体の文の構造\n${section3Structure(parsed.text)}\n\n② 使い方\n${section3Usage(parsed.text)}\n\n③ ニュアンス\n${section3Nuance(parsed.text,parsed.speaker)}\n\n④ 時制と文法の解説\n${section3Grammar(parsed.text)}`}
+    function seedSection3MissingMemos(){
+      let changed=false;transcriptItems().forEach(transcript=>{const data=parseTranscriptRow(transcript);if(!/(?:Section\s*3|セクション\s*3)/i.test(data.title))return;const existingSources=new Set(customItems.filter(x=>x.kind==='quiz'&&x.ja===META_NOTE_MARKER).map(row=>parseNoteRow(row)).filter(note=>note.podcastId===transcript.id).map(note=>clean(note.sourceText)));data.entries.forEach((entry,index)=>{const parsed=parseNumberedPodcastEntry(entry),sourceText=clean(entry.en);if(!parsed||existingSources.has(sourceText))return;const id=`meta-note-section3-${stableTextHash(`${transcript.id}|${parsed.number}|${sourceText}`)}`;if(customItems.some(x=>x.id===id))return;customItems.push(normalizeItem({id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:sourceText,sourceText,translation:clean(entry.ja),body:section3MemoText(entry),links:[],podcastId:transcript.id}),prompt:data.title||transcript.prompt,answer:'Podcastメモ',choices:[],position:Number(transcript.position||Date.now())+(index+1)/1000,updated_at:nowIso(),dirty:true}));existingSources.add(sourceText);changed=true})});if(changed)saveLocalItems();return changed
     }
     function loadUserTags(){try{userTags=parseTags((JSON.parse(localStorage.getItem(USER_TAGS_STORAGE_KEY)||'[]')||[]).join(','))}catch{userTags=[]}}
     function saveUserTags(){localStorage.setItem(USER_TAGS_STORAGE_KEY,JSON.stringify(userTags))}
@@ -441,7 +488,7 @@
     function mergeRemoteItems(remoteItems){const byId=new Map(customItems.map(x=>[x.id,x]));remoteItems.map(normalizeItem).forEach(remote=>{const local=byId.get(remote.id);if(!local){byId.set(remote.id,{...remote,dirty:false});return}const lt=new Date(local.updated_at||0).getTime(),rt=new Date(remote.updated_at||0).getTime();if(!local.dirty||rt>=lt)byId.set(remote.id,{...remote,dirty:false})});customItems=[...byId.values()].map(normalizeItem);saveLocalItems()}
     async function pushDirtyItems(){const dirty=customItems.filter(x=>x.dirty);if(!dirty.length)return;const rows=dirty.map(x=>({id:x.id,sync_key:syncConfig.syncKey,kind:x.kind,ja:x.ja,en:x.en,prompt:x.prompt,answer:x.answer,choices:x.choices,tags:x.tags||[],excluded:x.excluded,mastered:x.mastered,position:x.position,updated_at:x.updated_at,deleted_at:x.deleted_at}));await supabaseRequest('?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});const ids=new Set(dirty.map(x=>x.id));customItems=customItems.map(x=>ids.has(x.id)?{...x,dirty:false}:x);saveLocalItems()}
     async function pullRemoteItems(){const q=`?sync_key=eq.${encodeURIComponent(syncConfig.syncKey)}&order=position.asc`;mergeRemoteItems(await supabaseRequest(q))}
-    async function syncWithCloud(reason='manual'){if(isSyncing)return;if(!isSupabaseConfigured()){saveLocalItems();setSyncStatus('ローカル保存中（Supabase未設定）',true);return}isSyncing=true;setSyncStatus('同期中...');try{await pushDirtyItems();await pullRemoteItems();setSyncStatus(`同期済み ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);renderAll()}catch(e){console.warn(e);setSyncStatus('オフライン保存中（再接続で同期）',true)}finally{isSyncing=false}}
+    async function syncWithCloud(reason='manual'){if(isSyncing)return;if(!isSupabaseConfigured()){seedSection3MissingMemos();saveLocalItems();setSyncStatus('ローカル保存中（Supabase未設定）',true);renderAll();return}isSyncing=true;setSyncStatus('同期中...');try{await pushDirtyItems();await pullRemoteItems();if(seedSection3MissingMemos())await pushDirtyItems();setSyncStatus(`同期済み ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);renderAll()}catch(e){console.warn(e);setSyncStatus('オフライン保存中（再接続で同期）',true)}finally{isSyncing=false}}
     function saveSyncConfig(){const nextKey=clean($('syncKeyInput').value)||DEFAULT_SYNC_KEY;const previous=customItems.map(x=>({...x,sync_key:nextKey,updated_at:nowIso(),dirty:true}));syncConfig={supabaseUrl:clean($('supabaseUrlInput').value),supabaseAnonKey:clean($('supabaseAnonKeyInput').value),syncKey:nextKey};localStorage.setItem(SETTINGS_STORAGE_KEY,JSON.stringify(syncConfig));loadLocalItems();const byId=new Map(customItems.map(x=>[x.id,x]));previous.forEach(x=>byId.set(x.id,normalizeItem(x)));customItems=[...byId.values()];saveLocalItems();$('syncSettingsMessage').textContent='同期設定を保存しました。';renderAll();syncWithCloud('settings')}
     function clearSyncConfig(){localStorage.removeItem(SETTINGS_STORAGE_KEY);syncConfig={supabaseUrl:'',supabaseAnonKey:'',syncKey:DEFAULT_SYNC_KEY};renderSyncSettings();loadLocalItems();renderAll();setSyncStatus('ローカル保存中（Supabase未設定）',true);$('syncSettingsMessage').textContent='同期設定を消去しました。'}
 
@@ -602,7 +649,7 @@
     function saveLearningSettings(){localStorage.setItem(SPEAKING_MODE_STORAGE_KEY,$('speakingMode').value);localStorage.setItem(SPEAKING_REPEAT_STORAGE_KEY,$('repeatCount').value);localStorage.setItem(SPEAKING_RATE_STORAGE_KEY,$('speakingRate').value);localStorage.setItem(VOICE_PREF_STORAGE_KEY,$('voicePreference').value);localStorage.setItem(KEEP_AWAKE_STORAGE_KEY,$('keepAwakeToggle').checked?'1':'0')}
     function loadLearningSettings(){const mode=localStorage.getItem(SPEAKING_MODE_STORAGE_KEY)||'ja-en';if([...$('speakingMode').options].some(o=>o.value===mode))$('speakingMode').value=mode;const rep=localStorage.getItem(SPEAKING_REPEAT_STORAGE_KEY)||'1';$('repeatCount').value=rep;const rate=localStorage.getItem(SPEAKING_RATE_STORAGE_KEY)||'0.92';$('speakingRate').value=rate;const voice=localStorage.getItem(VOICE_PREF_STORAGE_KEY)||'default';$('voicePreference').value=voice;$('keepAwakeToggle').checked=localStorage.getItem(KEEP_AWAKE_STORAGE_KEY)==='1';$('reviewDailyLimit').value=localStorage.getItem(DAILY_LIMIT_STORAGE_KEY)||'20'}
 
-    function init(){loadSyncConfig();loadUserTags();loadLocalItems();seedBuiltinPodcastPacks();loadLearningSettings();if(localStorage.getItem(DRAWER_COLLAPSED_STORAGE_KEY)==='1'&&!isCompactLayout())document.body.classList.add('drawer-collapsed');bindEvents();renderAll();setSyncStatus(isSupabaseConfigured()?'同期待機中':'ローカル保存中（Supabase未設定）',!isSupabaseConfigured());if(isSupabaseConfigured())syncWithCloud('startup');syncTimer=setInterval(()=>syncWithCloud('auto'),SYNC_INTERVAL_MS);if(canUseSpeech()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices()}catch{}}}
+    function init(){loadSyncConfig();loadUserTags();loadLocalItems();seedBuiltinPodcastPacks();seedSection3MissingMemos();loadLearningSettings();if(localStorage.getItem(DRAWER_COLLAPSED_STORAGE_KEY)==='1'&&!isCompactLayout())document.body.classList.add('drawer-collapsed');bindEvents();renderAll();setSyncStatus(isSupabaseConfigured()?'同期待機中':'ローカル保存中（Supabase未設定）',!isSupabaseConfigured());if(isSupabaseConfigured())syncWithCloud('startup');syncTimer=setInterval(()=>syncWithCloud('auto'),SYNC_INTERVAL_MS);if(canUseSpeech()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices()}catch{}}}
     init();
   })();
   </script>
