@@ -294,7 +294,7 @@
         {n:177,e:`Amy: Could watch it all day.`,j:`一日中でも見ていられるわ。`,s:`主語 I が省略され、完全形は I could watch it all day. です。`,u:`I could do this all day. は「一日中でも〜していられる」ほど好き、という誇張表現です。`,x:`能力ではなく「ずっと見たいほどかわいい」という感想。会話を温かくユーモラスに締めています。`}
       ]
     },{
-      id:'builtin-podcast-section-5-janet-dance',title:'Section 5｜Janet Jacksonとダンス、Fred Astaire映画への挑戦',seedMemos:false,source:String.raw`
+      id:'builtin-podcast-section-5-janet-dance',title:'Section 5｜Janet Jacksonとダンス、Fred Astaire映画への挑戦',source:String.raw`
 **178. Amy:** Janet Jackson.
 → ジャネット・ジャクソン。
 **179. Tom:** Yes.
@@ -537,7 +537,7 @@
     function stableScopeSuffix(){let hash=2166136261;for(const char of syncConfig.syncKey||DEFAULT_SYNC_KEY){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}return(hash>>>0).toString(36)}
     function stableTextHash(text){let hash=2166136261;for(const char of String(text||'')){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}return(hash>>>0).toString(36)}
     function podcastGrammarText(entry){return clean(entry.g||BUILTIN_PODCAST_GRAMMAR[entry.n])}
-    function podcastMemoText(entry){return `① 全体の文の構造\n${entry.s}\n\n② 使い方\n${entry.u}\n\n③ ニュアンス\n${entry.x}\n\n④ 時制と文法の解説\n${podcastGrammarText(entry)}`}
+    function podcastMemoText(entry){const match=clean(entry.e).match(/^([^:]+):\s*(.*)$/s),speaker=clean(match?.[1]||''),text=clean(match?.[2]||entry.e),structure=clean(entry.s)||section3Structure(text),usage=clean(entry.u)||section3Usage(text),nuance=clean(entry.x)||section3Nuance(text,speaker),grammar=podcastGrammarText(entry)||section3Grammar(text);return `① 全体の文の構造\n${structure}\n\n② 使い方\n${usage}\n\n③ ニュアンス\n${nuance}\n\n④ 時制と文法の解説\n${grammar}`}
     function parseBuiltinPodcastSource(raw){
       const entries=[];String(raw||'').replace(/\r/g,'').split('\n').forEach(sourceLine=>{const line=sourceLine.trim(),match=line.match(/^\*\*(\d+)\.\s*([^:*]+):\*\*\s*(.+)$/);if(match){entries.push({n:Number(match[1]),e:`${clean(match[2])}: ${clean(match[3])}`,j:''});return}if(/^→/.test(line)&&entries.length)entries[entries.length-1].j=clean(line.replace(/^→\s*/,''))});return entries.filter(entry=>entry.e&&entry.j)
     }
@@ -547,8 +547,9 @@
         const sourceEntries=pack.entries||parseBuiltinPodcastSource(pack.source),podcastId=`${pack.id}-${scope}`,entries=sourceEntries.map(({n,e,j})=>({number:n,en:e,ja:j})),formatted=formatTranscriptEntries(entries);
         const transcriptRow={id:podcastId,kind:'quiz',ja:META_TRANSCRIPT_MARKER,en:JSON.stringify({title:pack.title,raw:formatted,formatted,entries}),prompt:pack.title,answer:'transcript',choices:[],position:400000+packIndex,updated_at:updatedAt,dirty:true};
         if(!existingIds.has(transcriptRow.id)){customItems.push(normalizeItem(transcriptRow));existingIds.add(transcriptRow.id);changed=true}
-        if(pack.seedMemos!==false)sourceEntries.forEach((entry,index)=>{
-          const id=`${pack.id}-memo-${entry.n}-${scope}`,row={id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:entry.e,sourceText:entry.e,translation:entry.j,body:podcastMemoText(entry),links:[],podcastId}),prompt:pack.title,answer:'Podcastメモ',choices:[],position:400001+index,updated_at:updatedAt,dirty:true},existing=customItems.find(x=>x.id===id);
+        sourceEntries.forEach((entry,index)=>{
+          const id=`${pack.id}-memo-${entry.n}-${scope}`,existing=customItems.find(x=>x.id===id);
+          const row={id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:entry.e,sourceText:entry.e,translation:entry.j,body:podcastMemoText(entry),links:[],podcastId}),prompt:pack.title,answer:'Podcastメモ',choices:[],position:400001+index,updated_at:updatedAt,dirty:true};
           if(!existing){customItems.push(normalizeItem(row));existingIds.add(id);changed=true;return}
           if(existing.deleted_at)return;
           try{const data=JSON.parse(existing.en||'{}');if(!clean(data.body).includes('④ 時制と文法の解説')){data.body=`${clean(data.body)}\n\n④ 時制と文法の解説\n${podcastGrammarText(entry)}`;existing.en=JSON.stringify(data);existing.updated_at=nowIso();existing.dirty=true;changed=true}}catch{}
@@ -572,6 +573,7 @@
     }
     function section3Usage(text){
       const rules=[
+        [/\bto be perfectly honest with you\b/i,'to be perfectly honest with you は「本当に正直に言うと」。率直な本音を切り出す定番表現です。'],[/\b(?:be|been|is|are|was|were) integral (?:in|to)\b/i,'be integral in/to ... は「〜に不可欠である」。成功や仕組みを支える重要な要素を表します。'],[/\bseek out\b/i,'seek out ... は「〜を自分から探し求める」。単なる look for より、意識的に追い求める感じがあります。'],[/\bif it hadn(?:'|’)t been for\b/i,"if it hadn't been for ... は『もし〜がなかったら』。過去の事実と反対の結果を想像する仮定法です。"],[/\bsecond nature\b/i,'second nature は「考えなくても自然にできるほど身についたこと」。反復で習慣や技能が体に染みついた状態です。'],[/\banother day at the office\b/i,'another day at the office は「いつもの仕事と変わらないこと」。難しいことにも慣れている様子を口語的に表します。'],[/\bpetrified\b/i,'be petrified は「ものすごく怖い／緊張している」。very scared より強い恐怖や緊張を表します。'],[/\bshow me what you(?:(?:'|’)ve)? got\b/i,'Show me what you have got. は「実力を見せて」。相手に能力を発揮するよう促すカジュアルな表現です。'],[/\bshoot (?:myself|yourself|himself|herself|themselves) in the foot\b/i,'shoot yourself in the foot は「自分の行動で自分を不利にする／自分で自分の首を絞める」という比喩表現です。'],[/\ba huge undertaking\b/i,'a huge undertaking は「非常に大規模で大変な仕事・挑戦」。長い準備や大きな責任を伴う計画に使います。'],[/\bfrom square one\b/i,'from square one は「最初から、一から」。いったん戻って基礎からやり直す状況に使います。'],[/\bget back into\b/i,'get back into ... は「〜をまた始める／再び本格的に取り組む」。離れていた活動へ戻る表現です。'],[/\belectric\b/i,'人を electric と表すと「刺激的で、場を一気に惹きつける魅力がある」という意味になります。'],
         [/\bwant to\b/i,'want to＋動詞原形で「〜したい」。意向を自然に伝える基本表現です。'],[/\bget to\b/i,'get to＋動詞原形で「〜する機会を得る／〜する段階になる」。文脈によって意味を選びます。'],[/\bthank you(?: so| very)? much\b/i,'Thank you very/so much. は感謝を強める定番表現です。so は感情的、very は落ち着いた丁寧さがあります。'],[/\bwhat a\b/i,'What a＋形容詞＋名詞! で「なんて〜な…だ」という感嘆を表します。'],[/\bhuge fan(?:s)? of\b/i,'be a huge fan of ... で「〜の大ファンだ」。人・作品・活動への強い好意を伝えます。'],[/\bas am I\b/i,'as am I は「私もそうです」。前の肯定内容を受け、倒置を使って簡潔に同意します。'],[/\bthe way\b/i,'the way＋主語＋動詞で「〜するやり方／姿勢」。方法や振る舞いをひとかたまりで述べられます。'],[/\bkind of\b/i,'kind of は「少し／なんというか」。断定を弱めたり、ぴったりの言葉を探したりするときに使います。'],[/\byou know\b/i,'you know は「ほら／分かるでしょう」。聞き手との共有感を作る会話のつなぎです。'],[/\bI mean\b/i,'I mean は「つまり／というか」。説明の補足や言い直しを始めるときに使います。'],[/\bI think\b/i,'I think ... は「〜だと思う」。意見を示しながら断定を柔らかくします。'],[/\bfeel like\b/i,'feel like＋節で「〜のように感じる」。feel like＋-ing なら「〜したい気分」です。'],[/\bused to\b/i,'used to＋動詞原形で「以前はよく〜した／以前は〜だった」。今との違いを含みます。'],[/\bkeen (?:to|for|on)\b/i,'be keen to ... は「ぜひ〜したい」、be keen on ... は「〜が好き」、be keen for 人 to ... は「人に〜してほしい」です。'],[/\bend(?:ed)? up\b/i,'end up＋-ing で「結局〜することになる」。予想外の最終結果を述べます。'],[/\bcome to realize\b/i,'come to realize で「次第に気づくようになる」。時間をかけた認識の変化を表します。'],[/\ba bit of\b/i,'a bit of ... は「少しの〜／ちょっとした〜」。評価や問題の強さを和らげます。'],[/\bas much as\b/i,'as much as ... は「〜と同じくらい」または「〜ではあるが」。周囲の文脈で比較か譲歩かを判断します。'],[/\bobsessed with\b/i,'be obsessed with ... は「〜に夢中／〜が気になって仕方ない」。強い関心を口語的に表します。'],[/\bhave to\b/i,'have to＋動詞原形で「〜しなければならない」。状況から生じる必要性を表します。'],[/\bbe supposed to\b/i,'be supposed to＋動詞原形で「〜することになっている／〜すべき」。予定や期待を表します。'],[/\blet it all go\b/i,'let it all go は「全部手放す／気にしないことにする」。管理や緊張をやめる感じがあります。'],[/\bmake(?:s| made)? me\b/i,'make＋人＋動詞原形で「人に〜させる」。感情や連想など、何かが引き起こす結果にも使います。'],[/\bget to know\b/i,'get to know＋人で「人を徐々に知るようになる」。一度の know ではなく関係の変化を表します。'],[/\bthere (?:is|are|was|were)\b/i,'There is/are ... で「〜がある／いる」。新しい話題や状況を会話へ導入します。'],[/\bshould\b/i,'should＋動詞原形で「〜したほうがよい」。助言のほか、控えめな自己反省にも使えます。']
       ];
       const hit=rules.find(([pattern])=>pattern.test(text));if(hit)return hit[1];
