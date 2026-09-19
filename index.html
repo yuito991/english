@@ -252,8 +252,9 @@
       {id:'builtin-quiz-4',kind:'quiz',prompt:'実行する',answer:'implement',tags:['仕事'],choices:['implement','imagine','interrupt'],position:4},
       {id:'builtin-quiz-5',kind:'quiz',prompt:'マーケティング戦略',answer:'marketing strategy',tags:['仕事'],choices:['marketing strategy','market research','sales target'],position:5}
     ];
+    const SECTION4_EXPERIMENT_TEMPLATE='section4-image-v2';
     const BUILTIN_PODCAST_PACKS=[{
-      id:'builtin-podcast-section-4-full-effort',title:'Section 4｜ダンスと「全力を出す」という教え',entries:[
+      id:'builtin-podcast-section-4-full-effort',title:'Section 4｜ダンスと「全力を出す」という教え',memoTemplate:SECTION4_EXPERIMENT_TEMPLATE,entries:[
         {n:140,e:`Tom: My parents were always huge fans of dancing, and all of us were sent to this kind of Saturday school.`,j:`両親は昔からダンスが大好きで、僕たち兄弟はみんな、こういう土曜日のスクールに通わされていました。`,s:`前半は My parents＋were＋huge fans of dancing のSVC。後半は all of us＋were sent の受動態で、to以下が行き先です。`,u:`be a huge fan of ... は「〜が大好き」。be sent to ... は「〜へ行かされる／通わされる」です。`,x:`were sent には親の方針で通った感じがあります。this kind of は学校の種類を少し曖昧にする会話表現です。`},
         {n:141,e:`Tom: It was called Nifty Feet.`,j:`「Nifty Feet」という名前でした。`,s:`It＋was called＋Nifty Feet。「call A B」の受動態で、Nifty Feet が呼び名です。`,u:`名前を紹介する定番表現です。現在なら It is called ...、過去の話なので was called です。`,x:`名前を短く付け足す自然な言い方です。Nifty Feet には軽快な足さばきを思わせる楽しい響きがあります。`},
         {n:142,e:`Tom: It was this kind of really fun little street dance kind of class, and we would do these shows every summer at the ballet school down the road, and my parents loved it.`,j:`すごく楽しい小さなストリートダンスのクラスみたいなもので、毎年夏には近所のバレエスクールで発表会をやっていて、両親もそれが大好きでした。`,s:`It was ... class、we would do these shows、my parents loved it の三節を and で連結。would do は過去の習慣です。`,u:`would＋動詞で「昔はよく〜した」。down the road は「近所に」、do a show は「公演をする」です。`,x:`kind of の反復は、記憶をたどりながら分類をぼかす口調です。really fun little に親しみがにじみます。`},
@@ -485,6 +486,46 @@
       176:`定形動詞のない名詞句的断片です。dancing は現在分詞で、Little Tom Holland がしている動作を説明します。`,
       177:`主語 I が省略され、could＋動詞原形 watch の形です。could は能力というより「いくらでも見ていられる」という仮定的な気持ちを表します。`
     };
+    const SECTION4_SENTENCE_IMAGES={
+      140:`ダンス好きな両親の熱が家庭全体へ広がり、兄弟全員が土曜日になると同じスクールへ送り出される場面です。parents の好みから children の行動へ、家族の流れが一続きに見えます。`,
+      141:`教室の入口に「Nifty Feet」という看板が掛かり、思い出の場所へ名前が与えられるイメージです。短い一文なので、その名前だけが記憶からくっきり浮かびます。`,
+      142:`小さくて活気のあるストリートダンス教室から、毎夏の近所の舞台、客席で喜ぶ両親へとカメラが移るイメージです。三つの場面を and が思い出の映像のようにつないでいます。`,
+      143:`個々の出来事ではなく、当時の時間全体を一つの明るい塊として振り返っています。such a fun time は「その時代そのものが楽しかった」という大きな実感です。`,
+      144:`相手の思い出を遮らず、うなずいて「その感じ、分かるよ」と受け止める場面です。Yeah 一語が、話を続けてよいという小さな合図になっています。`,
+      145:`人生で交わした小さな会話が種のように残り、時間をかけて現在の人格を形作るイメージです。conversations が shape you へつながり、言葉の長期的な力を描いています。`,
+      146:`一回のダンス教室を思い出すと、客席には毎回必ず両親がいる、という記憶が重なる場面です。曖昧な one class と、確かな every single time が対照になっています。`,
+      147:`踊っている子どもの視線の先に、いつ見ても同じ場所で両親が見守っているイメージです。there watching は、単に居るだけでなく注意を向け続けている姿を映します。`,
+      148:`調子の悪い日に、体を大きく使わず振り付けの輪郭だけをなぞっている場面です。was marking は、その瞬間ずっと力を抑えて踊っていた様子を動画のように見せます。`,
+      149:`帰り道の少年が、さっき力を抜いて踊った自分を頭の中で再生し、それを「格好よかった」と評価している場面です。踊った過去と、帰り道で考えた過去が二層になっています。`,
+      150:`肩をすくめて「別に気にしていない」と装い、努力しない自分を守る心の声です。I don't care と I don't need to が、傷つかないための二重の壁になっています。`,
+      151:`父の車の中で、父が息子へ「ベストを尽くすこと」を静かに話している場面です。conversation を where 以下で開くことで、記憶の中の会話へ入っていく感覚があります。`,
+      152:`内側の調子を示すメーターが低くても、人前に出る瞬間には今出せる最大値へ姿勢を合わせるイメージです。feeling と present を分け、気分と行動は同じでなくてよいと伝えています。`,
+      153:`車の後部座席での短い会話が、その後の大人・プロとしての自分を支える長い一本の軸になるイメージです。simple little と so important の距離が、影響の大きさを見せます。`,
+      154:`人生の節目ごとに、同じ会話へ何度も立ち戻って意味を確かめるイメージです。a lot は一度思い出したのではなく、現在も繰り返し心の中で再生していることを表します。`,
+      155:`Amy が Tom の話を受け取り、「それは簡単に身につく教訓ではない」と自分の経験へ橋を架ける場面です。interesting から because へ進み、共感の理由を言葉にしています。`,
+      156:`努力する姿を見せるのが恥ずかしい年頃の子どもが、「本気でやるほうが格好いい」と価値観を反転させる場面です。trying そのものを cool と結び直しています。`,
+      157:`本気を見せると、失敗したときに「本気ではなかった」という逃げ道がなくなり、心がむき出しになるイメージです。vulnerable は弱いというより、傷つく可能性を引き受ける状態です。`,
+      158:`Tom が小さくうなずき、Amy の「本気は無防備」という言葉が自分の経験に重なったことを示す場面です。説明せず、共感だけを短く返しています。`,
+      159:`何かを大切にしている気持ちが顔や態度から外へ透けて見えるイメージです。look like you care は、心の内側だけでなく、周囲にも本気が伝わる状態を指します。`,
+      160:`Amy が言葉を重ねる間、Tom がもう一度うなずいて話の核心を確認する場面です。同じ Yeah の反復が、二人の理解が少しずつ深まるリズムを作ります。`,
+      161:`人は本気を隠そうとする、という一般的な話から、Amy 自身も大人になって同じことをしたという告白へ急に切り替わる場面です。ダッシュが、一般論から実体験へ曲がる瞬間を見せます。`,
+      162:`大切な仕事で緊張が高まるほど、逆に眠そうで無関心な仮面をかぶってしまう場面です。nervous という内側の熱を、sleepy and ambivalent という外側の冷たさで隠しています。`,
+      163:`Tom が相手の体験を聞いた瞬間、「分かる、分かる、それだ」と勢いよく何度もうなずく場面です。Yeah の連続が理解の速さと強さをそのまま音にしています。`,
+      164:`本当は成功したいのに、心の前へ「別に気にしていない」という台詞を置いて自分を守るイメージです。You're like は、その防御的な心の声を目の前で再演しています。`,
+      165:`コーエン兄弟のような憧れの相手を前にした重要なオーディションを、一つの具体例として差し出す場面です。短い断片だけで、失敗したくない緊張の大きさが伝わります。`,
+      166:`最も集中すべきオーディションの真ん中で、わざと気のないようにあくびをする場面です。強い緊張を、正反対の「退屈そうな身体」で覆い隠すちぐはぐさが見えます。`,
+      167:`あくびや無関心の仮面を外すと、その奥にあった本当の原因は nervous だった、と明かす場面です。短く理由だけを置くことで、本音がまっすぐ届きます。`,
+      168:`この教訓は一度聞いて理解すれば終わりではなく、失敗や経験を重ねてようやく身につくもの、というイメージです。hard lesson は頭の知識より、体で覚える難しさを表します。`,
+      169:`優れた演技では、技術の奥から「これを大切にしている」という熱が観客へ見える、というイメージです。show that they care が、普通の演技と心を動かす演技の境目になります。`,
+      170:`Tom が Amy の結論へ迷いなく大きくうなずく場面です。Totally 一語で、部分的ではなく考え全体に賛成していることを示します。`,
+      171:`同じ「失敗」を左右の皿に載せ、一方には挑戦した事実、もう一方には挑戦しなかった後悔を載せて比べるイメージです。結果が同じでも、心に残る重さは違うと述べています。`,
+      172:`Amy が間を置かず「それは確か」と同意し、二人の価値観が一致する場面です。for sure が Yeah を補強し、迷いのない賛成にしています。`,
+      173:`挑戦した後なら、結果が悪くても自分を責め続けずに済む、という心の流れです。then は「努力した」という前提から「後悔が減る」という結果へ矢印を引いています。`,
+      174:`失敗のあと、自分に「少なくとも最大限やった」と言える場面です。At least は失った結果ではなく、守れた自分の努力へ視線を戻す言葉です。`,
+      175:`努力を尽くしたうえで、今回は自分のものになる運命ではなかったと静かに手放すイメージです。投げやりではなく、後悔なく区切りをつける響きがあります。`,
+      176:`幼い Tom Holland が一生懸命踊っている昔の映像を、Amy が微笑みながら思い浮かべる場面です。名前だけの短い断片が、かわいらしい一枚の映像を切り取ります。`,
+      177:`その幼い姿があまりに愛らしく、動画を一日中流していても飽きない、という誇張のイメージです。could は実際の予定ではなく、それほど見続けたいという気持ちの大きさを表します。`
+    };
 
     const $=id=>document.getElementById(id);
     let syncConfig={supabaseUrl:'',supabaseAnonKey:'',syncKey:DEFAULT_SYNC_KEY};
@@ -505,7 +546,7 @@
     function parseTags(v){return String(v||'').split(/[,、]/).map(clean).filter((x,i,a)=>x&&a.indexOf(x)===i)}
     function uniq(a){return [...new Set(a.filter(Boolean))]}
     function isMetaItem(item){return Boolean(item&&item.kind==='quiz'&&(item.ja===META_SRS_MARKER||item.ja===META_NOTE_MARKER||item.ja===META_TRANSCRIPT_MARKER))}
-    function parseNoteRow(row){try{const data=JSON.parse(row.en||'{}');return {title:clean(data.title),body:clean(data.body),links:Array.isArray(data.links)?data.links:[],sourceText:clean(data.sourceText||data.title),translation:clean(data.translation),podcastId:clean(data.podcastId)}}catch{return {title:'',body:'',links:[],sourceText:'',translation:'',podcastId:''}}}
+    function parseNoteRow(row){try{const data=JSON.parse(row.en||'{}');return {title:clean(data.title),body:clean(data.body),links:Array.isArray(data.links)?data.links:[],sourceText:clean(data.sourceText||data.title),translation:clean(data.translation),podcastId:clean(data.podcastId),templateVersion:clean(data.templateVersion)}}catch{return {title:'',body:'',links:[],sourceText:'',translation:'',podcastId:'',templateVersion:''}}}
     function normalizeTranscriptEntry(entry){if(typeof entry==='string')return {number:'',en:clean(entry),ja:''};return {number:clean(entry?.number),en:clean(entry?.en),ja:clean(entry?.ja)}}
     function parseTranscriptRow(row){try{const data=JSON.parse(row.en||'{}');let entries=Array.isArray(data.entries)?data.entries.map(normalizeTranscriptEntry).filter(x=>x.en||x.ja):[];if(!entries.length&&Array.isArray(data.sentences))entries=data.sentences.map(normalizeTranscriptEntry).filter(x=>x.en||x.ja);return {title:clean(data.title||row.prompt),raw:clean(data.raw),formatted:clean(data.formatted),entries}}catch{return {title:clean(row?.prompt),raw:'',formatted:'',entries:[]}}}
     function isReservedTag(t){return t.startsWith(MATERIAL_PREFIX)||t.startsWith(THEME_PREFIX)}
@@ -537,7 +578,10 @@
     function stableScopeSuffix(){let hash=2166136261;for(const char of syncConfig.syncKey||DEFAULT_SYNC_KEY){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}return(hash>>>0).toString(36)}
     function stableTextHash(text){let hash=2166136261;for(const char of String(text||'')){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}return(hash>>>0).toString(36)}
     function podcastGrammarText(entry){return clean(entry.g||BUILTIN_PODCAST_GRAMMAR[entry.n])}
-    function podcastMemoText(entry){const match=clean(entry.e).match(/^([^:]+):\s*(.*)$/s),speaker=clean(match?.[1]||''),text=clean(match?.[2]||entry.e),structure=clean(entry.s)||section3Structure(text),usage=clean(entry.u)||section3Usage(text),nuance=clean(entry.x)||section3Nuance(text,speaker),grammar=podcastGrammarText(entry)||section3Grammar(text);return `① 全体の文の構造\n${structure}\n\n② 使い方\n${usage}\n\n③ ニュアンス\n${nuance}\n\n④ 時制と文法の解説\n${grammar}`}
+    function podcastEntryParts(entry){const match=clean(entry.e).match(/^([^:]+):\s*(.*)$/s);return{speaker:clean(match?.[1]||''),text:clean(match?.[2]||entry.e)}}
+    function section4ReadableChunks(text){return clean(text).replace(/,\s*/g,' / ').replace(/\s+(and|but|because|so|where|even if)\s+/gi,' / $1 ').replace(/(?:\s*\/\s*){2,}/g,' / ')}
+    function section4ExperimentMemoText(entry){const {text}=podcastEntryParts(entry),grammar=podcastGrammarText(entry);return `① 全体の文の構造\n【英文のかたまり】\n${section4ReadableChunks(text)}\n\n【骨組み】\n${entry.s}\n\n② イメージ\n${SECTION4_SENTENCE_IMAGES[entry.n]}\n\n③ ニュアンス\n${entry.x}\n\n④ 時制と文法の解説\n【文法・語法】\n${entry.u}\n\n【時制の理由】\n${grammar}`}
+    function podcastMemoText(entry,pack){if(pack?.memoTemplate===SECTION4_EXPERIMENT_TEMPLATE)return section4ExperimentMemoText(entry);const {speaker,text}=podcastEntryParts(entry),structure=clean(entry.s)||section3Structure(text),usage=clean(entry.u)||section3Usage(text),nuance=clean(entry.x)||section3Nuance(text,speaker),grammar=podcastGrammarText(entry)||section3Grammar(text);return `① 全体の文の構造\n${structure}\n\n② 使い方\n${usage}\n\n③ ニュアンス\n${nuance}\n\n④ 時制と文法の解説\n${grammar}`}
     function parseBuiltinPodcastSource(raw){
       const entries=[];String(raw||'').replace(/\r/g,'').split('\n').forEach(sourceLine=>{const line=sourceLine.trim(),match=line.match(/^\*\*(\d+)\.\s*([^:*]+):\*\*\s*(.+)$/);if(match){entries.push({n:Number(match[1]),e:`${clean(match[2])}: ${clean(match[3])}`,j:''});return}if(/^→/.test(line)&&entries.length)entries[entries.length-1].j=clean(line.replace(/^→\s*/,''))});return entries.filter(entry=>entry.e&&entry.j)
     }
@@ -549,10 +593,11 @@
         if(!existingIds.has(transcriptRow.id)){customItems.push(normalizeItem(transcriptRow));existingIds.add(transcriptRow.id);changed=true}
         sourceEntries.forEach((entry,index)=>{
           const id=`${pack.id}-memo-${entry.n}-${scope}`,existing=customItems.find(x=>x.id===id);
-          const row={id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:entry.e,sourceText:entry.e,translation:entry.j,body:podcastMemoText(entry),links:[],podcastId}),prompt:pack.title,answer:'Podcastメモ',choices:[],position:400001+index,updated_at:updatedAt,dirty:true};
+          const noteData={title:entry.e,sourceText:entry.e,translation:entry.j,body:podcastMemoText(entry,pack),links:[],podcastId,...(pack.memoTemplate?{templateVersion:pack.memoTemplate}:{})};
+          const row={id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify(noteData),prompt:pack.title,answer:'Podcastメモ',choices:[],position:400001+index,updated_at:updatedAt,dirty:true};
           if(!existing){customItems.push(normalizeItem(row));existingIds.add(id);changed=true;return}
           if(existing.deleted_at)return;
-          try{const data=JSON.parse(existing.en||'{}');if(!clean(data.body).includes('④ 時制と文法の解説')){data.body=`${clean(data.body)}\n\n④ 時制と文法の解説\n${podcastGrammarText(entry)}`;existing.en=JSON.stringify(data);existing.updated_at=nowIso();existing.dirty=true;changed=true}}catch{}
+          try{const data=JSON.parse(existing.en||'{}');if(pack.memoTemplate&&data.templateVersion!==pack.memoTemplate){existing.en=JSON.stringify({...data,...noteData});existing.updated_at=nowIso();existing.dirty=true;changed=true}else if(!clean(data.body).includes('④ 時制と文法の解説')){data.body=`${clean(data.body)}\n\n④ 時制と文法の解説\n${podcastGrammarText(entry)}`;existing.en=JSON.stringify(data);existing.updated_at=nowIso();existing.dirty=true;changed=true}}catch{}
         });
       });
       if(changed)saveLocalItems();
@@ -794,7 +839,7 @@
       $('transcriptSentenceList').addEventListener('toggle',e=>{const details=e.target;if(!details.matches('.transcript-translation')||!e.currentTarget.contains(details))return;const podcastId=details.dataset.podcastId,key=details.dataset.translationKey;if(!podcastId||!key)return;let openTranslations=openTranscriptTranslations.get(podcastId);if(!openTranslations){openTranslations=new Set();openTranscriptTranslations.set(podcastId,openTranslations)}if(details.open)openTranslations.add(key);else openTranslations.delete(key)},true);
       $('transcriptSentenceList').addEventListener('click',e=>{if(e.target.closest('.transcript-translation'))return;const btn=e.target.closest('.transcript-add');if(btn){selectTranscriptSentence(Number(btn.dataset.index));return}const row=e.target.closest('.transcript-sentence[data-memo-id]');if(row)editPodcastMemo(row.dataset.memoId)});
       $('transcriptSentenceList').addEventListener('keydown',e=>{if(e.target.closest('.transcript-translation')||e.key!=='Enter'&&e.key!==' ')return;const row=e.target.closest('.transcript-sentence[data-memo-id]');if(row){e.preventDefault();editPodcastMemo(row.dataset.memoId)}});
-      $('podcastMemoForm').addEventListener('submit',e=>{e.preventDefault();const transcript=currentTranscriptRow();if(!transcript){$('transcriptStatus').textContent='先に文字起こしを保存してください。';return}const phrase=clean($('podcastMemoPhrase').value),translation=clean($('podcastMemoTranslation').value);if(!phrase)return;const editing=$('podcastMemoEditingId').value,existing=editing?noteItems().find(x=>x.id===editing):null,data=currentTranscriptData(),savedId=editing||makeId('meta-note');upsertLocalItem({...(existing||{}),id:savedId,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:phrase,sourceText:phrase,translation,body:clean($('podcastMemoBody').value),links:[],podcastId:activePodcastId}),prompt:data.title||transcript.prompt,answer:'Podcastメモ',choices:[],position:existing?.position||Date.now()});selectedPodcastMemoId=savedId;clearPodcastMemoForm();renderPodcastWorkspace();openPodcastMemoDrawer(savedId);showToast(editing?'メモを更新しました':'英語＋和訳をメモに追加しました')});
+      $('podcastMemoForm').addEventListener('submit',e=>{e.preventDefault();const transcript=currentTranscriptRow();if(!transcript){$('transcriptStatus').textContent='先に文字起こしを保存してください。';return}const phrase=clean($('podcastMemoPhrase').value),translation=clean($('podcastMemoTranslation').value);if(!phrase)return;const editing=$('podcastMemoEditingId').value,existing=editing?noteItems().find(x=>x.id===editing):null,previousData=existing?parseNoteRow(existing):{},data=currentTranscriptData(),savedId=editing||makeId('meta-note');upsertLocalItem({...(existing||{}),id:savedId,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({...previousData,title:phrase,sourceText:phrase,translation,body:clean($('podcastMemoBody').value),links:[],podcastId:activePodcastId}),prompt:data.title||transcript.prompt,answer:'Podcastメモ',choices:[],position:existing?.position||Date.now()});selectedPodcastMemoId=savedId;clearPodcastMemoForm();renderPodcastWorkspace();openPodcastMemoDrawer(savedId);showToast(editing?'メモを更新しました':'英語＋和訳をメモに追加しました')});
       $('cancelPodcastMemoButton').addEventListener('click',clearPodcastMemoForm);
       $('podcastMemoList').addEventListener('click',e=>{const speakBtn=e.target.closest('.podcast-memo-speak');if(speakBtn){const row=noteItems().find(x=>x.id===speakBtn.dataset.id);if(row)speak(parseNoteRow(row).sourceText,'en-US');return}const edit=e.target.closest('.podcast-memo-edit');if(edit){editPodcastMemo(edit.dataset.id);return}const del=e.target.closest('.podcast-memo-delete');if(del&&confirm('このフレーズメモを削除しますか？')){softDeleteLocalItem(del.dataset.id);renderPodcastWorkspace()}});
       $('newNoteButton').addEventListener('click',()=>{document.querySelector('.legacy-notes').open=true;openNoteForm()});$('cancelNoteButton').addEventListener('click',closeNoteForm);$('noteForm').addEventListener('submit',e=>{e.preventDefault();const id=$('noteEditingId').value||makeId('meta-note');const links=[...$('notePhraseLinks').selectedOptions].map(o=>o.value);upsertLocalItem({id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:clean($('noteTitle').value),body:clean($('noteBody').value),links,podcastId:''}),prompt:clean($('noteMaterial').value),answer:clean($('noteTheme').value),choices:[],position:Date.now()});closeNoteForm();renderAll();showToast('メモを保存しました')});$('notesList').addEventListener('click',e=>{const ed=e.target.closest('.note-edit');if(ed){const n=customItems.find(x=>x.id===ed.dataset.id);if(n){document.querySelector('.legacy-notes').open=true;openNoteForm(n)}return}const del=e.target.closest('.note-delete');if(del&&confirm('このメモを削除しますか？'))softDeleteLocalItem(del.dataset.id)});
