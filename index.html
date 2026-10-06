@@ -252,9 +252,9 @@
       {id:'builtin-quiz-4',kind:'quiz',prompt:'実行する',answer:'implement',tags:['仕事'],choices:['implement','imagine','interrupt'],position:4},
       {id:'builtin-quiz-5',kind:'quiz',prompt:'マーケティング戦略',answer:'marketing strategy',tags:['仕事'],choices:['marketing strategy','market research','sales target'],position:5}
     ];
-    const SECTION4_EXPERIMENT_TEMPLATE='section4-image-v2';
+    const PODCAST_MEMO_TEMPLATE_VERSION='podcast-word-chunks-v2';
     const BUILTIN_PODCAST_PACKS=[{
-      id:'builtin-podcast-section-4-full-effort',title:'Section 4｜ダンスと「全力を出す」という教え',memoTemplate:SECTION4_EXPERIMENT_TEMPLATE,entries:[
+      id:'builtin-podcast-section-4-full-effort',title:'Section 4｜ダンスと「全力を出す」という教え',entries:[
         {n:140,e:`Tom: My parents were always huge fans of dancing, and all of us were sent to this kind of Saturday school.`,j:`両親は昔からダンスが大好きで、僕たち兄弟はみんな、こういう土曜日のスクールに通わされていました。`,s:`前半は My parents＋were＋huge fans of dancing のSVC。後半は all of us＋were sent の受動態で、to以下が行き先です。`,u:`be a huge fan of ... は「〜が大好き」。be sent to ... は「〜へ行かされる／通わされる」です。`,x:`were sent には親の方針で通った感じがあります。this kind of は学校の種類を少し曖昧にする会話表現です。`},
         {n:141,e:`Tom: It was called Nifty Feet.`,j:`「Nifty Feet」という名前でした。`,s:`It＋was called＋Nifty Feet。「call A B」の受動態で、Nifty Feet が呼び名です。`,u:`名前を紹介する定番表現です。現在なら It is called ...、過去の話なので was called です。`,x:`名前を短く付け足す自然な言い方です。Nifty Feet には軽快な足さばきを思わせる楽しい響きがあります。`},
         {n:142,e:`Tom: It was this kind of really fun little street dance kind of class, and we would do these shows every summer at the ballet school down the road, and my parents loved it.`,j:`すごく楽しい小さなストリートダンスのクラスみたいなもので、毎年夏には近所のバレエスクールで発表会をやっていて、両親もそれが大好きでした。`,s:`It was ... class、we would do these shows、my parents loved it の三節を and で連結。would do は過去の習慣です。`,u:`would＋動詞で「昔はよく〜した」。down the road は「近所に」、do a show は「公演をする」です。`,x:`kind of の反復は、記憶をたどりながら分類をぼかす口調です。really fun little に親しみがにじみます。`},
@@ -283,7 +283,7 @@
         {n:165,e:`Amy: Like, you know, auditioning for the Coen brothers.`,j:`例えば、コーエン兄弟のオーディションを受けているときとかね。`,s:`前文の times の具体例を示す断片。auditioning for ... は動名詞句です。`,u:`audition for 人・作品・役 は「〜のためのオーディションを受ける」です。`,x:`著名なコーエン兄弟を例に、非常に緊張する大事な場面だったことをユーモラスに伝えます。`},
         {n:166,e:`Amy: Just being, like, yawning in the middle of it.`,j:`その真っ最中なのに、あくびなんかしちゃったりして。`,s:`前文の auditioning を説明する続きの断片。being ... yawning でその場の状態を表します。`,u:`in the middle of ... は「〜の真っ最中に」。yawn は「あくびをする」です。`,x:`重要な場面で無関心そうにする不自然さを自嘲的に語っています。just が「まさに」と強調します。`},
         {n:167,e:`Amy: Because I was nervous.`,j:`緊張していたから。`,s:`Because＋I＋was＋nervous の理由節だけを独立させた会話的な断片です。`,u:`because節は会話では理由の付け足しとして単独でも自然です。`,x:`無関心だったのではなく実は緊張していた、と本音を短く明かします。短さが原因を際立たせます。`},
-        {n:168,e:`Amy: Like, and it is a hard lesson to learn.`,j:`だから、それを学ぶのって本当に難しいことなのよ。`,s:`it は形式主語で、is＋a hard lesson が述部、to learn が内容を示します。Like はフィラーです。`,u:`a hard lesson to learn は「身につけるのが難しい教訓」という定番の組み合わせです。`,x:`努力を見せる勇気は、頭で理解するだけでは身につかないと話をまとめています。`},
+        {n:168,e:`Amy: Like, and it is a hard lesson to learn.`,j:`だから、それを学ぶのって本当に難しいことなのよ。`,s:`it は前に話した教訓を受け、is＋a hard lesson が述部。to learn は lesson を後ろから修飾します。Like はフィラーです。`,u:`a hard lesson to learn は「身につけるのが難しい教訓」という定番の組み合わせです。`,x:`努力を見せる勇気は、頭で理解するだけでは身につかないと話をまとめています。`},
         {n:169,e:`Amy: But that is what is the difference between, I think, like, great performances, is people show that they care.`,j:`でも、素晴らしいパフォーマンスとの違いって、結局は「その人が本気で大切にしていることが伝わるかどうか」なんだと思う。`,s:`整えると What makes the difference in great performances is that people show that they care. に近い構造。挿入と自己修正を含みます。`,u:`make the difference は「決定的な違いを生む」。show that you care は「本気で大切にしていると示す」です。`,x:`考えを組み立てながら核心へ進む生の話し方です。名演には技術だけでなく本気が見えることが必要だと述べています。`},
         {n:170,e:`Tom: Totally.`,j:`本当にそう思います。`,s:`副詞一語の省略表現で、I totally agree. に相当します。`,u:`カジュアルな「完全に同意」。フォーマルには I completely agree. が適します。`,x:`Yeah より強い全面的な賛同で、相手の結論が自分の経験と一致したことを示します。`},
         {n:171,e:`Tom: And it's that idea that failing if you tried is better than failing if you didn't try.`,j:`そして、「挑戦して失敗するほうが、挑戦せずに失敗するよりもいい」という考え方なんですよね。`,s:`It is that idea が主節。that以下は failing if you tried＋is＋better than failing if you didn't try の比較です。`,u:`A is better than B は「Aの方がBよりよい」。idea that ... で考えの内容を説明します。`,x:`結果より努力したかを重視する価値観です。同じ failing を対比し、失敗後の後悔の違いを示します。`},
@@ -475,8 +475,8 @@
       165:`auditioning は動名詞／現在分詞形ですが、ここでは前文の times の具体例となる名詞的な断片です。定形動詞はありません。`,
       166:`being と yawning は -ing形で、前文から続く場面描写です。主語と定形動詞を省略した会話的な断片です。`,
       167:`was nervous は単純過去のSVCです。Because で始まる従属節だけを独立させ、直前の行動理由を後から補っています。`,
-      168:`is は現在形。it は形式主語で、to learn が実質的な内容です。lesson を to learn が後ろから修飾する解釈もできます。`,
-      169:`現在形で一般論を述べています。what節と is が重なるのは、話しながら組み直した口語特有の形です。that節が care の内容を示します。`,
+      168:`is は現在形で、努力を見せる勇気の難しさを一般論として述べています。it は前の教訓を受け、to learn は lesson を後ろから修飾します。`,
+      169:`show と care は現在形で、優れた演技に共通する特徴を述べています。show that they care の that節は show の目的語（見せる内容）です。語順の重複は話しながら組み直した跡で、整えるなら The difference is that people show that they care. です。`,
       170:`副詞だけの省略応答なので時制はありません。完全形なら I totally agree. のように現在形になります。`,
       171:`is は現在形。failing は動名詞で主語・比較対象になります。if節の tried／didn't try は過去形を使い、仮定的な状況を表しています。`,
       172:`相づちなので時制はありません。for sure は前置詞句が副詞的に働き、同意の確かさを強めます。`,
@@ -485,6 +485,842 @@
       175:`主語 It が省略されています。wasn't meant は単純過去の受動態で、to be を伴う慣用的な形です。`,
       176:`定形動詞のない名詞句的断片です。dancing は現在分詞で、Little Tom Holland がしている動作を説明します。`,
       177:`主語 I が省略され、could＋動詞原形 watch の形です。could は能力というより「いくらでも見ていられる」という仮定的な気持ちを表します。`
+    };
+    const PODCAST_WORD_GLOSSARY=Object.fromEntries(`
+a|ひとつの・ある（初めて話題に出すもの）
+an|a と同じ。不定冠詞（次が母音の音）
+the|その（話し手と聞き手が特定できるもの）
+i|私は
+you|あなたは／一般の人は（文脈による）
+he|彼は
+she|彼女は
+it|それは／形式的な主語
+we|私たちは
+they|彼らは・それらは
+me|私を・私に
+him|彼を・彼に
+her|彼女を・彼女に／彼女の
+us|私たちを・私たちに
+them|彼らを・彼らに
+my|私の
+your|あなたの
+his|彼の
+our|私たちの
+their|彼らの
+its|それの
+myself|私自身／自分を
+yourself|あなた自身／自分を
+themselves|彼ら自身
+this|この・これ
+that|その・それ／内容や修飾節を導く語
+these|これらの
+those|それらの
+who|誰／人を説明する関係語
+what|何／〜すること・もの
+which|どれ／直前の物・文全体を説明する関係語
+where|どこ／場所・場面を説明する関係語
+when|いつ／〜するとき
+how|どのように・どれほど
+why|なぜ
+and|そして（内容を加える）
+but|でも（対比）
+or|または
+either|どちらか一方（either A or B）
+because|〜だから（理由）
+cause|because の口語的な省略形
+if|もし〜なら（条件）
+even|〜さえ・たとえ
+although|〜ではあるが
+while|〜している間／一方で
+since|〜以来／〜なので
+than|〜より（比較）
+as|〜として／〜のように
+to|〜へ／不定詞を導く語
+of|〜の（所属・内容・一部）
+for|〜のために・〜にとって・〜の間
+with|〜と一緒に・〜を伴って
+without|〜なしに
+in|〜の中に・〜という範囲で
+on|〜の上に・〜に接して／着用して
+at|〜という地点・時点で
+about|〜について
+from|〜から（出発点）
+after|〜の後で
+before|〜の前で
+into|〜の中へ（変化・参加先）
+out|外へ
+up|上へ／完了・再開を示す副詞
+down|下へ／通りに沿って
+over|向こうへ／一帯を覆って
+back|戻って・後ろ
+through|〜を通して
+between|〜の間
+be|〜である・いる（原形）
+am|be の現在形（I と使う）
+is|be の現在形（単数）
+are|be の現在形（you・複数）
+was|be の過去形（単数）
+were|be の過去形（you・複数／仮定）
+been|be の過去分詞（完了形）
+being|be の -ing 形（状態を名詞化・進行）
+have|持つ／完了形を作る助動詞
+having|have の -ing 形。持っている・経験している／〜すること
+has|have の三人称単数現在形
+had|have の過去形・過去分詞／過去完了の助動詞
+do|する／疑問・否定・強調を作る助動詞
+does|do の三人称単数現在形
+did|do の過去形／過去の疑問・否定・強調を作る助動詞
+done|do の過去分詞
+doing|すること・している（do の -ing 形）
+not|〜ではない
+no|いいえ／ひとつも〜ない
+never|一度も〜ない・決して〜ない
+can|できる（能力・可能性）
+could|できた／〜できるだろう（控えめな可能性）
+will|〜するだろう・するつもり
+would|〜するだろう（仮定）／昔はよく〜した
+should|〜すべき・〜したほうがよい
+must|〜しなければならない
+may|〜かもしれない・〜してよい
+might|〜かもしれない
+need|必要とする
+able|できる能力がある
+let|〜させる・〜を許す
+all|すべて・みんな
+any|何かの／どんな〜でも（否定なら少しも）
+some|いくつかの・ある
+one|ひとつ・一人
+two|二つ
+five|五つ・五人
+first|最初の・まず
+last|最後の／前の
+most|最も
+more|より多く・さらに
+much|たくさん・とても
+little|小さい／少しの
+bit|少量
+lot|たくさん（a lot で頻繁に・大いに）
+very|とても
+really|本当に・実際に
+so|とても／だから（結果へつなぐ）
+such|そのような・それほどの
+just|ただ・ちょうど・まさに（文脈による）
+also|〜もまた
+too|〜も・〜すぎる
+only|〜だけ
+own|自分自身の
+another|別の・もう一つの
+every|すべての・毎〜
+single|ひとつの・一回の（every single で一つも欠かさず）
+always|いつも
+often|よく・頻繁に
+sometimes|ときどき
+again|再び
+now|今／さて
+then|そのとき／そうすれば
+today|今日・現在
+here|ここに
+there|そこに／存在構文を導く語
+right|正しい／ちょうど／なるほど
+well|上手に・よく
+almost|ほとんど
+already|すでに
+still|まだ・今なお
+anymore|もはや（否定と使う）
+immediately|すぐに
+completely|完全に
+naturally|自然に
+probably|たぶん
+maybe|もしかしたら
+perfectly|完全に・まったく
+personally|個人的には
+far|遠く（so far でこれまで）
+least|最も少ない（at least で少なくとも）
+yes|はい・肯定
+yeah|うん（くだけた同意・相づち）
+okay|分かった・大丈夫
+oh|おお・ああ（驚きや気づき）
+wow|わあ（強い驚き・感動）
+totally|完全に・まったく
+sure|確か・確信している
+babe|親しい人への呼びかけ（ここでは台詞の再現）
+bro|brother の略。仲間へのくだけた呼びかけ
+man|男性／Oh, man. では感情を強める呼びかけ
+god|神（Oh my God! は驚きの決まり文句）
+parents|両親
+dad|お父さん（親しみのある言い方）
+mom|お母さん（親しみのある言い方）
+brothers|兄弟
+sister|姉妹・妹
+kid|子ども
+kids|子どもたち
+adult|大人
+young|若い・幼い
+age|年齢
+certain|ある特定の／確かな
+person|人
+people|人々
+guy|男性・やつ（くだけた言い方）
+life|人生・生活
+home|家・自宅へ
+car|車
+way|道・やり方
+day|日・一日
+time|時間・時期・回
+times|時々・複数の時期／番組名の一部
+week|週
+years|年（複数）
+summer|夏
+saturday|土曜日
+school|学校・スクール
+class|授業・レッスン
+club|クラブ
+room|部屋
+road|道路
+floor|床
+hardwood|硬い木材（hardwood floor で木の床）
+bare|何もない・飾りのない
+computer|コンピューター
+office|職場・オフィス
+door|扉（比喩では機会への入口）
+dance|踊る・ダンス
+dancing|踊ること・踊っている
+dancer|ダンサー
+ballet|バレエ
+street|通り（street dance でストリートダンス）
+routines|決まった振り付け・一連の動作
+marking|ダンスで動きを小さく確認しながら踊っている
+marked|mark の過去形・過去分詞（ここでは軽く踊った）
+rhythm|リズム・リズム感
+music|音楽
+song|曲
+shows|公演・舞台（複数）／見せる（三人称単数）
+show|見せる／公演・舞台
+lights|照明・ライト
+audience|観客
+feet|foot の複数形。足
+foot|足
+shoes|靴
+tap|タップダンスの
+step|ステップ・足の一歩
+rehearsal|リハーサル
+choreographer|振付師
+choreographers|振付師たち
+studio|スタジオ
+studios|スタジオ（複数・施設名の一部）
+actor|俳優
+actors|俳優たち
+actress|女優
+artist|芸術家・アーティスト
+director|監督
+agent|代理人（ここでは芸能エージェント）
+movie|映画
+film|映画
+tv|テレビ
+material|題材・演じる内容
+performances|演技・パフォーマンス
+audition|オーディションを受ける／オーディション
+auditioning|オーディションを受けること・受けている
+career|仕事の経歴・キャリア
+job|仕事
+business|仕事・業界
+success|成功
+hits|ヒット曲
+risk|危険・リスク
+skills|技能・技術
+prep|preparation の略。準備
+undertaking|大きな仕事・計画
+point|点・観点
+view|見方（point of view で観点）
+regret|後悔
+fears|不安・恐れ
+questions|問い・迷い
+idea|考え・発想
+instinct|本能・無意識の傾向
+conversation|会話
+conversations|会話（複数）
+lesson|教訓・レッスン
+dream|夢
+understanding|理解・分かっていること
+love|愛する・大好きである／愛情
+loved|love の過去形。大好きだった
+passion|情熱
+relationship|関係・向き合い方
+magic|魔法
+spiritual|精神的な・神秘的な
+primal|原始的な・根源的な
+creativity|創造性
+types|種類
+nature|性質（second nature で自然にできる習慣）
+nervous|緊張した・不安な
+system|仕組み・系（nervous system で神経系）
+petrified|身がすくむほど怖い・極度に緊張した
+ambivalent|気持ちが両方向に揺れている（ここでは気乗りしない様子）
+sleepy|眠そうな
+vulnerable|無防備な・傷つきやすい
+excited|わくわくしている（感じる側）
+exciting|わくわくさせる（出来事の側）
+upset|動揺した・腹を立てた
+fulfilling|充実感・満足感を与える
+fun|楽しいこと・楽しさ
+funny|面白い・不思議な（必ずしも笑えるではない）
+cool|格好いい・落ち着いた
+good|よい
+bad|悪い
+best|最善・最高
+better|よりよい
+great|素晴らしい
+amazing|驚くほど素晴らしい
+incredible|信じられないほど素晴らしい
+talented|才能がある
+electric|電気の／人の魅力が刺激的で場を活気づける
+huge|巨大な・とても大きい
+big|大きい
+biggest|最も大きい
+strong|強い
+important|重要な・大切な
+integral|不可欠な・欠かせない
+honest|正直な
+simple|単純な・ささやかな
+hard|難しい／一生懸命に
+heavy|重い（題材なら深刻な）
+horrendous|ひどい・惨憺たる
+crazy|常識外れの・信じられない
+different|異なる
+difference|違い
+interesting|興味深い・面白い
+professional|プロ・仕事の専門家
+famous|有名な
+ready|準備ができた・受け入れる用意がある
+fans|ファン・愛好者
+kind|種類（kind of で少し・なんというか）
+thing|もの・こと
+things|もの・こと（複数）
+something|何か
+whatever|何でも／まあそんな感じのこと
+course|進路・過程（of course でもちろん）
+end|終わり・結局の結果（West End はロンドンの劇場街）
+front|正面（in front of で〜の前で）
+middle|真ん中・途中
+square|正方形（square one で出発点）
+second|二番目の／秒
+remember|覚えている・思い出す
+think|考える・思う
+thought|think の過去形・過去分詞。思った
+know|知っている
+mean|意味する（I mean でつまり・というか）
+meant|mean の過去分詞（be meant to で〜することになっている）
+guess|推測する（I guess でたぶん〜だと思う）
+say|言う
+said|say の過去形。言った
+talk|話す
+talking|話している・話すこと
+tell|伝える
+telling|伝えている
+care|大切に思う・気にかける
+feel|感じる
+feels|feel の三人称単数現在形
+feeling|感じている・感じること
+look|見る／〜に見える
+find|見つける・気づく
+see|見る・見える
+watch|見る・見守る
+watching|見ている・見守っている
+worry|心配する
+learn|学ぶ・身につける
+try|試みる・努力する
+tried|try の過去形。試みた
+trying|努力すること・試みている
+failing|失敗すること
+get|得る／〜になる／着く（後ろの語による）
+got|get の過去形・過去分詞
+getting|得つつある・〜になりつつある
+go|行く
+going|行く・〜する予定である（be going to）
+went|go の過去形。行った
+come|来る・戻る
+comes|come の三人称単数現在形
+coming|来つつある・戻ってきている
+grew|grow の過去形（grew up で育った）
+live|生きる・生き続ける
+move|動く
+shake|振る・揺らす
+calm|落ち着かせる
+shape|形作る（ここでは人格に影響する）
+present|示す・見せる（ここでは自分の振る舞いを表す動詞）
+sent|send の過去分詞。送られた
+called|call の過去分詞。呼ばれた
+wanted|want の過去形。望んだ
+want|望む・〜したい
+seek|探し求める
+sought|seek の過去形。探し求めた
+sat|sit の過去形・過去分詞。座った・座っている状態
+sit|座る
+met|meet の過去分詞。会った
+meet|会う
+spotted|spot の過去分詞。見いだされた
+opens|open の三人称単数現在形。開く
+compete|競う・大会に参加する
+competitions|大会・競技会
+agree|同意する
+becomes|become の三人称単数現在形。〜になる
+trained|train の過去形。訓練した
+worn|wear の過去分詞。身につけた
+wear|身につける
+shoot|撃つ（慣用句では自ら不利にする）
+googled|Google で検索した
+played|play の過去形。曲を流した
+started|start の過去形。始まった
+happened|happen の過去形。起きた
+buried|bury の過去分詞。埋めた（ここでは徹底的に叱ったという誇張）
+making|make の -ing 形。作ること・作っている
+make|作る・〜させる
+finished|finish の過去形。終えた
+quit|やめる・やめた（原形と過去形が同じ）
+left|leave の過去形。去った
+take|取る（take class でレッスンを受ける）
+book|予約する・仕事を決める（ここでは映画の出演が決まる）
+pick|選ぶ・拾う（pick up で再開する・身につける）
+list|一覧にする・列挙する
+asked|ask の過去形。尋ねた・頼んだ
+ask|尋ねる・頼む
+yawning|あくびをしている
+yawn|あくびをする
+janet|ジャネット（人名）
+jackson|ジャクソン（人名）
+michael|マイケル（人名）
+nifty|しゃれた・巧みな（ここでは教室名の一部）
+coen|コーエン（人名）
+tom|トム（人名）
+holland|ホランド（人名）
+amy|エイミー（人名）
+billie|ビリー（人名）
+eilish|アイリッシュ（人名）
+billy|ビリー（作品名の一部）
+elliot|エリオット（作品名の一部）
+fred|フレッド（人名）
+astaire|アステア（人名）
+pineapple|パイナップル（ここではスタジオ名）
+paul|ポール（人名）
+king|キング（ここでは人名）
+west|西（West End で劇場街の名前）
+gen|generation の略。世代
+x|X（Gen X は世代を表す名称）
+thank|感謝する
+thanks|ありがとう・感謝
+sweet|優しい・愛らしい／甘い
+happy|うれしい・幸せな
+keen|熱心な（keen to でぜひ〜したい）
+obsessed|夢中になった・頭から離れない
+used|使った／used to で以前はよく〜した
+realize|気づく
+supposed|想定された（be supposed to で〜することになっている）
+personality|性格・人格
+family|家族
+children|子どもたち
+child|子ども
+mother|母
+father|父
+brother|兄弟
+friends|友人たち
+friend|友人
+house|家
+household|家庭
+work|働く・仕事
+working|働いている・取り組んでいる
+worked|働いた
+youngest|一番年下の
+older|より年上の
+younger|より年下の
+old|年を取った・昔の
+growing|育っている
+grown|grow の過去分詞。育った
+grow|育つ・成長する
+put|置く・置いた
+looked|look の過去形。見た
+heard|hear の過去形・過去分詞。聞いた
+hear|聞く・聞こえる
+listen|意識して聞く
+felt|feel の過去形。感じた
+made|make の過去形・過去分詞。作った・〜させた
+became|become の過去形。〜になった
+become|〜になる
+meanwhile|その間に・一方で
+together|一緒に
+away|離れて
+everything|すべてのこと
+anything|何か・何でも（否定では何も）
+nothing|何も〜ない
+everyone|みんな
+someone|誰か
+everyone's|みんなの／everyone is の短縮
+sort|種類（sort of でなんというか）
+stuff|もの・こと（くだけた総称）
+actually|実は・実際には
+quite|かなり
+pretty|かなり／かわいい
+absolutely|まったく・完全に
+exactly|まさに・正確に
+basically|基本的には・つまり
+perhaps|ひょっとすると
+obviously|明らかに・当然ながら
+especially|特に
+enough|十分な・十分に
+early|早い・早く
+later|後で
+once|一度／いったん〜したら
+yet|まだ（否定）・もう（疑問）
+ever|今までに・かつて
+year|年
+month|月
+minute|分・少しの時間
+each|それぞれの
+both|両方
+same|同じ
+other|他の
+others|他の人々・もの
+around|周りに・〜くらい
+throughout|〜の間ずっと
+against|〜に対して・逆らって
+during|〜の間に
+until|〜まで
+off|離れて・切れて
+by|〜によって・〜のそばで
+somewhere|どこかに
+anywhere|どこかに・どこにでも
+kindness|優しさ
+support|支える・支援
+help|助ける・助け
+problem|問題
+problems|問題（複数）
+solve|解決する
+solving|解決している
+learned|learn の過去形。学んだ
+learnt|learn の過去形（主に英国英語）
+training|訓練・練習
+practice|練習・練習する
+practicing|練習している
+practising|練習している（英国英語）
+experience|経験
+experiences|経験（複数）
+memories|思い出・記憶
+memory|記憶
+remembered|remember の過去形。覚えていた
+moment|瞬間・時
+moments|瞬間（複数）
+difficult|難しい
+easy|簡単な
+beautiful|美しい
+wonderful|素晴らしい
+honestly|正直に言うと
+london|ロンドン（地名）
+`.trim().split('\n').map(line=>line.split('|')));
+    const PODCAST_SENTENCE_CHUNKS={
+      140:`My parents | were always huge fans of dancing | and all of us | were sent to this kind of Saturday school.`,
+      141:`It | was called | Nifty Feet.`,
+      142:`It was this kind of really fun little street dance kind of class | and we would do these shows every summer | at the ballet school down the road | and my parents loved it.`,
+      143:`Like | it was | such a fun time.`,
+      144:`Yeah.`,
+      145:`And I remember | it's so funny how | there are conversations | that you have in your life | that really shape you as a person.`,
+      146:`And I remember one dance class or something | my parents would come and watch | every single time.`,
+      147:`They were always there | watching.`,
+      148:`And I guess maybe | I was having a bad day or something | and I was marking all the routines.`,
+      149:`And on the way home | I thought that | I had been really cool | in the way that I had marked it.`,
+      150:`It was like | “Oh, I don't care. | I don't need to try that hard.”`,
+      151:`And I remember this conversation | I had with my dad | where he was talking about doing your best.`,
+      152:`And even if you're not feeling your best | you need to present | as your best.`,
+      153:`And it's so interesting how | you know | that simple little conversation | I had in the back of his car | has been so important to me | as an adult and a professional.`,
+      154:`And I think about that conversation | a lot.`,
+      155:`It's so interesting you say that | because that is, like, a hard lesson.`,
+      156:`And for kids of a certain age | to learn that | trying is cool.`,
+      157:`But it's so vulnerable.`,
+      158:`Yeah.`,
+      159:`And to look like | you care.`,
+      160:`Yeah.`,
+      161:`And it is our instinct to just— | I did it as an adult too.`,
+      162:`Like, there were times in my career | where I would be nervous | so I would just get kind of, like, sleepy and ambivalent.`,
+      163:`Yeah, yeah, yeah | right.`,
+      164:`You're like | “I don't really care about this.”`,
+      165:`Like, you know | auditioning for the Coen brothers.`,
+      166:`Just being, like | yawning in the middle of it.`,
+      167:`Because I was nervous.`,
+      168:`Like, and it is a hard lesson | to learn.`,
+      169:`But that is what is the difference between | I think, like | great performances | is people show that they care.`,
+      170:`Totally.`,
+      171:`And it's that idea that | failing if you tried | is better than | failing if you didn't try.`,
+      172:`Yeah | for sure.`,
+      173:`'Cause then | you don't feel bad about it.`,
+      174:`You're like | “At least I did my best.”`,
+      175:`Just wasn't meant to be.`,
+      176:`Little Tom Holland | dancing.`,
+      177:`Could watch it | all day.`,
+      178:`Janet Jackson.`,179:`Yes.`,180:`You love.`,
+      181:`I love Janet Jackson | so, so much.`,
+      182:`Let's talk about Janet | for a second.`,183:`Oh, man.`,184:`She's just electric.`,185:`She's so talented.`,
+      186:`I mean, we grew up— | I, like, Gen X grew up with Janet.`,
+      187:`Janet was first on TV | as a little young actress | on Good Times | doing, like, very heavy material.`,
+      188:`And then Janet—of course, Michael—but Janet | we were like | “Okay, Michael's sister, Janet.”`,
+      189:`And then Janet was her own just incredible artist | who had huge hits | and was an incredible dancer.`,
+      190:`To be perfectly honest with you | I really feel like | if you asked me to list five people | that have been integral in the success of my career | she would be one of them.`,
+      191:`Have you met her?`,192:`I've never met her | no.`,193:`She's here.`,194:`Yeah, she's here— | like, “Oh my God!”`,
+      195:`Janet | come on out.`,
+      196:`But if I didn't show | that I had an understanding of, like, rhythm | my mom would have never got me into dancing.`,
+      197:`And if I didn't get into dancing | I would never have been spotted | to audition for this show.`,
+      198:`And if I didn't do that show | I wouldn't have got an agent.`,
+      199:`And, you know | it was never something | that I sought out.`,200:`I never wanted | to be an actor.`,
+      201:`It was never like | I sat down with my parents | and was like | “I have this dream of being famous.”`,
+      202:`So if it hadn't been for that song | when I was a kid | I probably wouldn't be sat here today | which is kind of crazy.`,
+      203:`Billie Eilish was here | and we were talking about | how she was, like, you know, getting ready | to compete in all of her dancing competitions.`,
+      204:`I do feel like | I have a strong love and passion | for dancing.`,
+      205:`I feel like dancing is— | first of all | it feels like magic | when people can do it well.`,206:`It feels like | something spiritual.`,
+      207:`But also I love it just personally | because it's very good | for my nervous system.`,208:`Yeah.`,
+      209:`Like, it is this thing where | if you can shake it out and move | you can calm yourself | or whatever.`,
+      210:`It is this really primal thing | that I think opens the door | to all different types of creativity.`,211:`Totally agree | yeah.`,
+      212:`So what is your relationship to dancing | right now?`,213:`How often | do you dance?`,214:`Where | do you dance?`,
+      215:`It comes at a very interesting time | because last week I did my first dance rehearsal | for the Fred Astaire movie | that we're doing.`,216:`Oh!`,
+      217:`It's funny, like | I don't find myself getting that nervous | anymore for things.`,
+      218:`You know, because you do it so often | and it becomes second nature | and it feels like another day at the office.`,
+      219:`But I went to Pineapple Dance Studios | which is where I trained as a kid | when we were doing Billy Elliot.`,
+      220:`I was with the director of the movie | and the choreographer of the movie.`,221:`Wow.`,
+      222:`And I was petrified | because I'd been telling this guy, this director Paul King | I said | “Don't worry, bro, like, I can dance.”`,
+      223:`Babe | I'm not one of those actors.`,224:`Yeah, yeah, like | I'm a dancer-dancer.`,225:`Yeah, I was on the West End | okay?`,226:`Right.`,
+      227:`And we get there | and it's, you know, a bare room | with a hardwood floor.`,
+      228:`I've got tap shoes on | first time I've worn tap shoes | in 15 years.`,
+      229:`And immediately I'm like | “Wow, my feet feel like... | in these shoes.”`,
+      230:`And then he kind of was a little bit like | “Okay, do your thing.”`,231:`“Show me | what you got.”`,
+      232:`And I went over to the computer | and I Googled the Billy Elliot music | and was like | “I'm either going to do something amazing here | or I'm really going to shoot myself in the foot.”`,
+      233:`And I played the song | and what was so amazing is | how it really does live in you | you know?`,
+      234:`Like, the music started | and then it all started coming back.`,235:`And I could see the lights.`,236:`I could see the audience.`,
+      237:`And without even having to think of | what the first step was | it just happened naturally.`,
+      238:`Now, if I did the dance like I did last week | in front of my Billy Elliot choreographers | when I was a kid | they probably would have buried me | because it was horrendous.`,
+      239:`They would've been | really upset.`,240:`But it was | really exciting.`,
+      241:`And I've been very nervous | about the idea of making that film | just because, you know | it's going to be a huge undertaking | from a prep point of view.`,
+      242:`And it's also a big risk | I think.`,243:`You know | it's a big movie.`,244:`We're ready | for it.`,
+      245:`I'm excited | but after that rehearsal | any fears I had | or any questions of, like, “Should I be making this movie?” | completely left the room.`,
+      246:`Because I think | my biggest regret in my career so far is | that when I finished that show | I quit dancing.`,247:`Yeah.`,
+      248:`And I just, you know, would dance in a club or something like that | but wouldn't go and take class.`,249:`Yeah.`,
+      250:`And the thing I love most about my job is | that you can book a film | and learn all of these amazing skills | from the best people in the business.`,
+      251:`And to be able to do that again | and pick up dancing from square one | and try to get back into it | I think it's going to be so fulfilling.`
+    };
+    const PODCAST_PHRASE_GLOSSES={
+      'huge fans of':'〜の大ファン', 'kind of':'少し・なんというか／kind of＋名詞なら〜の種類', 'all of us':'私たち全員', 'down the road':'通りの先・近所に', 'every single time':'一度も欠かさず毎回', 'having a bad day':'調子の悪い一日を過ごしている', 'on the way home':'帰り道で', 'in the way that':'〜したやり方において', "don't need to":'〜する必要はない', 'doing your best':'自分の最善を尽くすこと', 'even if':'たとえ〜でも', 'present as your best':'自分の最善を人前で示す', 'a lot':'たくさん・頻繁に', 'of a certain age':'ある年頃の', 'look like':'〜のように見える', 'care about':'〜を大切に思う・気にかける', 'in the middle of':'〜の真っ最中に', 'better than':'〜よりよい', 'for sure':'確かに・間違いなく', 'feel bad about':'〜を後悔する・気に病む', 'at least':'少なくとも', 'did my best':'自分のベストを尽くした', "wasn't meant to be":'今回は縁がなかった・そうなる運命ではなかった', 'all day':'一日中', 'for a second':'少しの間', 'grew up with':'〜を身近に感じながら育った', 'of course':'もちろん', 'to be perfectly honest with you':'本当に正直に言うと', 'feel like':'〜のように感じる／節の前なら〜だと感じる', 'have been integral':'今まで不可欠な存在であり続けた', 'one of them':'その中の一人', 'come on out':'さあ出てきて', 'get into dancing':'ダンスを始める・取り組む', 'got me into dancing':'私がダンスを始めるきっかけを作った', 'sought out':'自分から積極的に探し求めた', 'sat down with':'〜と腰を据えて話した', "if it hadn't been for":'もし〜がなかったら', 'getting ready':'準備をしている', 'first of all':'まず第一に', 'nervous system':'神経系', 'shake it out':'体を揺らして緊張を振り払う', 'opens the door':'扉を開く・新しい可能性を開く', 'or whatever':'まあそんな感じのこと', 'right now':'今現在', 'second nature':'考えなくても自然にできるほど身についたこと', 'another day at the office':'いつもどおりの仕事の一日', 'tap shoes on':'タップシューズを履いている', 'do your thing':'得意なことを見せて・自分らしくやって', 'what you got':'君の持っている力（口語）', 'either going to':'どちらかの結果になりそうだ（either A or B の前半）', 'shoot myself in the foot':'自分の行動で自分を不利にする', 'coming back':'戻ってくる', 'without even having to':'〜する必要さえなく', 'in front of':'〜の前で', 'a huge undertaking':'非常に大きな仕事・計画', 'from a prep point of view':'準備の観点から', 'left the room':'部屋を出ていった（不安なら消え去ったという比喩）', 'so far':'これまでのところ', 'take class':'レッスンを受ける', 'book a film':'映画の出演が決まる', 'pick up dancing':'ダンスを再開する・身につけ直す', 'from square one':'一から・基礎から', 'get back into it':'再びその活動へ本格的に取り組む'
+    };
+    const PODCAST_EXPRESSION_COMPARISONS=[
+      [/let's talk.*for a second/i,`Let's は You should と違い、相手に指示せず「一緒に話そう」と誘います。for a second は for one second という厳密な一秒でなく、briefly のように「ちょっとだけ」と話題転換を軽くする言い方です。`],
+      [/never wanted to be an actor/i,`never wanted は didn't want より、過去のどの時点にもその夢がなかったと強めます。became an actor という結果と、wanted という本人の意向を切り離し、偶然から始まった道だと伝えています。`],
+      [/wouldn't have got an agent/i,`got an agent は hired someone より、芸能の仕事を支える代理人がついたという経歴上の転機です。wouldn't have が、実際には手に入れた機会を「もし前の舞台がなかったら」と取り消して感謝を示します。`],
+      [/director of the movie.*choreographer/i,`director と choreographer を並べるのは people from the movie とまとめるより、自分の演技とダンスを評価する専門家が二人ともいたという圧力を具体的に見せるためです。`],
+      [/let's\b/i,`Let's は You should と違い、話し手も含めて「一緒に」と誘う表現です。命令の距離を作らず、次の行動へ相手を巻き込む親しさがあります。`],
+      [/huge fans? of/i,`huge fan は like より熱が強く、「大好きで応援している」という感じ。巨大という物理的な意味を気持ちの大きさに借りています。`],
+      [/were sent/i,`were sent は went より「親の方針で通わせてもらった／通わされた」という外側の働きかけが見えます。ここでは本人の自発性より家族の背景を語るための受動態です。`],
+      [/was called/i,`was called は Its name was より、当時みんながその名前で呼んでいたという自然な紹介になります。`],
+      [/would do these shows/i,`would do は did より、夏になるたび同じ行事があった懐かしい反復が見えます。used to は「今はそうでない」という対比が出やすく、would は思い出の場面を繰り返し描きます。`],
+      [/such a fun time/i,`such a fun time は It was fun より、時期全体を抱えて「あんなに楽しかった」と感情を込めます。very は程度、such は名詞のまとまり全体を強めます。`],
+      [/shape you/i,`shape は change より、人格の輪郭が時間をかけて作られる感じ。単なる変化ではなく、会話が今の自分の土台になったと表すために選ばれています。`],
+      [/every single time/i,`every time でも毎回ですが、single が一回ずつ指差すように「一度も欠かさず」を強めます。親の見守りへの感謝がにじむ選び方です。`],
+      [/there watching/i,`watching は seeing より、意識して目を向け続ける感じ。there だけで存在を言うより、関心を持って見守った両親の姿が伝わります。`],
+      [/marking|marked/i,`mark a routine は dance lightly より、ダンスの動きを小さく確認するという専門的な意味です。ここではその軽い踊り方を「本気を出していない態度」と結びつけています。`],
+      [/really cool/i,`cool は good より、「うまくできた」ではなく「格好よく見える」という評価です。本気を出さないことを格好いいと勘違いしていた当時の心情を表します。`],
+      [/don't need to try/i,`don't need to は mustn't と違い「禁止」ではなく「必要がない」。努力しなくてよいという自分向けの言い訳になり、try that hard が「そこまで本気になるのは…」という距離を作ります。`],
+      [/doing your best|did my best/i,`do your best は try hard より、その人がその状況で出せる最大限を尽くすことに焦点があります。努力量だけでなく、自分としてやり切ったかを大切にする表現です。`],
+      [/present as your best/i,`present は feel より外側に示す姿に焦点があります。「最高の気分になる」のではなく、調子が悪くても人前で出せる最善を示す、という教えです。`],
+      [/simple little conversation/i,`simple little は unimportant と違い、価値がないという意味ではありません。ささやかな会話と大きな影響を対比し、愛着を込めて小ささを表しています。`],
+      [/think about that conversation/i,`think about は remember より、記憶を取り出した後で意味を考え続ける感じです。教えが今も判断の基準になっていることを伝えています。`],
+      [/hard lesson/i,`hard lesson は difficult fact と違い、知識として分かるだけでは足りず、経験して身につける難しさがあります。「頭では分かるけれど、実際には難しい」という空気です。`],
+      [/trying is cool/i,`cool は useful より、周囲にどう見えるかという年頃の価値観に寄り添います。「努力は役に立つ」より「本気な姿が格好いい」と言うことで、恥ずかしさをひっくり返します。`],
+      [/vulnerable/i,`vulnerable は weak と違い、能力が弱いとは限りません。本気を見せると傷つく可能性に自分をさらす、という心の無防備さ。むしろ勇気を必要とする状態です。`],
+      [/look like you care|show that they care/i,`care は be interested より、「自分にとって大切で、結果にも心が動く」という関与が深い語です。look like／show を付け、本気が他人にも伝わる点を強調します。`],
+      [/our instinct/i,`instinct は decision より、考えて選ぶ前につい出てしまう反応です。無関心を装うのを悪意として責めず、誰にでもある防御反応として説明します。`],
+      [/sleepy and ambivalent/i,`sleepy は calm より眠そうな印象、ambivalent は indifferent の「完全に無関心」と違い気持ちが揺れている状態です。好き・大切なのに距離を取ってしまう、緊張の隠し方を描きます。`],
+      [/don't really care/i,`don't really care は don't care より「そんなに気にしてない」と否定を少し弱めます。本心は気になるのに、平気そうに見せる逃げ道を作る台詞です。`],
+      [/auditioning for/i,`auditioning は applying より、実際の演技を見せて審査される場面です。憧れの監督名を添えることで、どうでもよい場面ではない緊張感が分かります。`],
+      [/yawning/i,`yawning は relaxed より、退屈・気乗りしなさが外へ見える具体的な動作です。緊張しているのにあくびをする、という内心と見た目のずれが自嘲の笑いになります。`],
+      [/was nervous/i,`nervous は scared より、失敗したくない・評価が気になる場面の緊張を表しやすい語です。無関心に見えた態度の奥に、実は大切に思う気持ちがあったと明かします。`],
+      [/failing if/i,`failing を両側で繰り返すのは success と比較するためではなく、同じ失敗でも「挑戦したか」で価値が違うと見せるためです。better は結果の優劣より、後悔の少なさを指します。`],
+      [/feel bad about/i,`feel bad は be sad より、悲しさだけでなく後悔や自分への責めも含められます。about it で失敗そのものより、その失敗への気持ちに焦点を置いています。`],
+      [/at least/i,`at least は anyway より、悪い結果の中にも残る最低限の確かな価値をすくい上げる感じ。「でもベストは尽くした」と自分を支える言葉です。`],
+      [/meant to be/i,`wasn't meant to be は I failed より、努力不足と決めつけず、結果を縁や巡り合わせとして受け入れる響きです。本気でやった後の言葉なので、諦めの言い訳より納得が出ます。`],
+      [/could watch.*all day/i,`could は can の能力報告より、「機会があればずっと見ていたい」という気持ちを柔らかく表します。all day は文字どおりの予定より、愛らしさへの誇張です。`],
+      [/electric/i,`electric は talented と違い、技術の高さだけでなく、場をぱっと活気づける刺激や存在感を表します。電気が走るようなジャネットの魅力を伝える比喩です。`],
+      [/talented/i,`talented は skilled の「訓練で身につけた技術」より、才能そのものを褒める語です。electric の存在感から、表現者としての能力へ称賛を重ねています。`],
+      [/grew up with/i,`grew up with は knew より、成長する時期を一緒に過ごしたという親密さ。ここでは直接一緒に暮らしたのではなく、テレビや音楽でずっと身近に感じてきたという意味です。`],
+      [/heavy material/i,`heavy は serious より、内容が心にずっしり来る重さを感じさせます。幼い女優が深刻な題材を演じていたという意外さを伝えます。`],
+      [/her own.*artist/i,`her own は independent より、「誰かの妹という立場から、自分自身の名前と実績へ」という物語を作ります。家族の名声ではなく本人の力を褒める選び方です。`],
+      [/integral/i,`integral は important より、「欠けると全体が成り立たない」という不可欠さが強い語です。会ったことがなくても、自分の成功の土台にいた人として最大級の感謝を表します。`],
+      [/never met/i,`never は haven't met yet の「これから会う可能性」より、今までの一度もない経験を強調します。強い影響を受けたのに面識はない、という意外さを短く添えます。`],
+      [/have you met/i,`Have you met は Did you meet と違い、特定の日の出来事ではなく人生の今までの経験を聞きます。影響を受けた相手との面識を自然に確かめる質問です。`],
+      [/come on out/i,`come on out は come here より、隠れている舞台裏からこちらへ出てきて、という呼びかけです。on が勢いを添え、番組のサプライズ登場を演じる冗談になります。`],
+      [/understanding of.*rhythm/i,`understanding of rhythm は knew rhythm より、知識だけでなく体でリズムをつかめていた感じです。show と組み合わせ、母親が才能に気づけた理由を語ります。`],
+      [/been spotted/i,`spotted は found より、周囲の中から才能や可能性に目を留めて見いだした感じ。自分が探したのでなく他者に発見された流れを受動態で描きます。`],
+      [/sought out/i,`sought out は looked for より、自分から積極的に探し求める感じです。never で否定し、俳優という道が計画的な夢ではなく偶然つながったことを強調します。`],
+      [/hadn't been for/i,`if it hadn't been for は without より、過去の出会いを取り除いた別の人生を想像させます。probably と kind of が壮大な話を言い切りすぎず、本人の驚きとして伝えます。`],
+      [/strong love and passion/i,`love は好きで大切という気持ち、passion は取り組む熱。like だけでは出ない深い愛着を二語重ね、I do feel の do で「本当に」と念を押しています。`],
+      [/feels like magic/i,`magic は impressive より、仕組みを説明しきれないほど不思議に心を動かされる感じ。上手なダンスへの理屈を超えた感動を表します。`],
+      [/spiritual/i,`spiritual は religious と違い、必ずしも宗教の話ではありません。身体を動かすダンスに、心や精神の深いところへ届く感覚があると述べています。`],
+      [/nervous system/i,`good for my nervous system は it relaxes me より、気分だけでなく身体ごと落ち着く感じを言っています。nervous はここでは「緊張した」ではなく神経系を表す形容詞です。`],
+      [/shake it out/i,`shake it out は move より、体を揺らして内側のこわばりを振り払うイメージ。or whatever は説明を医学的に断言せず「まあ、そんな感じ」と柔らかく締めます。`],
+      [/opens the door/i,`opens the door は causes より、創造性を強制的に生むのではなく、入っていける可能性を開く比喩。primal が、考える前に身体で動く根源的な力を示します。`],
+      [/relationship to dancing/i,`relationship は frequency より、踊る回数だけでなく今どんな意味を持つかまで尋ねる語です。right now で現在の距離感に話を絞っています。`],
+      [/how often/i,`How often は Do you dance? より、踊る前提で頻度を聞く質問です。活動が生活にどれほど入っているか、答えやすい具体的な方向へ会話を進めます。`],
+      [/where do you/i,`Where は How と違い、方法でなく場所を焦点にします。短い質問を続けることで、広い話題から日常の具体的な様子へ近づいています。`],
+      [/interesting time/i,`interesting time は good time より、単に都合がよいのではなく「今まさにその話がある」という偶然の重なりへの驚きです。last week の出来事が質問の意味を変えています。`],
+      [/don't find myself/i,`find myself getting は be nervous と違い、いつの間にかそうなる自分に気づく表現。anymore は以前は緊張したが経験で変わった、という現在との対比を作ります。`],
+      [/second nature/i,`second nature は easy より、考えず自然にできるほど身体に染みついた状態です。another day at the office は退屈というより、特別なことが日常の仕事になった比喩です。`],
+      [/trained as a kid/i,`trained は practiced より、指導を受けて技能を鍛えた感じです。昔の場所へ戻った背景を添え、今回は単なる訪問ではなく原点へ帰る体験になっています。`],
+      [/petrified/i,`petrified は nervous よりずっと強く、身がすくむほどの恐怖です。「踊れる」と言い続けた後なので、期待に応えられるかという圧力の大きさを表します。`],
+      [/one of those actors/i,`those は simply actors より、相手も思い当たる「例のタイプの俳優」を指す距離感があります。ここでは踊れると言うだけの人とは違うという自信を台詞として再現します。`],
+      [/dancer-dancer/i,`dancer-dancer は dancer を繰り返し、「名ばかりではなく本物」とカテゴリーを絞る口語です。professional dancer よりくだけていて、少し大げさな自信の再現になります。`],
+      [/west end/i,`the West End は a stage より、実績のある劇場街での経験を具体的に示します。okay? が「ちゃんと実績があるんだからね」という念押しを添えます。`],
+      [/bare room/i,`bare は empty より、飾りも設備もない剥き出しの感じ。木の床と自分だけという場面を描き、実力を隠せない緊張につなげます。`],
+      [/tap shoes on/i,`have got ... on は own と違い、持っているだけでなく今履いている状態です。first time ... in 15 years で、昔の得意なことにもブランクがある不安が出ます。`],
+      [/my feet feel like/i,`feel like の後を言い切らないことで、言葉にならない違和感をそのまま再現しています。uncomfortable と断定するより、その場の戸惑いが生々しく出ます。`],
+      [/do your thing/i,`do your thing は follow these steps より、やり方を指示せず「得意なことを見せて」と任せる感じ。短い励ましでも、期待される側にはプレッシャーがあります。`],
+      [/show me what you/i,`Show me what you got は Please demonstrate your ability より、くだけた挑戦の響きです。励ましにも腕試しにも聞こえ、期待される場の緊張が伝わります。`],
+      [/shoot myself in the foot/i,`shoot myself in the foot は fail と違い、自分の選択で自分を不利にする比喩です。昔の曲で実力を見せるか、過大な自信を露呈するか、という二択をユーモラスに表します。`],
+      [/does live in you/i,`does live は remains より、昔の技能が自分の中で生きているという感覚です。does の強調が、実際に身体が覚えていた驚きと確信を加えます。`],
+      [/started coming back/i,`coming back は remembered より、記憶や感覚が自分の意思で探さなくても戻ってくる感じ。started が、音楽をきっかけに徐々に回復する瞬間を描きます。`],
+      [/could see the (lights|audience)/i,`could see は remembered より、過去の場面が目の前に見えるほど鮮やかだったという表現です。照明・観客を別々に言うことで思い出の映像が段階的に広がります。`],
+      [/happened naturally/i,`happened naturally は I performed well と違い、自分が意識して実行したのでなく身体が自然に動いた感じです。without even が、最初の一歩すら考える必要がなかった驚きを強めます。`],
+      [/buried me/i,`buried me は criticized me より極端な誇張で、「徹底的にやられていた」のような自嘲です。実際の暴力でなく、昔の高い基準で見ればひどい踊りだったという冗談です。`],
+      [/really upset/i,`upset は angry だけに絞らず、失望・動揺・怒りを含められます。相手の自嘲を受け、昔の振付師の厳しさを一緒に想像する軽い応答です。`],
+      [/really exciting/i,`exciting は excited と違い、わくわくした本人でなく出来事の性質を述べます。技術的には不十分でも、再び踊れた体験の価値を前向きに評価しています。`],
+      [/huge undertaking/i,`undertaking は task より、大きな責任と長い準備を引き受ける仕事です。from a prep point of view は、不安の理由を作品全体でなく準備面に絞っています。`],
+      [/big risk/i,`risk は problem と違い、まだ起きていない失敗の可能性です。I think を添えて、作品への不安を事実と断定せず自分の見方として出しています。`],
+      [/big movie/i,`big はここでは物理的なサイズでなく、大作としての規模や注目度。important だけより、作品の大きさが責任や重圧に結びつく感じがあります。`],
+      [/we're ready/i,`ready は looking forward to より、「もう受け止める準備ができている」という積極的な励ましです。心配する俳優に、観客側は楽しみに待っていると返します。`],
+      [/left the room/i,`left the room は disappeared より、不安を人のようにして部屋から出ていかせる比喩です。リハーサルという具体的な場面から疑いが消えた解放感が伝わります。`],
+      [/biggest regret/i,`regret は mistake と違い、客観的な誤りの判定より、自分の中に残る「やめなければよかった」という感情です。biggest がダンスを失った大きさを率直に語ります。`],
+      [/would dance.*club/i,`would dance は danced once と違い、たまに繰り返していたことです。but wouldn't take class との対比で、楽しむ程度と本格的な練習を分けています。`],
+      [/book a film/i,`book はここでは reserve の単なる予約より、映画の出演が決まる業界の言い方です。can learn が、仕事を学びの機会として愛している理由を示します。`],
+      [/square one/i,`from square one は again より、途中から戻るのでなく基礎からやり直す感じ。fulfilling は fun より、心が満たされる長期的な充実感を表します。`],
+      [/^totally(?: agree)?[,.! ]*$/i,`Totally は Yes より同意の強さが前に出て、「全面的にそう思う」というくだけた応答です。`],
+      [/^yeah[, .]+for sure/i,`for sure は maybe と逆で、迷いのない確信。Yeah だけより「うん、間違いない」と同意を強めます。`],
+      [/^yeah(?:[, ]+yeah)*(?:[, ]+right)?[.!]?$/i,`Yeah は Yes より親しみのある相づちです。繰り返すと冷たい「はいはい」でなく、「分かる、その感じ」と理解の勢いが出ます。`],
+      [/^yes[.!]?$/i,`Yes は Yeah よりはっきり肯定する語です。短く答えることで相手の話を止めず、肯定だけを渡しています。`],
+      [/^wow[.!]?$/i,`Wow は Oh より驚きや感心が強く前に出ます。情報を足さず、相手の経験に感情で反応する一語です。`],
+      [/^oh[!,. ]/i,`Oh は気づきや驚きが出た瞬間の声です。man が続く場合は具体的な男性の話でなく、感慨を強める呼びかけになります。`],
+      [/^right[.!]?$/i,`Right は correct という採点ではなく、会話を受ける「その通り／そうなんです」。相手の理解と自分の意図がそろった感じです。`],
+      [/\bkind of\b/i,`kind of は exactly と違い、分類や程度を少しぼかします。記憶や感覚をぴったり言い切らず、「なんというか」と聞き手と一緒に言葉を探す感じです。`],
+      [/\bi mean\b/i,`I mean は therefore の論理的な結論より、「というか」と話を補足・言い直す合図です。考えながら話す親しさが出ます。`],
+      [/\bi think\b/i,`I think は I know より、自分の判断として置くことで断定を和らげます。相手にも別の見方を残す柔らかい語調です。`],
+      [/\byou know\b/i,`you know は as you are aware よりくだけた共有の合図です。「ほら」と聞き手を自分の経験の中へ招き、説明を独り言にしない働きがあります。`],
+      [/\blove\b/i,`love は like より感情と愛着が深い語です。単なる好みを越え、自分にとって特別な存在だと伝えています。`],
+      [/\bwould\b/i,`would は will と違い、仮定の距離や昔の反復を示せます。未来を断言するより、条件を置いて結果を想像したり、当時の場面を振り返ったりする口調です。`],
+      [/\breally\b/i,`really は somewhat と違い、「本当に」と実感を押し出します。事実だけでなく、話し手がその評価に気持ちを込めていることを伝えます。`]
+    ];
+    const PODCAST_TENSE_NOTES={
+      140:`were は単純過去。両親のダンス好きと、子どもの頃に通わされたスクールを、現在とは区切られた当時の背景として回想しています。always はその時期のいつもの状態を表します。`,
+      141:`was called は単純過去。当時通った教室の名前を、過去のエピソードの中で紹介します。今もその名前かどうかは、この文では判断していません。`,
+      142:`was／loved は当時のクラスと両親の気持ちを語る単純過去。would do は未来の予想ではなく、毎年夏になるたび行われた発表会を思い出す過去の反復です。`,
+      143:`was は単純過去。過ぎ去った子ども時代を一つの楽しい時期として評価しているため、is ではなく was で振り返ります。`,
+      144:`Yeah は相づちで、独立した時制を持ちません。相手が語った過去の体験に、今、同意しています。`,
+      145:`remember／is は今の記憶と感想。have／shape は「人生で交わす会話は人格を形作る」という現在にも当てはまる一般的な話なので単純現在です。`,
+      146:`remember は今思い出している気持ち。would come は両親が毎回見に来た過去の習慣で、これから来るという未来の意味ではありません。`,
+      147:`were は当時の状態。watching を添えることで、ただ来たという出来事でなく、そこにいて見守り続ける場面を描きます。`,
+      148:`was having／was marking は過去進行形。父との会話の背景として、その日の不調と、その時レッスンで踊っていた様子を途中の場面として見せています。`,
+      149:`thought は帰り道で抱いた考えという単純過去。had been／had marked はその考えより前のレッスンを振り返る過去完了です。帰り道とダンス中という二つの過去を区別します。`,
+      150:`was は当時の気持ちを再現する導入。引用内の don't care／don't need は、その瞬間の心の声をそのまま述べる現在形です。いま現在の気持ちだという意味ではありません。`,
+      151:`remember は今の記憶、had は父と交わした当時の会話という単純過去。was talking はその会話の中で父が話していた内容を場面として取り出す過去進行形です。`,
+      152:`you're not feeling はその時々の調子を一時的な状態として表す現在進行形。need は「調子にかかわらず最善を見せる」という一般的な教えなので現在形です。`,
+      153:`is は今の感想、had は車内で交わした一回の会話という単純過去。has been はその会話の大切さが過去から大人・プロになった今まで続いているため、現在完了です。`,
+      154:`think は単純現在。いま一度だけ考えているのでなく、その会話を普段から何度も思い返す習慣を a lot とともに示します。`,
+      155:`is／say は今交わしている会話への評価。that is a hard lesson も、子ども時代だけでなく今も難しい教訓として語る現在形です。`,
+      156:`trying is cool の is は、努力することの価値を一般論として語る現在形。to learn／trying そのものに独立した時制はなく、教訓の内容を示します。`,
+      157:`is は現在形。本気を見せると傷つく可能性にさらされる、という人の心理を一般論として述べるためで、過去の一回の出来事だけに限定していません。`,
+      158:`Yeah は相づちなので時制はありません。直前の一般論への理解を短く返しています。`,
+      159:`to look は前の話へ付け足す不定詞の断片で、独立した時制はありません。you care は、本気で大切に思っている状態を現在形で一般的に表します。`,
+      160:`Yeah は相づちで時制を持ちません。相手の説明を受け、同意の姿勢だけを示しています。`,
+      161:`is は人が取りがちな防御反応という一般論なので現在形。I did は自分も大人になってから実際にそうした、という経験を区切って回想する単純過去です。`,
+      162:`were は過去に何度かあった場面、would be／would get はその時期に繰り返した緊張と眠そうな態度。後者は未来予測ではなく過去の反復です。`,
+      163:`Yeah／right の相づちだけで時制はありません。反復して、相手の心理が分かるという反応を強めています。`,
+      164:`You're like はそのような場面を聞き手にも重ねる一般的な現在形。引用内の don't care は、その場の心の声を直接再現した現在形です。`,
+      165:`auditioning は例を挙げる -ing の断片で、これだけでは独立した進行形・時制ではありません。いつかは前の過去の体験談から補います。`,
+      166:`being／yawning は前文の例を続ける -ing の断片。独立した時制でなく、オーディション中のあくびという具体的な様子を当時の場面へ付け足します。`,
+      167:`was は単純過去。当時あくびをした理由が、そのオーディションで緊張していたことだと説明します。`,
+      168:`is は現在形。いまでも、人が経験を通して身につけるのに苦労する教訓だと総括しています。当時だけ難しかった、という過去形ではありません。`,
+      169:`is／show／care は単純現在。特定の一公演でなく、素晴らしい演技に共通する要素として「本気が伝わること」を一般化しています。`,
+      170:`Totally は同意の一語で時制を持ちません。相手の一般論に全面的に賛成しています。`,
+      171:`it's／is は現在形で、失敗の価値についての一般的な考えを示します。if you tried／didn't try は、その失敗に至るまでの挑戦を済んだ行為として振り返る形です。`,
+      172:`Yeah, for sure は相づちと確信の表現で、独立した時制はありません。前文の考えを確かにそうだと受けています。`,
+      173:`don't feel は現在形。全力を出した場合には後悔しにくい、という一般的な結果を述べています。then はここでは過去の一時点でなく「そうすれば」です。`,
+      174:`You're like は失敗した後の心の声を一般的に再現。引用の did は、結果を受け止める時点より前にベストを尽くした行為なので単純過去です。`,
+      175:`wasn't は単純過去。結果が出たあとで、実現しなかった今回の機会を振り返っています。これからの運命を予言する未来形ではありません。`,
+      176:`Little Tom Holland dancing は名詞＋分詞の断片で、独立した時制はありません。子どもの頃に踊る姿を、思い浮かぶ一場面として差し出しています。`,
+      177:`Could watch は「機会があればずっと見ていたい」という仮定・控えめな願望です。could の形だけで過去の能力と解釈せず、前の幼い姿への現在の反応として読みます。`,
+      178:`名前だけの断片なので時制はありません。Janet Jackson という話題を相手へ渡しています。`,
+      179:`肯定の応答だけなので時制はありません。直前の話題を受けて「はい」と返しています。`,
+      180:`love は現在形。Janet Jackson が目的語として文脈から分かるため省略され、今の好みを確かめています。`,
+      181:`love は現在形。いま感じている一時的な出来事でなく、続いている好みなので単純現在を使います。`,
+      182:`Let's は Let us の勧誘表現で時制を直接持ちません。これから一緒に話すことを提案しています。`,
+      183:`感嘆・呼びかけだけなので時制はありません。Oh, man. で話題への強い感慨を示します。`,
+      184:`She's は She is。現在形でジャネットの魅力を恒常的な特徴として評価します。`,
+      185:`She's は She is。talented は進行中の動作でなく才能という特徴なので現在形です。`,
+      186:`grew up は単純過去。成長した時代を現在から振り返ります。we から I／Gen X への切り替えは話しながらの言い直しです。`,
+      187:`was は単純過去でテレビ出演を振り返ります。doing はその出演当時に演じていた内容を付け足す分詞句で、それ自体に独立した時制はありません。`,
+      188:`were like は単純過去で当時の見方を再現します。引用内は Michael's sister という名詞句なので時制はありません。Michael's の 's は所有格です。`,
+      189:`was と had は単純過去。本人の名声・ヒット曲・踊りの実力が確立した過去の時期を語ります。had huge hits は過去完了でなく、単に「ヒット曲があった」です。`,
+      190:`if you asked／she would be は仮定法過去。今、もし五人を挙げるよう頼まれたらという想像で、過去の日の質問ではありません。have been は現在完了で、これまでの影響が今の成功につながっていることを示します。`,
+      191:`Have you met は現在完了の経験。いつ会ったかではなく、今までに一度でも会ったことがあるかを聞くので、Did you meet ではありません。`,
+      192:`I've は I have、met は過去分詞。現在完了＋never で人生の今までに一度も会った経験がないと答えます。`,
+      193:`She's は She is。here は現在の居場所を表すため現在形です。`,
+      194:`she's here は冗談の場面を現在形で再演しています。Oh my God! は時制を持たない感嘆です。`,
+      195:`come は命令形の原形。主語 you を省略し、その場で出てくるよう呼びかけています。`,
+      196:`would have got は「実際には起きた過去」を反対に想像する助動詞＋完了形です。if節は話し言葉で didn't show ですが、整えた仮定法過去完了なら hadn't shown。had an understanding の had は単純過去で、過去完了ではありません。`,
+      197:`would have been spotted は仮定の過去＋受動態。ダンスを始めた事実がなければ才能を見いだされなかった、という想像です。if節は口語の didn't get で、整えるなら hadn't got into dancing です。`,
+      198:`wouldn't have got は過去の事実と反対の結果を想像します。if I didn't do は口語の形で、整えるなら if I hadn't done。現実には舞台に出てエージェントがついた、という背景です。`,
+      199:`was と sought は単純過去。俳優の道へ進んだ当時、自分からそれを探し求めていたわけではないという回想です。`,
+      200:`wanted は単純過去で当時の希望を振り返ります。to be は不定詞で、wanted の内容を述べるため独立した時制はありません。`,
+      201:`was／sat は単純過去で当時の典型的な場面を否定します。引用内 I have は当時の心の声を直接話す現在形で、現在完了ではありません。`,
+      202:`if it hadn't been for は仮定法過去完了で過去の曲との出会いを取り除く想像。wouldn't be ... today は現在への結果で、「過去が違えば今も違う」という混合仮定法です。be sat は英国口語で座っている状態を表します。`,
+      203:`was here は単純過去。were talking／was getting ready は過去進行形で、その来訪時に続いていた会話と、会話で回想した準備中の様子を描きます。`,
+      204:`do feel は現在形を強める do＋原形です。have a strong love は現在の愛情を述べる一般動詞で、完了形ではありません。`,
+      205:`feel／feels は現在形。when people can do it well は一度きりの日時でなく、上手な踊りを見るといつもそう感じるという一般的な状況です。`,
+      206:`feels は現在形で、ダンスから受ける普段の印象を述べます。spiritual は形容詞で動作ではありません。`,
+      207:`love／is は現在形。ダンスが普段から自分の身体によいと感じるため、習慣的な評価として現在形を使います。`,
+      208:`相づちだけなので時制はありません。相手の実感を受け止める応答です。`,
+      209:`is と can は現在形・現在の可能性。if節は一般的な条件で、仮定法過去ではありません。動けば落ち着ける、という普段の効果を述べています。`,
+      210:`is／think／opens は現在形。ダンスが創造性の入口になるという一般的な見方です。that は thing を修飾する関係代名詞で、I think は挿入されます。`,
+      211:`主語 I が省略された (I) totally agree は現在形。相手の今の発言に全面的に同意しています。`,
+      212:`is は現在形で、right now と合わせて現在のダンスとの関係を尋ねます。疑問詞 what＋be動詞＋主語の語順です。`,
+      213:`do you dance は単純現在の疑問文。How often が頻度を聞くため、いま踊っている動作でなく日常の習慣が対象です。`,
+      214:`do you dance は単純現在の疑問文。Where を先頭に置き、習慣的に踊る場所を尋ねます。`,
+      215:`comes は現在の質問への感想、did は last week の完了したリハーサルなので単純過去。we're doing は現在進行形で、現在取り組んでいる映画の計画・制作を説明します。`,
+      216:`感嘆の一語なので時制はありません。新しく聞いた話への驚きです。`,
+      217:`is／don't find は現在形で現在の傾向を述べます。getting は find の目的語 myself の状態変化を説明する分詞で、文全体が現在進行形というわけではありません。`,
+      218:`do／becomes／feels は現在形。反復経験から仕事が自然なものになる一般的な流れで、未来予測でも過去の一回の出来事でもありません。`,
+      219:`went と trained は単純過去で訪問・昔の訓練を振り返ります。is は今もその場所であるという説明、were doing は当時継続して出演・練習していた期間の過去進行形です。`,
+      220:`was は単純過去でリハーサル当日の同席者を説明します。with 以下は同じ時点で一緒にいた人を示します。`,
+      221:`感嘆だけなので時制はありません。経験の大きさに驚いています。`,
+      222:`was petrified はリハーサル時の単純過去。I'd been telling は I had been telling の過去完了進行形で、その時より前から何度も言い続けていたこと。引用の I can dance は当時の自信を直接再現します。`,
+      223:`I'm は I am。本人の自信ありげな台詞を現在形で再現しているので、過去の物語でも台詞内は現在形です。`,
+      224:`I'm は I am。自分が本物のダンサーだと言う当時の台詞をそのまま再現する現在形です。dancer-dancer は口語的な名詞の反復です。`,
+      225:`was は単純過去で、過去の舞台経験を自信の根拠として語ります。okay? は主節を補う確認の一語です。`,
+      226:`相づちなので時制はありません。直前の台詞の再現が的確だと認めています。`,
+      227:`get と is は歴史的現在。過去のリハーサルを、その場へ到着したような臨場感で再現しています。実際に今起きているという意味ではありません。`,
+      228:`I've got ... on は今の装着状態を生々しく再現する have got の形。I've worn は現在完了の経験で、15年という範囲から今回の着用を見ています。first time の前は (It is the) が省略されています。`,
+      229:`I'm like と feel は歴史的現在・直接の心の声。当時の足の違和感をその瞬間の感想として再現します。like の後の内容が途切れた未完の発話です。`,
+      230:`was は単純過去。do your thing は主語 you を省略した命令形で、監督のその場の指示を引用しています。`,
+      231:`Show は命令形、what you got は「持っている力」の内容節。口語の got は標準的には what you've got／what you have。過去の一回の取得を強調する場面ではありません。`,
+      232:`went／Googled／was は単純過去。引用の I'm going to は、その時から見た直後の行動・結果を予想する形です。物語の過去と、その瞬間の心の声を分けています。`,
+      233:`played／was は単純過去で体験を回想。is／does live は現在形で、その体験から気づいた現在にも当てはまる真実を述べます。does は live を強める助動詞です。`,
+      234:`started は単純過去で音楽と記憶が動き出した瞬間です。coming は started の後ろで動作内容を表し、それだけで独立した進行形ではありません。`,
+      235:`could see は過去の知覚・可能性。当時の照明が想像の中で見えるほど鮮明になった体験で、仮定の未来ではありません。`,
+      236:`could see は過去の知覚。音楽を聞いたその時、昔の観客まで鮮明に浮かんだことを述べています。`,
+      237:`happened／was は単純過去。without の後の having は動名詞で、without having to が「必要もなく」。what the first step was は疑問文の倒置でなく内容節の語順です。`,
+      238:`would have buried は実際には起きなかった過去の結果を想像。if I did は口語の条件節で、整えるなら if I had done。did last week は実際の踊り、when I was a kid は比較する昔の時期を指定します。`,
+      239:`would've は would have。been upset は仮定の過去で、もし振付師が見ていたら怒っただろうという前文の想像を引き継ぎます。been＋形容詞なので受動態ではありません。`,
+      240:`was は単純過去でリハーサルの体験を評価します。exciting はその体験が自分をわくわくさせたという形容詞です。`,
+      241:`I've been nervous は現在完了で、準備への不安が今まで続いてきた状態。it's going to be はこれからの準備の大変さを予測します。making は of の後の動名詞です。`,
+      242:`is は現在形で作品への現在の判断。I think を挿入し、リスクの評価を自分の見方として述べます。`,
+      243:`is は現在形で映画の現在の規模を述べます。big は補語の形容詞で、進行する動作ではありません。`,
+      244:`We're は We are。現在すでに歓迎する気持ち・用意があるという状態です。ready は形容詞で未来形ではありません。`,
+      245:`I'm excited は現在の期待。had／left はリハーサル前の不安と終了後の変化という単純過去。Should I be making は当時の迷いを引用し、取り組み中の映画について判断を問います。`,
+      246:`think／is は現在の評価、finished／quit は過去の決定。現在の後悔の中に、いつ何をやめたかという過去の出来事を埋め込んでいます。quit は過去形も同じ形です。`,
+      247:`相づちなので時制はありません。後悔の話を受け止める短い応答です。`,
+      248:`would dance と wouldn't go は過去の習慣。昔、クラブでは踊っていたがレッスンへは行かなかったという反復で、仮定の未来ではありません。`,
+      249:`相づちなので時制はありません。相手の回想の続きへうなずいています。`,
+      250:`love／is／can は現在形で仕事への普段の評価と可能性。can book and learn は映画の仕事が決まれば技術を学べる、という一般的な仕組みです。`,
+      251:`to be able／pick up／try は不定詞の並列で、これから再開できる内容を説明します。I think は現在の考え、it's going to be は今の手応えを根拠に将来の充実を見込む形です。`
     };
     const SECTION4_SENTENCE_IMAGES={
       140:`ダンス好きな両親の熱が家庭全体へ広がり、兄弟全員が土曜日になると同じスクールへ送り出される場面です。parents の好みから children の行動へ、家族の流れが一続きに見えます。`,
@@ -546,7 +1382,7 @@
     function parseTags(v){return String(v||'').split(/[,、]/).map(clean).filter((x,i,a)=>x&&a.indexOf(x)===i)}
     function uniq(a){return [...new Set(a.filter(Boolean))]}
     function isMetaItem(item){return Boolean(item&&item.kind==='quiz'&&(item.ja===META_SRS_MARKER||item.ja===META_NOTE_MARKER||item.ja===META_TRANSCRIPT_MARKER))}
-    function parseNoteRow(row){try{const data=JSON.parse(row.en||'{}');return {title:clean(data.title),body:clean(data.body),links:Array.isArray(data.links)?data.links:[],sourceText:clean(data.sourceText||data.title),translation:clean(data.translation),podcastId:clean(data.podcastId),templateVersion:clean(data.templateVersion)}}catch{return {title:'',body:'',links:[],sourceText:'',translation:'',podcastId:'',templateVersion:''}}}
+    function parseNoteRow(row){try{const data=JSON.parse(row.en||'{}');return {...data,title:clean(data.title),body:clean(data.body),links:Array.isArray(data.links)?data.links:[],sourceText:clean(data.sourceText||data.title),translation:clean(data.translation),podcastId:clean(data.podcastId),templateVersion:clean(data.templateVersion)}}catch{return {title:'',body:'',links:[],sourceText:'',translation:'',podcastId:'',templateVersion:''}}}
     function normalizeTranscriptEntry(entry){if(typeof entry==='string')return {number:'',en:clean(entry),ja:''};return {number:clean(entry?.number),en:clean(entry?.en),ja:clean(entry?.ja)}}
     function parseTranscriptRow(row){try{const data=JSON.parse(row.en||'{}');let entries=Array.isArray(data.entries)?data.entries.map(normalizeTranscriptEntry).filter(x=>x.en||x.ja):[];if(!entries.length&&Array.isArray(data.sentences))entries=data.sentences.map(normalizeTranscriptEntry).filter(x=>x.en||x.ja);return {title:clean(data.title||row.prompt),raw:clean(data.raw),formatted:clean(data.formatted),entries}}catch{return {title:clean(row?.prompt),raw:'',formatted:'',entries:[]}}}
     function isReservedTag(t){return t.startsWith(MATERIAL_PREFIX)||t.startsWith(THEME_PREFIX)}
@@ -579,9 +1415,66 @@
     function stableTextHash(text){let hash=2166136261;for(const char of String(text||'')){hash^=char.charCodeAt(0);hash=Math.imul(hash,16777619)}return(hash>>>0).toString(36)}
     function podcastGrammarText(entry){return clean(entry.g||BUILTIN_PODCAST_GRAMMAR[entry.n])}
     function podcastEntryParts(entry){const match=clean(entry.e).match(/^([^:]+):\s*(.*)$/s);return{speaker:clean(match?.[1]||''),text:clean(match?.[2]||entry.e)}}
-    function section4ReadableChunks(text){return clean(text).replace(/,\s*/g,' / ').replace(/\s+(and|but|because|so|where|even if)\s+/gi,' / $1 ').replace(/(?:\s*\/\s*){2,}/g,' / ')}
-    function section4ExperimentMemoText(entry){const {text}=podcastEntryParts(entry),grammar=podcastGrammarText(entry);return `① 全体の文の構造\n【英文のかたまり】\n${section4ReadableChunks(text)}\n\n【骨組み】\n${entry.s}\n\n② イメージ\n${SECTION4_SENTENCE_IMAGES[entry.n]}\n\n③ ニュアンス\n${entry.x}\n\n④ 時制と文法の解説\n【文法・語法】\n${entry.u}\n\n【時制の理由】\n${grammar}`}
-    function podcastMemoText(entry,pack){if(pack?.memoTemplate===SECTION4_EXPERIMENT_TEMPLATE)return section4ExperimentMemoText(entry);const {speaker,text}=podcastEntryParts(entry),structure=clean(entry.s)||section3Structure(text),usage=clean(entry.u)||section3Usage(text),nuance=clean(entry.x)||section3Nuance(text,speaker),grammar=podcastGrammarText(entry)||section3Grammar(text);return `① 全体の文の構造\n${structure}\n\n② 使い方\n${usage}\n\n③ ニュアンス\n${nuance}\n\n④ 時制と文法の解説\n${grammar}`}
+    function parsePodcastLearningEntry(entry){const raw=clean(entry?.en||entry?.e),numbered=raw.match(/^(?:###\s*|\*\*)?(\d+)[.\s]+\*{0,2}([^:*]+):\*{0,2}\s*(.+)$/s),spoken=raw.match(/^([^:]+):\s*(.*)$/s);return {n:Number(entry?.number||entry?.n||numbered?.[1])||null,e:raw,j:clean(entry?.ja||entry?.j),speaker:clean(numbered?.[2]||spoken?.[1]||''),text:clean(numbered?.[3]||spoken?.[2]||raw).replace(/\\$/,'').trim()}}
+    let builtinPodcastLearningEntries=null;
+    function findBuiltinPodcastEntry(parsed){if(!builtinPodcastLearningEntries)builtinPodcastLearningEntries=BUILTIN_PODCAST_PACKS.flatMap(pack=>pack.entries||parseBuiltinPodcastSource(pack.source));return builtinPodcastLearningEntries.find(entry=>{const p=podcastEntryParts(entry);return p.text===parsed.text&&(!parsed.speaker||p.speaker===parsed.speaker)})||null}
+    function podcastLearningChunks(parsed,builtin){if(builtin&&PODCAST_SENTENCE_CHUNKS[builtin.n])return PODCAST_SENTENCE_CHUNKS[builtin.n].split('|').map(clean);return parsed.text.split(/,\s+|(?<=[.!?])\s+(?=[A-Z])|\s+(?=(?:and|but|because|when|where|if)\s+(?:I|you|he|she|it|we|they|my|the)\b)/i).map(clean).filter(Boolean)}
+    function podcastWordMeaning(word,text){const key=word.toLowerCase().replaceAll('’',"'"),normalized=text.toLowerCase().replaceAll('’',"'");if(/^\d+$/.test(key))return `${word}（数・年数など）`;
+      if(key==="let's")return 'let us の短縮。一緒に〜しよう';
+      if(key==='like')return /\b(?:am|is|are|was|were|i'm|it's|you're)\s+like\b/.test(normalized)?'引用を導く「〜という感じ／こう言った」':/\b(?:feel|feels|look|looks)\s+like\b/.test(normalized)?'〜のように（感じる・見える）':/\b(?:kind of|,\s*like\b)/.test(normalized)?'なんというか（口語のつなぎ）':'〜のように／好む／口語のつなぎ（前後で判断）';
+      if(key==='nervous'&&normalized.includes('nervous system'))return '神経の（system と合わせて神経系）';
+      if(key==='book'&&normalized.includes('film'))return '映画の出演を決める（業界での言い方）';
+      if(key==='got'&&normalized.includes('what you got'))return '持っている（口語。標準的には have／have got）';
+      if(key==='hard'&&/try.*hard/.test(normalized))return '一生懸命に（try の努力の程度）';
+      if(key==='so'&&/^so\b/.test(normalized))return 'だから（前の話を受ける結果）';
+      if(key==='that'&&normalized.includes('that nervous'))return 'それほど（nervous の程度を強める）';
+      if(key.endsWith("n't")){const base=({won:'will',can:'can',ca:'can',sha:'shall'})[key.slice(0,-3)]||key.slice(0,-3);return `${base} not の短縮：${PODCAST_WORD_GLOSSARY[base]||base}＋否定`;}
+      const contraction=key.match(/^(.+)'(m|re|ve|ll|d|s)$/);if(contraction){const [,base,ending]=contraction;if(!['i','you','he','she','it','we','they','that','there','what'].includes(base)&&ending==='s')return `${PODCAST_WORD_GLOSSARY[base]||base}の（所有格）`;const following=normalized.slice(normalized.indexOf(key)+key.length).trim(),expanded={m:'am',re:'are',ve:'have',ll:'will',d:/^(?:(?:never|already|just)\s+)?(?:been|had|done|seen|got|met|made|\w+ed)\b/.test(following)?'had':'would',s:/^(?:(?:never|already|just)\s+)?(?:been|got|done)\b/.test(following)?'has':'is'}[ending];return `${base} ${expanded} の短縮：${PODCAST_WORD_GLOSSARY[base]||base}＋${PODCAST_WORD_GLOSSARY[expanded]||expanded}`;}
+      if(PODCAST_WORD_GLOSSARY[key])return PODCAST_WORD_GLOSSARY[key];if(key.endsWith('s')&&PODCAST_WORD_GLOSSARY[key.slice(0,-1)])return `${PODCAST_WORD_GLOSSARY[key.slice(0,-1)]}（複数・三人称単数の形）`;
+      if(/^[A-Z]/.test(word)&&/\b(?:Janet|Jackson|Tom|Holland|Amy|Billie|Eilish|Billy|Elliot|Fred|Astaire|Paul|King|Coen|Pineapple|Nifty)\b/.test(word))return '人名・作品名・施設名の一部';return '未登録語：和訳と前後の文脈を確認して意味を追記';
+    }
+    function podcastChunkWords(chunk,text){const words=chunk.match(/[A-Za-z]+(?:['’][A-Za-z]+)?|\d+/g)||[],seen=new Set(),definitions=words.filter(word=>{const key=word.toLowerCase();if(seen.has(key))return false;seen.add(key);return true}).map(word=>`${word}：${podcastWordMeaning(word,text)}`),normalized=chunk.toLowerCase().replaceAll('’',"'"),phrases=Object.entries(PODCAST_PHRASE_GLOSSES).filter(([phrase])=>normalized.includes(phrase)).map(([phrase,meaning])=>`${phrase}：${meaning}`);return [...definitions,...(phrases.length?['\n【つなげた意味】',...phrases]:[])].join('\n')}
+    function podcastChunkGrammar(chunk){const points=[],text=chunk.replaceAll('’',"'");
+      if(/\bthere (?:is|are|was|were)\b/i.test(text))points.push('存在構文：there＋be動詞＋名詞で、会話に新しい存在や場面を導入');
+      else if(/\b(?:is|are|was|were|am|it's|she's|i'm|we're|you're)\s+(?:(?:always|so|just|really|very|not)\s+)*(?:a|an|the|huge|cool|nervous|here|there|with|on|electric|talented|vulnerable|ready|excited|upset|important|interesting|funny|petrified)\b/i.test(text))points.push('be動詞＋名詞・形容詞・場所表現：主語が何か、どんな状態かを結ぶ');
+      if(/\b(?:let's|show me|come on|don't worry|do your thing)\b/i.test(text))points.push("命令・勧誘：動詞原形（Let's は Let us の短縮）");
+      if(/\b(?:would(?:n't|'ve)?|could|can|should|will|may|might|must)\b/i.test(text))points.push('助動詞＋原形：能力・判断・仮定・過去の反復などを主動詞に加える');
+      if(/\b(?:would have|would've|wouldn't have)\b/i.test(text))points.push('助動詞＋have＋過去分詞：実現しなかった過去の結果を想像');
+      if(/\b(?:had been|i'd been)\s+\w+ing\b/i.test(text))points.push('過去完了進行形：過去の基準時より前から続いていた動作');
+      else if(!/\b(?:would have|would've|wouldn't have)\b/i.test(text)&&(/\b(?:has|have|had|'ve|'d)\b\s*(?:never\s+|not\s+)?(?:been|met|worn|done|got|seen|\w+ed)\b/i.test(text)||/\b(?:i've|you've|they've|hadn't)\s+(?:never\s+)?(?:been|met|worn|done|got|\w+ed)\b/i.test(text)||/\bhave you met\b/i.test(text)))points.push('完了形：have／has／had＋過去分詞。過去と基準時を結ぶ');
+      if(/\bgoing to\s+\w+/i.test(text))points.push('be going to＋原形：現在の意図・状況から見込む、これからの行動や結果');
+      else if(/\b(?:am|is|are|was|were)\s+(?:always\s+)?\w+ing\b/i.test(text)||/\b(?:i'm|we're|you're|it's)\s+(?:not\s+)?\w+ing\b/i.test(text))points.push('進行形：be動詞＋-ing。基準時の途中にある動作・状態');
+      if(/\b(?:was called|were sent|been spotted|wasn't meant)\b/i.test(text))points.push('受動態：be＋過去分詞。呼ばれる・送られるなど、働きかけを受ける側が主語');
+      if(/\bto\s+(?:be|do|try|learn|present|audition|compete|think|get|list|talk)\b/i.test(text))points.push('to不定詞：to＋原形で行動の内容・目的をひとまとまりにする');
+      if(/\b(?:of|about|for|without)\s+(?:even\s+)?\w+ing\b/i.test(text)||/\b(?:failing|trying)\b/i.test(text))points.push('動名詞：-ing形を「〜すること」として名詞・前置詞の後に置く');
+      if(/\b(?:if|even if|when|because)\b/i.test(text))points.push('従属節：条件・時・理由を接続詞の後ろで説明');
+      if(/^(?:that|who|which|where)\s/i.test(text))points.push('関係節・内容節：前の名詞または発言内容を詳しく説明');
+      if(/\b(?:what|how)\s+(?:I|you|he|she|it|the)\b/i.test(text))points.push('疑問詞の内容節：疑問文の倒置ではなく、疑問詞＋主語＋動詞');
+      if(/\b(?:better than|either|at least|such a)\b/i.test(text))points.push(/better than/i.test(text)?'比較級＋than：二つの内容を比較':/either/i.test(text)?'either A or B：二つの選択肢を並列':/at least/i.test(text)?'at least：最低限の価値を限定する副詞句':'such a＋形容詞＋名詞：名詞句全体を強調');
+      if(/^\s*(?:[“"']?)(?:how often|where|what|have you|do you)\b/i.test(text)&&/\?/.test(text))points.push('直接疑問文：疑問詞・助動詞・be動詞を主語の前に置く');
+      if(/\bany fears I had\b/i.test(text))points.push('fears＋関係代名詞を省略した I had：自分が抱えていた不安、という名詞のまとまり');
+      if(!points.length){if(/^(?:yeah|yes|oh|wow|right|totally)\b/i.test(text))points.push('相づち・省略応答：前の発言から主語・述語を補う');else if(/^(?:My parents|and all of us|that simple little conversation|Little Tom Holland)\b/i.test(text))points.push('名詞句：後ろの動詞につながる主語・話題。「誰が／何が」のまとまり');else if(/^(?:and\s+)?(?:for|from|in|on|about|as|after)\b/i.test(text))points.push('前置詞＋名詞・代名詞：対象・場所・時などを前後の述語へ補足する');else if(/\b(?:is|are|was|were|am|i'm|it's|she's|we're)\b/i.test(text))points.push('be動詞の文：主語と性質・状態・居場所を結ぶ');else if(/^(?:and\s+)?(?:learn|pick|try|look|present|care)\b/i.test(text))points.push('動詞句：前の主語・助動詞・to などとつながり、行動の内容を並べる');else if(/\b(?:went|grew|got|came|said|left|quit|\w+ed)\b/i.test(text))points.push('動詞を含むまとまり：動作や変化を述べ、主語はこの部分または前のかたまりから補う');else if(/\b(?:I|you|we|they|he|she|it)\b/i.test(text))points.push('主語＋動詞を中心に、その後へ対象や状態を加える');else points.push('名詞句・副詞句・分詞句：前後の主語・述語とつなげ、対象や程度・背景を補足する');}
+      return points.join('。')+'。';
+    }
+    function podcastComparisonText(parsed,builtin){const matches=PODCAST_EXPRESSION_COMPARISONS.filter(([pattern])=>pattern.test(parsed.text)).slice(0,3).map(([,explanation])=>explanation);if(!matches.length){if(parsed.text.split(/\s+/).length<=4)matches.push(/\blittle\b/i.test(parsed.text)?'little は small の寸法だけより、幼い姿への親しみ・愛らしさを添えます。':/\bhere\b/i.test(parsed.text)?'here は there より、話し手と同じ場所へ相手を引き込む感じです。登場の冗談では「まさにこの場にいる」という意外さが出ます。':'この短い断片は、完全な説明文より話題・反応をすばやく渡します。名前なら she／he より対象をはっきり示し、相づちなら情報を足さず相手の話を促します。');else if(/\bbut\b/i.test(parsed.text))matches.push('but は and と違い、聞き手の予想をいったん曲げる接続です。前半を認めながら、後半に話し手が強調したい違いを置きます。');else if(/\bbecause\b/i.test(parsed.text))matches.push('because は so と違い、結論の後へ理由を置く言い方です。「こうした、というのも…」と聞き手の疑問に答える流れを作ります。');else matches.push(`原文の「${parsed.text}」は、和訳の「${parsed.j||'前後の発言'}」に加えて、語順・省略で話し手の焦点を示します。類義語での説明が必要な語は、文脈に合わせてメモへ追記できます。`);}
+      return [clean(builtin?.x),...matches].filter(Boolean).join('\n\n');
+    }
+    function podcastMemoText(entry){const parsed=parsePodcastLearningEntry(entry),builtin=findBuiltinPodcastEntry(parsed),chunks=podcastLearningChunks(parsed,builtin),structure=builtin?.s||section3Structure(parsed.text),tense=builtin?(PODCAST_TENSE_NOTES[builtin.n]||podcastGrammarText(builtin)):podcastFallbackTense(parsed.text);return `① 全体の文の構造\n${chunks.map((chunk,index)=>`[${index+1}] ${chunk}`).join('\n')}\n\n${structure}\n\n② かたまりごとの単語の意味\n${chunks.map((chunk,index)=>`【${index+1}】${chunk}\n${podcastChunkWords(chunk,parsed.text)}`).join('\n\n')}\n\n③ ニュアンス・類義語との比較\n${podcastComparisonText(parsed,builtin)}\n\n④ 時制と文法の解説\n【文法・語法：かたまりごと】\n${chunks.map((chunk,index)=>`[${index+1}] ${chunk}\n${podcastChunkGrammar(chunk)}`).join('\n\n')}${builtin?.u?'\n\n'+builtin.u:''}\n\n【時制を選んだ理由】\n${tense}`}
+    function podcastFallbackTense(text){
+      const normalized=text.replaceAll('’',"'"),points=[];
+      if(/^(?:yeah|yes|oh|wow|right|totally|Janet Jackson)[!., ]*$/i.test(normalized))return '相づち・名前の断片なので、独立した時制はありません。意味は前後の会話から補います。';
+      if(/^let's\b/i.test(normalized))return "Let's は勧誘で、独立した過去・現在の時制を示しません。話している今から一緒にする行動を提案します。";
+      if(/\b(?:have|has|I've|you've|we've|they've)\s+(?:never\s+|already\s+|just\s+)?(?:been|done|seen|known|had|got|\w+ed)\b/i.test(normalized))points.push('現在完了は、過去の経験・状態を今へつなげるための形です。特定の過去の日を区切るより、今までの経験や今も残る影響に焦点があります。');
+      if(/\b(?:had|I'd|hadn't)\s+(?:never\s+|already\s+|just\s+)?(?:been|done|seen|known|had|got|\w+ed)\b/i.test(normalized))points.push('過去完了は、語っている過去の場面よりさらに前を振り返るための形です。if と一緒なら、実際の過去とは違う条件を想像している可能性も確認します。');
+      if(/\b(?:was|were)\s+(?:always\s+)?\w+ing\b/i.test(normalized))points.push('過去進行形は、その時に動作の途中だった様子を描きます。一回の完了した出来事だけでなく、背景や続いていた場面を見せる選び方です。');
+      if(/\b(?:am|is|are|I'm|we're|you're|it's)\s+(?:not\s+)?(?!going to\b)\w+ing\b/i.test(normalized))points.push('現在進行形は、今の場面・今取り組んでいる期間に焦点を当てます。普段いつもそうするという習慣とは区別して読みます。');
+      if(/\b(?:will|going to)\b/i.test(normalized))points.push('未来を表す形は、発言する時点から先の行動・結果を見込むためです。going to は今の意図や状況を根拠にし、will は予想・意思などを示します。');
+      if(/\bwould(?:n't|'ve)?\b/i.test(normalized))points.push('would は、if があれば仮定の結果、昔の場面や頻度表現があれば過去の反復を表せます。単語の形だけで未来とせず、この文の条件・時間表現と合わせて読みます。');
+      if(/\b(?:was|were|did|went|got|came|thought|felt|made|said|took|grew|lived|wanted|loved|\w+ed)\b/i.test(normalized))points.push('過去形の部分は、当時の出来事・状態を今とは区切って振り返るためです。完了形の過去分詞や形容詞との区別は、上の文法・語法で確認します。');
+      if(!points.length)points.push('現在形の部分は、今の気持ち・事実、または普段の習慣や一般的な性質を述べるためです。動詞のない名詞句・-ing の断片なら独立した時制はなく、前後の文から時点を補います。');
+      if(/[“"]/.test(normalized))points.push('引用内は当時の台詞を直接再現できます。引用内の現在形と、出来事を語る地の文の過去形は、別の視点として読みます。');
+      return points.join('\n\n');
+    }
     function parseBuiltinPodcastSource(raw){
       const entries=[];String(raw||'').replace(/\r/g,'').split('\n').forEach(sourceLine=>{const line=sourceLine.trim(),match=line.match(/^\*\*(\d+)\.\s*([^:*]+):\*\*\s*(.+)$/);if(match){entries.push({n:Number(match[1]),e:`${clean(match[2])}: ${clean(match[3])}`,j:''});return}if(/^→/.test(line)&&entries.length)entries[entries.length-1].j=clean(line.replace(/^→\s*/,''))});return entries.filter(entry=>entry.e&&entry.j)
     }
@@ -593,11 +1486,9 @@
         if(!existingIds.has(transcriptRow.id)){customItems.push(normalizeItem(transcriptRow));existingIds.add(transcriptRow.id);changed=true}
         sourceEntries.forEach((entry,index)=>{
           const id=`${pack.id}-memo-${entry.n}-${scope}`,existing=customItems.find(x=>x.id===id);
-          const noteData={title:entry.e,sourceText:entry.e,translation:entry.j,body:podcastMemoText(entry,pack),links:[],podcastId,...(pack.memoTemplate?{templateVersion:pack.memoTemplate}:{})};
+          const noteData={title:entry.e,sourceText:entry.e,translation:entry.j,body:podcastMemoText(entry),links:[],podcastId,templateVersion:PODCAST_MEMO_TEMPLATE_VERSION};
           const row={id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify(noteData),prompt:pack.title,answer:'Podcastメモ',choices:[],position:400001+index,updated_at:updatedAt,dirty:true};
           if(!existing){customItems.push(normalizeItem(row));existingIds.add(id);changed=true;return}
-          if(existing.deleted_at)return;
-          try{const data=JSON.parse(existing.en||'{}');if(pack.memoTemplate&&data.templateVersion!==pack.memoTemplate){existing.en=JSON.stringify({...data,...noteData});existing.updated_at=nowIso();existing.dirty=true;changed=true}else if(!clean(data.body).includes('④ 時制と文法の解説')){data.body=`${clean(data.body)}\n\n④ 時制と文法の解説\n${podcastGrammarText(entry)}`;existing.en=JSON.stringify(data);existing.updated_at=nowIso();existing.dirty=true;changed=true}}catch{}
         });
       });
       if(changed)saveLocalItems();
@@ -610,10 +1501,10 @@
       if(/^(are|is|am|was|were|do|does|did|have|has|had|can|could|will|would|should)\b.*\?$/i.test(text))return'be動詞・助動詞を主語の前に置いた疑問文です。相手から確認や説明を引き出す語順になっています。';
       if(/[.!?]\s+(?:And|But|So|Because)\b/i.test(text))return'複数の文を接続表現でつないでいます。前半で事実や反応を述べ、後半で追加・対比・理由を示す構成です。';
       if(/\bbut\b/i.test(text))return'but が二つの内容を対比しています。前半の情報に対して、後半で意外な点や異なる見方を加える構造です。';
-      if(/\b(and|so)\b/i.test(text))return'中心となる主語＋動詞に、and／so で情報や結果を加えた構造です。長い文では接続語ごとに意味のまとまりを取ります。';
+      if(/\band\b/i.test(text)||/^so\b|,\s*so\s+(?:I|you|we|they|it)\b/i.test(text))return'中心となる主語＋動詞に、接続語で情報や結果を加えた構造です。長い文では接続語ごとに意味のまとまりを取ります。';
       if(/\bthat\b/i.test(text))return'that節または関係節を含む文です。主節の後ろで、考え・事実の内容や直前の名詞を詳しく説明しています。';
       if(/\b(when|where|while|if|since)\b/i.test(text))return'主節に時・場所・条件を表す従属節が加わっています。接続詞から後ろが、中心となる出来事の背景を説明します。';
-      if(text.split(/\s+/).length<=5)return'短い応答または省略表現です。主語や動詞の一部は会話の文脈から分かるため、省かれています。';
+      if(/^(?:yeah|yes|oh|wow|right|totally|Janet Jackson|Little Tom Holland)[!., ]*$/i.test(text))return'相づち・名前などの断片です。独立した主語＋述語の文ではなく、前後の会話から意味を補います。';
       return'主語＋動詞を中心に情報を続ける基本構造です。まず「誰が・何が」と中心動詞を捉え、その後の目的語や補足を分けて読みます。';
     }
     function section3Usage(text){
@@ -645,9 +1536,22 @@
       if(!points.length){if(/\b(?:was|were|did|had|went|got|came|thought|felt|made|said|took|grew|lived|wanted|loved)\b/i.test(text))points.push('単純過去が使われ、完了した出来事や当時の状態を回想しています');else points.push('単純現在を中心に、現在の事実・気持ち、または一般的な内容を述べています')}
       return points.slice(0,2).join('。')+'。';
     }
-    function section3MemoText(entry){const parsed=parseNumberedPodcastEntry(entry);if(!parsed)return'';return `① 全体の文の構造\n${section3Structure(parsed.text)}\n\n② 使い方\n${section3Usage(parsed.text)}\n\n③ ニュアンス\n${section3Nuance(parsed.text,parsed.speaker)}\n\n④ 時制と文法の解説\n${section3Grammar(parsed.text)}`}
-    function seedSection3MissingMemos(){
-      let changed=false;transcriptItems().forEach(transcript=>{const data=parseTranscriptRow(transcript);if(!/(?:Section\s*3|セクション\s*3)/i.test(data.title))return;const existingSources=new Set(customItems.filter(x=>x.kind==='quiz'&&x.ja===META_NOTE_MARKER).map(row=>parseNoteRow(row)).filter(note=>note.podcastId===transcript.id).map(note=>clean(note.sourceText)));data.entries.forEach((entry,index)=>{const parsed=parseNumberedPodcastEntry(entry),sourceText=clean(entry.en);if(!parsed||existingSources.has(sourceText))return;const id=`meta-note-section3-${stableTextHash(`${transcript.id}|${parsed.number}|${sourceText}`)}`;if(customItems.some(x=>x.id===id))return;customItems.push(normalizeItem({id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:sourceText,sourceText,translation:clean(entry.ja),body:section3MemoText(entry),links:[],podcastId:transcript.id}),prompt:data.title||transcript.prompt,answer:'Podcastメモ',choices:[],position:Number(transcript.position||Date.now())+(index+1)/1000,updated_at:nowIso(),dirty:true}));existingSources.add(sourceText);changed=true})});if(changed)saveLocalItems();return changed
+    function upgradePodcastMemo(row,entry){if(row.deleted_at)return false;const data=parseNoteRow(row);if(data.templateVersion===PODCAST_MEMO_TEMPLATE_VERSION)return false;row.en=JSON.stringify({...data,previousBody:data.body||data.previousBody||'',body:podcastMemoText(entry),templateVersion:PODCAST_MEMO_TEMPLATE_VERSION});row.updated_at=nowIso();row.dirty=true;return true}
+    function seedAllPodcastMemos(){
+      let changed=false;
+      transcriptItems().forEach(transcript=>{
+        const data=parseTranscriptRow(transcript),notes=customItems.filter(x=>x.kind==='quiz'&&x.ja===META_NOTE_MARKER&&parseNoteRow(x).podcastId===transcript.id),used=new Set();
+        data.entries.forEach((entry,index)=>{
+          if(!clean(entry.en))return;
+          const parsed=parsePodcastLearningEntry(entry),key=`${parsed.speaker}|${parsed.text}`,matching=notes.find(row=>{if(used.has(row.id))return false;const note=parseNoteRow(row),source=parsePodcastLearningEntry({en:note.sourceText});return `${source.speaker}|${source.text}`===key&&clean(note.translation)===clean(entry.ja)})||notes.find(row=>{if(used.has(row.id))return false;const source=parsePodcastLearningEntry({en:parseNoteRow(row).sourceText});return `${source.speaker}|${source.text}`===key});
+          if(matching){used.add(matching.id);if(upgradePodcastMemo(matching,entry))changed=true;return}
+          const id=`meta-note-podcast-${stableTextHash(`${transcript.id}|${parsed.n??index}|${entry.en}`)}`;
+          if(customItems.some(x=>x.id===id))return;
+          customItems.push(normalizeItem({id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:entry.en,sourceText:entry.en,translation:entry.ja,body:podcastMemoText(entry),links:[],podcastId:transcript.id,templateVersion:PODCAST_MEMO_TEMPLATE_VERSION}),prompt:data.title||transcript.prompt,answer:'Podcastメモ',choices:[],position:Number(transcript.position||0)+(index+1)/1000,updated_at:nowIso(),dirty:true}));used.add(id);changed=true;
+        });
+        notes.forEach(row=>{if(!used.has(row.id)){const note=parseNoteRow(row);if(note.sourceText&&upgradePodcastMemo(row,{en:note.sourceText,ja:note.translation}))changed=true}});
+      });
+      if(changed)saveLocalItems();return changed;
     }
     function loadUserTags(){try{userTags=parseTags((JSON.parse(localStorage.getItem(USER_TAGS_STORAGE_KEY)||'[]')||[]).join(','))}catch{userTags=[]}}
     function saveUserTags(){localStorage.setItem(USER_TAGS_STORAGE_KEY,JSON.stringify(userTags))}
@@ -690,7 +1594,7 @@
     function mergeRemoteItems(remoteItems){const byId=new Map(customItems.map(x=>[x.id,x]));remoteItems.map(normalizeItem).forEach(remote=>{const local=byId.get(remote.id);if(!local){byId.set(remote.id,{...remote,dirty:false});return}const lt=new Date(local.updated_at||0).getTime(),rt=new Date(remote.updated_at||0).getTime();if(!local.dirty||rt>=lt)byId.set(remote.id,{...remote,dirty:false})});customItems=[...byId.values()].map(normalizeItem);saveLocalItems()}
     async function pushDirtyItems(){const dirty=customItems.filter(x=>x.dirty);if(!dirty.length)return;const rows=dirty.map(x=>({id:x.id,sync_key:syncConfig.syncKey,kind:x.kind,ja:x.ja,en:x.en,prompt:x.prompt,answer:x.answer,choices:x.choices,tags:x.tags||[],excluded:x.excluded,mastered:x.mastered,position:x.position,updated_at:x.updated_at,deleted_at:x.deleted_at}));await supabaseRequest('?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});const ids=new Set(dirty.map(x=>x.id));customItems=customItems.map(x=>ids.has(x.id)?{...x,dirty:false}:x);saveLocalItems()}
     async function pullRemoteItems(){const q=`?sync_key=eq.${encodeURIComponent(syncConfig.syncKey)}&order=position.asc`;mergeRemoteItems(await supabaseRequest(q))}
-    async function syncWithCloud(reason='manual'){if(isSyncing)return;if(!isSupabaseConfigured()){seedSection3MissingMemos();saveLocalItems();setSyncStatus('ローカル保存中（Supabase未設定）',true);renderAll();return}isSyncing=true;setSyncStatus('同期中...');try{await pushDirtyItems();await pullRemoteItems();if(seedSection3MissingMemos())await pushDirtyItems();setSyncStatus(`同期済み ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);renderAll()}catch(e){console.warn(e);setSyncStatus('オフライン保存中（再接続で同期）',true)}finally{isSyncing=false}}
+    async function syncWithCloud(reason='manual'){if(isSyncing)return;if(!isSupabaseConfigured()){seedBuiltinPodcastPacks();seedAllPodcastMemos();saveLocalItems();setSyncStatus('ローカル保存中（Supabase未設定）',true);renderAll();return}isSyncing=true;setSyncStatus('同期中...');try{if(reason==='startup')await pullRemoteItems();await pushDirtyItems();await pullRemoteItems();seedBuiltinPodcastPacks();if(seedAllPodcastMemos()||customItems.some(x=>x.dirty))await pushDirtyItems();setSyncStatus(`同期済み ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);renderAll()}catch(e){console.warn(e);setSyncStatus('オフライン保存中（再接続で同期）',true)}finally{isSyncing=false}}
     function saveSyncConfig(){const nextKey=clean($('syncKeyInput').value)||DEFAULT_SYNC_KEY;const previous=customItems.map(x=>({...x,sync_key:nextKey,updated_at:nowIso(),dirty:true}));syncConfig={supabaseUrl:clean($('supabaseUrlInput').value),supabaseAnonKey:clean($('supabaseAnonKeyInput').value),syncKey:nextKey};localStorage.setItem(SETTINGS_STORAGE_KEY,JSON.stringify(syncConfig));loadLocalItems();const byId=new Map(customItems.map(x=>[x.id,x]));previous.forEach(x=>byId.set(x.id,normalizeItem(x)));customItems=[...byId.values()];saveLocalItems();$('syncSettingsMessage').textContent='同期設定を保存しました。';renderAll();syncWithCloud('settings')}
     function clearSyncConfig(){localStorage.removeItem(SETTINGS_STORAGE_KEY);syncConfig={supabaseUrl:'',supabaseAnonKey:'',syncKey:DEFAULT_SYNC_KEY};renderSyncSettings();loadLocalItems();renderAll();setSyncStatus('ローカル保存中（Supabase未設定）',true);$('syncSettingsMessage').textContent='同期設定を消去しました。'}
 
@@ -781,9 +1685,10 @@
       $('transcriptSentenceList').innerHTML=shown.length?shown.map(({entry,index})=>{const key=transcriptEntryKey(entry),memoId=memoed.get(key)||'',done=Boolean(memoId),translationKey=`${index}-${stableTextHash(key)}`;return `<div class="transcript-sentence${done?' memoed':''}"${done?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(entry.number||index+1)}</span><div class="transcript-text"><div class="transcript-en">${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div><button class="ghost transcript-add" type="button" data-index="${index}">${done?'メモを見る':'＋ メモ'}</button></div>`}).join(''):`<div class="transcript-empty">${all.length?'検索に一致する文章がありません。':'「新規作成」または既存のスクリプトを選んでください。'}</div>`;
     }
     function podcastMemoItems(){if(!activePodcastId)return[];return noteItems().map(row=>({row,data:parseNoteRow(row)})).filter(x=>x.data.podcastId===activePodcastId).sort((a,b)=>a.row.position-b.row.position)}
+    function previousPodcastMemoMarkup(data){return data.previousBody?`<details class="transcript-translation"><summary>以前の補足メモ</summary><div class="memo-body">${escapeHtml(data.previousBody)}</div></details>`:''}
     function renderPodcastMemos(){
       const notes=podcastMemoItems();$('podcastMemoCount').textContent=`${notes.length}件`;$('podcastMemoButtonCount').textContent=notes.length;
-      $('podcastMemoList').innerHTML=notes.length?notes.map(({row,data},i)=>`<article class="podcast-memo-card${row.id===selectedPodcastMemoId?' focused':''}" data-id="${escapeHtml(row.id)}"><div class="memo-index">${i+1}</div><div class="memo-phrase">${escapeHtml(data.sourceText||data.title)}</div>${data.translation?`<div class="memo-translation">${escapeHtml(data.translation)}</div>`:''}${data.body?`<div class="memo-body">${escapeHtml(data.body)}</div>`:''}<div class="note-actions"><button class="ghost podcast-memo-speak" type="button" data-id="${escapeHtml(row.id)}">再生</button><button class="ghost podcast-memo-edit" type="button" data-id="${escapeHtml(row.id)}">編集</button><button class="danger podcast-memo-delete" type="button" data-id="${escapeHtml(row.id)}">削除</button></div></article>`).join(''):'<div class="transcript-empty">スクリプトの「＋ メモ」を押すと、ここに追加できます。</div>';
+      $('podcastMemoList').innerHTML=notes.length?notes.map(({row,data},i)=>`<article class="podcast-memo-card${row.id===selectedPodcastMemoId?' focused':''}" data-id="${escapeHtml(row.id)}"><div class="memo-index">${i+1}</div><div class="memo-phrase">${escapeHtml(data.sourceText||data.title)}</div>${data.translation?`<div class="memo-translation">${escapeHtml(data.translation)}</div>`:''}${data.body?`<div class="memo-body">${escapeHtml(data.body)}</div>`:''}${previousPodcastMemoMarkup(data)}<div class="note-actions"><button class="ghost podcast-memo-speak" type="button" data-id="${escapeHtml(row.id)}">再生</button><button class="ghost podcast-memo-edit" type="button" data-id="${escapeHtml(row.id)}">編集</button><button class="danger podcast-memo-delete" type="button" data-id="${escapeHtml(row.id)}">削除</button></div></article>`).join(''):'<div class="transcript-empty">スクリプトの「＋ メモ」を押すと、ここに追加できます。</div>';
     }
     function renderPodcastWorkspace(){
       renderPodcastSelector();const row=currentTranscriptRow(),data=currentTranscriptData();
@@ -796,11 +1701,12 @@
       if(!entries.length){$('transcriptStatus').textContent='文字起こし本文を入力してください。';return}
       const formatted=formatTranscriptEntries(entries),existing=currentTranscriptRow(),id=existing?.id||makeId('meta-transcript');activePodcastId=id;localStorage.setItem(ACTIVE_PODCAST_STORAGE_KEY,id);$('transcriptInput').value=formatted;
       upsertLocalItem({...(existing||{}),id,kind:'quiz',ja:META_TRANSCRIPT_MARKER,en:JSON.stringify({title,raw:cleanTranscriptSource(source),formatted,entries}),prompt:title,answer:'transcript',choices:[],position:existing?.position||Date.now()});
+      seedAllPodcastMemos();
       $('transcriptStatus').textContent=`${entries.length}セットに自動整形して保存しました。`;renderPodcastWorkspace();$('podcastImportDetails').open=false;if(!auto)showToast('英語＋和訳をセットで保存しました');
     }
     function resizePodcastMemoBody(){const field=$('podcastMemoBody'),viewHeight=Number(field.dataset.viewHeight)||180;field.style.height='auto';field.style.height=`${Math.max(viewHeight,field.scrollHeight+2)}px`}
     function clearPodcastMemoForm(){$('podcastMemoForm').reset();$('podcastMemoEditingId').value='';$('podcastMemoBody').dataset.viewHeight='';$('savePodcastMemoButton').textContent='このフレーズを追加';resizePodcastMemoBody()}
-    function selectTranscriptSentence(index){const data=currentTranscriptData(),entry=data.entries[index];if(!entry)return;const existing=podcastMemoItems().find(({data:m})=>`${m.sourceText}\n${m.translation}`===transcriptEntryKey(entry));if(existing){editPodcastMemo(existing.row.id);return}$('podcastMemoEditingId').value='';$('podcastMemoPhrase').value=entry.en||'';$('podcastMemoTranslation').value=entry.ja||'';$('podcastMemoBody').value='';$('podcastMemoBody').dataset.viewHeight='';$('savePodcastMemoButton').textContent='このフレーズを追加';openPodcastMemoDrawer();resizePodcastMemoBody();$('podcastMemoBody').focus()}
+    function selectTranscriptSentence(index){const data=currentTranscriptData(),entry=data.entries[index];if(!entry)return;const existing=podcastMemoItems().find(({data:m})=>`${m.sourceText}\n${m.translation}`===transcriptEntryKey(entry));if(existing){editPodcastMemo(existing.row.id);return}$('podcastMemoEditingId').value='';$('podcastMemoPhrase').value=entry.en||'';$('podcastMemoTranslation').value=entry.ja||'';$('podcastMemoBody').value=podcastMemoText(entry);$('podcastMemoBody').dataset.viewHeight='';$('savePodcastMemoButton').textContent='このフレーズを追加';openPodcastMemoDrawer();resizePodcastMemoBody();$('podcastMemoBody').focus()}
     function editPodcastMemo(id){const row=noteItems().find(x=>x.id===id);if(!row)return;const data=parseNoteRow(row),body=$('podcastMemoBody');$('podcastMemoEditingId').value=id;$('podcastMemoPhrase').value=data.sourceText||data.title;$('podcastMemoTranslation').value=data.translation||'';body.value=data.body;$('savePodcastMemoButton').textContent='メモを更新';openPodcastMemoDrawer(id);requestAnimationFrame(()=>{const viewed=$('podcastMemoList').querySelector(`[data-id="${CSS.escape(id)}"] .memo-body`);body.dataset.viewHeight=String(Math.max(180,viewed?.offsetHeight||0));resizePodcastMemoBody()});body.focus()}
     function renderNotePhraseOptions(){const selected=[...$('notePhraseLinks').selectedOptions].map(o=>o.value);$('notePhraseLinks').innerHTML=sentencePairs.map(x=>`<option value="${escapeHtml(x.id)}">${escapeHtml(x.en)} ｜ ${escapeHtml(x.ja)}</option>`).join('');[...$('notePhraseLinks').options].forEach(o=>o.selected=selected.includes(o.value))}
     function renderNotes(){const q=clean($('librarySearch').value).toLowerCase(),m=$('materialFilter').value,t=$('themeFilter').value;const notes=generalNoteItems().map(row=>({row,data:parseNoteRow(row)})).filter(({row,data})=>(!m||row.prompt===m)&&(!t||row.answer===t)&&(!q||`${data.title} ${data.body} ${row.prompt} ${row.answer}`.toLowerCase().includes(q)));$('notesList').innerHTML=notes.length?notes.map(({row:n,data})=>`<div class="note-card"><div class="phrase-meta"><span class="pill">${escapeHtml(n.prompt||'未分類')}</span><span class="pill">${escapeHtml(n.answer||'未分類')}</span></div><h3>${escapeHtml(data.title)}</h3><p>${escapeHtml(data.body)}</p><div class="note-links">${data.links.map(id=>{const p=sentencePairs.find(x=>x.id===id);return p?`<span class="pill">${escapeHtml(p.en)}</span>`:''}).join('')}</div><div class="note-actions"><button class="ghost note-edit" data-id="${escapeHtml(n.id)}">編集</button><button class="danger note-delete" data-id="${escapeHtml(n.id)}">削除</button></div></div>`).join(''):'<div class="empty-state">一般メモはまだありません。</div>'}
@@ -841,7 +1747,7 @@
       $('transcriptSentenceList').addEventListener('click',e=>{if(e.target.closest('.transcript-translation'))return;const btn=e.target.closest('.transcript-add');if(btn){selectTranscriptSentence(Number(btn.dataset.index));return}const row=e.target.closest('.transcript-sentence[data-memo-id]');if(row)editPodcastMemo(row.dataset.memoId)});
       $('transcriptSentenceList').addEventListener('keydown',e=>{if(e.target.closest('.transcript-translation')||e.key!=='Enter'&&e.key!==' ')return;const row=e.target.closest('.transcript-sentence[data-memo-id]');if(row){e.preventDefault();editPodcastMemo(row.dataset.memoId)}});
       $('podcastMemoBody').addEventListener('input',resizePodcastMemoBody);
-      $('podcastMemoForm').addEventListener('submit',e=>{e.preventDefault();const transcript=currentTranscriptRow();if(!transcript){$('transcriptStatus').textContent='先に文字起こしを保存してください。';return}const phrase=clean($('podcastMemoPhrase').value),translation=clean($('podcastMemoTranslation').value);if(!phrase)return;const editing=$('podcastMemoEditingId').value,existing=editing?noteItems().find(x=>x.id===editing):null,previousData=existing?parseNoteRow(existing):{},data=currentTranscriptData(),savedId=editing||makeId('meta-note');upsertLocalItem({...(existing||{}),id:savedId,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({...previousData,title:phrase,sourceText:phrase,translation,body:clean($('podcastMemoBody').value),links:[],podcastId:activePodcastId}),prompt:data.title||transcript.prompt,answer:'Podcastメモ',choices:[],position:existing?.position||Date.now()});selectedPodcastMemoId=savedId;clearPodcastMemoForm();renderPodcastWorkspace();openPodcastMemoDrawer(savedId);showToast(editing?'メモを更新しました':'英語＋和訳をメモに追加しました')});
+      $('podcastMemoForm').addEventListener('submit',e=>{e.preventDefault();const transcript=currentTranscriptRow();if(!transcript){$('transcriptStatus').textContent='先に文字起こしを保存してください。';return}const phrase=clean($('podcastMemoPhrase').value),translation=clean($('podcastMemoTranslation').value);if(!phrase)return;const editing=$('podcastMemoEditingId').value,existing=editing?noteItems().find(x=>x.id===editing):null,previousData=existing?parseNoteRow(existing):{},data=currentTranscriptData(),savedId=editing||makeId('meta-note');upsertLocalItem({...(existing||{}),id:savedId,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({...previousData,title:phrase,sourceText:phrase,translation,body:clean($('podcastMemoBody').value),links:previousData.links||[],podcastId:activePodcastId,templateVersion:PODCAST_MEMO_TEMPLATE_VERSION}),prompt:data.title||transcript.prompt,answer:'Podcastメモ',choices:[],position:existing?.position||Date.now()});selectedPodcastMemoId=savedId;clearPodcastMemoForm();renderPodcastWorkspace();openPodcastMemoDrawer(savedId);showToast(editing?'メモを更新しました':'英語＋和訳をメモに追加しました')});
       $('cancelPodcastMemoButton').addEventListener('click',clearPodcastMemoForm);
       $('podcastMemoList').addEventListener('click',e=>{const speakBtn=e.target.closest('.podcast-memo-speak');if(speakBtn){const row=noteItems().find(x=>x.id===speakBtn.dataset.id);if(row)speak(parseNoteRow(row).sourceText,'en-US');return}const edit=e.target.closest('.podcast-memo-edit');if(edit){editPodcastMemo(edit.dataset.id);return}const del=e.target.closest('.podcast-memo-delete');if(del&&confirm('このフレーズメモを削除しますか？')){softDeleteLocalItem(del.dataset.id);renderPodcastWorkspace()}});
       $('newNoteButton').addEventListener('click',()=>{document.querySelector('.legacy-notes').open=true;openNoteForm()});$('cancelNoteButton').addEventListener('click',closeNoteForm);$('noteForm').addEventListener('submit',e=>{e.preventDefault();const id=$('noteEditingId').value||makeId('meta-note');const links=[...$('notePhraseLinks').selectedOptions].map(o=>o.value);upsertLocalItem({id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:clean($('noteTitle').value),body:clean($('noteBody').value),links,podcastId:''}),prompt:clean($('noteMaterial').value),answer:clean($('noteTheme').value),choices:[],position:Date.now()});closeNoteForm();renderAll();showToast('メモを保存しました')});$('notesList').addEventListener('click',e=>{const ed=e.target.closest('.note-edit');if(ed){const n=customItems.find(x=>x.id===ed.dataset.id);if(n){document.querySelector('.legacy-notes').open=true;openNoteForm(n)}return}const del=e.target.closest('.note-delete');if(del&&confirm('このメモを削除しますか？'))softDeleteLocalItem(del.dataset.id)});
@@ -854,7 +1760,7 @@
     function saveLearningSettings(){localStorage.setItem(SPEAKING_MODE_STORAGE_KEY,$('speakingMode').value);localStorage.setItem(SPEAKING_REPEAT_STORAGE_KEY,$('repeatCount').value);localStorage.setItem(SPEAKING_RATE_STORAGE_KEY,$('speakingRate').value);localStorage.setItem(VOICE_PREF_STORAGE_KEY,$('voicePreference').value);localStorage.setItem(KEEP_AWAKE_STORAGE_KEY,$('keepAwakeToggle').checked?'1':'0')}
     function loadLearningSettings(){const mode=localStorage.getItem(SPEAKING_MODE_STORAGE_KEY)||'ja-en';if([...$('speakingMode').options].some(o=>o.value===mode))$('speakingMode').value=mode;const rep=localStorage.getItem(SPEAKING_REPEAT_STORAGE_KEY)||'1';$('repeatCount').value=rep;const rate=localStorage.getItem(SPEAKING_RATE_STORAGE_KEY)||'0.92';$('speakingRate').value=rate;const voice=localStorage.getItem(VOICE_PREF_STORAGE_KEY)||'default';$('voicePreference').value=voice;$('keepAwakeToggle').checked=localStorage.getItem(KEEP_AWAKE_STORAGE_KEY)==='1';$('reviewDailyLimit').value=localStorage.getItem(DAILY_LIMIT_STORAGE_KEY)||'20'}
 
-    function init(){loadSyncConfig();loadUserTags();loadLocalItems();seedBuiltinPodcastPacks();seedSection3MissingMemos();loadLearningSettings();if(localStorage.getItem(DRAWER_COLLAPSED_STORAGE_KEY)==='1'&&!isCompactLayout())document.body.classList.add('drawer-collapsed');bindEvents();renderAll();setSyncStatus(isSupabaseConfigured()?'同期待機中':'ローカル保存中（Supabase未設定）',!isSupabaseConfigured());if(isSupabaseConfigured())syncWithCloud('startup');syncTimer=setInterval(()=>syncWithCloud('auto'),SYNC_INTERVAL_MS);if(canUseSpeech()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices()}catch{}}}
+    function init(){loadSyncConfig();loadUserTags();loadLocalItems();if(!isSupabaseConfigured()){seedBuiltinPodcastPacks();seedAllPodcastMemos()}loadLearningSettings();if(localStorage.getItem(DRAWER_COLLAPSED_STORAGE_KEY)==='1'&&!isCompactLayout())document.body.classList.add('drawer-collapsed');bindEvents();renderAll();setSyncStatus(isSupabaseConfigured()?'同期待機中':'ローカル保存中（Supabase未設定）',!isSupabaseConfigured());if(isSupabaseConfigured())syncWithCloud('startup');syncTimer=setInterval(()=>syncWithCloud('auto'),SYNC_INTERVAL_MS);if(canUseSpeech()){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices()}catch{}}}
     init();
   })();
   </script>
