@@ -61,6 +61,11 @@
 
     @media(max-width:900px){.podcast-start{grid-template-columns:1fr}.podcast-new-card{min-width:0}.podcast-toolbar{grid-template-columns:1fr 1fr}}
     @media(max-width:620px){.podcast-setup>summary{align-items:flex-start;padding:11px 12px}.podcast-setup-copy>span{font-size:11px}.podcast-setup-toggle{min-width:54px}.podcast-setup-body{padding:11px}.podcast-toolbar{grid-template-columns:1fr}.podcast-picker{max-height:210px}.podcast-option{min-height:44px;padding:7px 8px}.transcript-sentence{grid-template-columns:30px minmax(0,1fr)}.transcript-add{grid-column:2;justify-self:start}.podcast-pane-head{align-items:flex-start}.transcript-pane .podcast-pane-head{flex-direction:column}.podcast-memo-drawer{width:100vw}.podcast-memo-list{padding-bottom:32px}}
+    .podcast-listening{position:sticky;top:0;z-index:5;width:min(900px,100%);margin:0 auto 10px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:8px}.podcast-listening audio{display:block;width:100%;height:40px}.listening-options{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:4px;font-size:12px;color:var(--muted)}.listening-options label{display:inline-flex;align-items:center;gap:5px}.listening-options select{width:auto;min-height:30px;padding:3px 6px}.listening-status{margin-left:auto}.listening-actions{display:flex;flex-wrap:wrap;gap:5px}.transcript-sentence[data-listening-cue]{scroll-margin-top:105px}.transcript-sentence[data-listening-cue][aria-current]{border-color:var(--good);background:var(--goodbg)}
+    .listening-options label{white-space:nowrap}.listening-options input[type=checkbox]{width:auto;min-height:0;margin:0;accent-color:var(--primary)}
+    .transcript-sentence[data-listening-cue].memoed{cursor:auto}
+    @media(max-width:860px){.podcast-listening{top:var(--topbar)}.transcript-sentence[data-listening-cue]{scroll-margin-top:calc(var(--topbar) + 112px)}}
+    @media(max-width:620px){.listening-actions{grid-column:2}}
   </style>
 </head>
 <body>
@@ -155,6 +160,14 @@
           </details>
 
           <div class="podcast-workspace">
+            <div id="podcastListening" class="podcast-listening" hidden>
+              <audio id="podcastAudio" controls preload="metadata" aria-label="英語リスニング音声"></audio>
+              <div class="listening-options">
+                <label>速度 <select id="podcastAudioRate"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1×</option><option value="1.15">1.15×</option><option value="1.25">1.25×</option></select></label>
+                <label><input id="podcastAudioFollow" type="checkbox" checked> 自動スクロール</label>
+                <span id="podcastAudioStatus" class="listening-status" role="status">米国英語・合成音声</span>
+              </div>
+            </div>
             <section class="podcast-pane transcript-pane" aria-label="文字起こし一覧">
               <div class="podcast-pane-head"><div class="podcast-pane-heading"><h3 id="activePodcastTitle">スクリプト</h3><span id="transcriptCount">0セット</span></div><button id="podcastMemoPaneButton" class="ghost" type="button">メモを見る</button></div>
               <div class="podcast-pane-tools"><input id="transcriptSearch" type="search" placeholder="文字起こし内を検索"></div>
@@ -213,6 +226,7 @@
   <aside id="playbar" class="playbar" hidden><div class="playbar-inner"><div id="playbarStatus" class="playbar-status">待機中</div><button id="previousPhraseButton" class="ghost">← 前へ</button><button id="barPlayButton" class="primary">再生</button><button id="barStopButton" class="secondary" disabled>停止</button><button id="nextPhraseButton" class="ghost">次へ →</button></div></aside>
   <div id="toast" class="toast"></div>
 
+  <script src="assets/a2-good-language-learner.js"></script>
   <script>
   (()=>{
     'use strict';
@@ -253,6 +267,68 @@
       {id:'builtin-quiz-5',kind:'quiz',prompt:'マーケティング戦略',answer:'marketing strategy',tags:['仕事'],choices:['marketing strategy','market research','sales target'],position:5}
     ];
     const PODCAST_MEMO_TEMPLATE_VERSION='podcast-word-chunks-v2';
+    const A2_LESSON=typeof A2_LISTENING_LESSON==='undefined'?null:A2_LISTENING_LESSON;
+    const A2_CUE_BY_TEXT=new Map((A2_LESSON?.entries||[]).map((entry,index)=>[entry.e,index]));
+    const KEVIN_PODCAST_ID='builtin-podcast-kevin-japan-parents';
+    const KEVIN_TRANSLATIONS=`
+［英語以外の音声］ポッドキャストへようこそ。みなさん、こんにちは。よし、これを取り上げよう。
+それじゃなくて、そっち。あ、違う、その一つじゃなくて、そっちだ。うん。このDMじゃないな。あ、違う、こっちのDMだ。
+それで、ええと……［英語以外の音声］。よし。
+ああ、なるほど。ありがとう。うーん、僕は親になったことがないから、親の立場でそれが正しいかどうかは言えないけどね。
+そうだね。日本に戻りたくないからって、その人がわがまますぎるのか。僕らもまだ子どもだしね。でも、いや、その……自分の人生って、
+やっぱり自分のものだと思うんだ。だから、戻りたくないなら、祖父母にその子の面倒を見てもらうのも……息子だったか娘だったか忘れたけど、それも、
+一つの選択肢だと思う。それをわがままだとは思わないよ。そうそう。親が健康でいることは、子どもたちにとっても、
+いいことだよね。心の健康の話ね。うんうん。例えば、お父さんを残してみんなで日本へ引っ越して、
+日本で働いたり何もかも一人でやったりして、彼女が言っていたように体調を崩すかもしれない。それじゃ、その子だって、
+日本で楽しく過ごすことにはつながらないよね。うん、そうだね。
+だから心が健康でいること、自分がいたい場所にいることってすごく大事だよね。うん。娘さん二人にとってもね。
+そう、すごく大事だよね。じゃあ、高校生くらいの年齢で海外へ行くことについてだけど、
+ケビンの場合はどうだった？　うん、僕はね、ええと……。
+中学を卒業したとき、日本に戻りたいと思ったんだ。高校からでも大学からでもいい。どちらにせよ、日本で働きたい気持ちはあった。
+それで両親に「いずれ日本で働くって決めているなら、もっと早くから日本で生活を始めたら？　そうすれば日本に、
+早く慣れるし、そのほうがいいよね」って言われたんだ。それで、僕より三つ年上の姉も「私も日本に戻りたい。
+向こうの大学に行きたい」って言ってた。ちょうどタイミングが同じだったんだ。三歳差だから、姉が大学に入る時期と、
+僕が高校に入る時期が重なった。じゃあみんなで行こうってなって、僕と姉と母の三人が、そのタイミングで日本に行ったんだ。
+うん、それで三人で暮らした。なるほど。じゃあ、お母さんは日本に戻ることにためらいはなかったの？　むしろ戻りたかったとか？
+本人がどう思っていたか、アメリカに残りたかったのか日本に行きたかったのか、正直よく分からない。でも僕から見ると、戻りたかったんじゃないかな。あまり、
+英語が話せないし、日本で生まれ育ったから。なるほど。じゃあ日本に戻るのは全然問題なかったんだね。うん、日本の、
+食べ物が好きだったし。たぶんアメリカより日本のほうが好きだったと思う。なるほど、三人ともどちらかというと日本に帰りたい気持ちだったんだね。うんうん。
+そう。それで日本にいる間は……［一部聞き取り不明］。実際、父はアメリカに残ることになってたんだ。だから、それがね、
+一つの大きな難点だった。僕が日本に行くことで寂しいことといえば、父に頻繁には会えなくなること。
+その頃飼っていた犬のハンナにもね。［笑い］うん。それは本当に、よく考えて天秤にかけなきゃいけなかった。でも日本へ行くことにしたんだ。
+なるほど。じゃあ、今回のメッセージとはまったく同じ状況ではないわけだね。うん。でも、
+日本へ戻ると決めたときって、ケビンは、
+15歳だったんだよね。言わなかったけど、中学を卒業した直後でしょ？　そう。そこで決めたんだよね。うん、自分の、
+人生に関わる決断をしたんだね。そう。じゃあ、当時は自分の人生のことを自分で決められるくらい、度胸があったと思う？　もしこの相談者の立場だったら、
+一人でも日本へ戻って、祖父母の家に住もうとした？　うん。仮にあのとき母が「いや、私は、
+アメリカに残りたい」って言って、姉も「私もアメリカに残る。ケビン、日本へ行きたいなら一人で行くことになるよ」って言ったとしても、
+たぶん同じことをしたと思う。「分かった、一人で行くよ」って。むしろ、わくわくしてたかもしれない。
+「やった、一人で暮らせるんだ」って。もちろん家族と離れる寂しさはあるけどね。それでも当時の僕には、
+将来へのわくわくしか見えてなかった気がする。その未来が日本にあったんだよね。もしすごく寂しくなったら、たぶん何か対処したと思う。もしかしたら、
+戻ってたかもしれない。でも、そのときはそれが問題じゃなかった。うんうん。とにかく楽しみだった。だから一人で行くとしても、その選択をしたと思うよ。
+うん。祖父母と過ごしながら高校へ通うとか、あるいは本当に一人で暮らすとかね。そう。僕が世間知らずだっただけかもしれないけど、
+たぶんそう考えてたと思う。なるほど。そういえば、君がフランスへ行ったときも、両親は一緒じゃなくて、一人で、
+寂しいこともあったよね。うん。行くのは簡単に決められた？　一人だってことは、そこまで問題じゃなかった？
+うん、それは全然問題じゃなかった。そもそも、日本やアメリカで暮らすときみたいに、フランスに長く住むわけじゃなかったから。留学生として行っただけで、たった、
+一か月、いや、一年だった。そこが違うね。でも、とにかく全然違う文化、全然違う国で、一人でやってみるという面はあった。
+言葉も違うしね。それ自体が目的じゃなかったけど、僕にもわくわくする経験だった。寂しくもあったけどね。家族が大好きだから、フランスに着いたばかりのときは泣いたよ。
+［一部聞き取り不明］。でも、それでも自分で望んだことだったんだよね。経験として、人生の訓練みたいなものとして。
+うん、分かる。そうだね。でも僕の場合は一年だけだったから、一年が終われば自動的に、
+日本に帰ることになってた。確かに。ずっと日本で生活しようと決めた君とは、そこが違うよね。そうだね。将来、日本で働くつもりで、
+日本に引っ越したわけだから。僕はそうじゃなかった。一年だけフランスに行って、いろんな経験をして、奮闘して、
+成長して帰ってくるのが目標だった。なるほど。僕の場合はずっと日本で暮らすつもりの決断だった。うん。だから、それはずっと大変な決断だと思うな。
+まあ、もちろん戻ることもできるし、二度と帰れないわけじゃない。でも僕から見ると、大きな一歩だし、大きな決断だよ。確かにね。
+うん。それに、15歳って、大人が思う以上にいろんなことができると思うんだ。僕も15歳のときは、
+本当にできるか分からなかったけど、日本で一人でも暮らしていける、なんとかやっていけると思ってた。仕事を探すとかね。うん。
+そうね。高校生って、意外とたくましいんじゃないかな。まだ子どもではあるけど、同時にエネルギーもあるしね。
+うん。それに、成長する絶好の機会でもあるよね。そうそう。何とも言えないけど、十分やっていける力はあると思うよ。
+かなりいい経験になると思うな。もちろん、彼は日本人で日本語も話せるんだから、言葉の問題はないわけだし。日本に戻って、
+祖父母のところで暮らすんだよね。うん。僕が同じ状況だったら……確かに、僕の場合と似てるね。同じ状況ならね。
+うん。まあ、あくまで僕の意見と君の意見であって、こうしなさいって助言しているわけじゃないし、
+正解があることでもない。そういうつもりじゃないけど、僕には楽しそうだし、すごくいい経験に思える。やってみたら、って。うん、同感。でもその前に、
+いちばん大事なのは健康でいること。そう、心も体もね。本当にそうだね。よし。
+楽しみな将来だね。うん、本当にそう。みなさん、聞いてくれてありがとう。ありがとう、バイバイ。
+`.trim().split(/\r?\n/);
     const BUILTIN_PODCAST_PACKS=[{
       id:'builtin-podcast-section-4-full-effort',title:'Section 4｜ダンスと「全力を出す」という教え',entries:[
         {n:140,e:`Tom: My parents were always huge fans of dancing, and all of us were sent to this kind of Saturday school.`,j:`両親は昔からダンスが大好きで、僕たち兄弟はみんな、こういう土曜日のスクールに通わされていました。`,s:`前半は My parents＋were＋huge fans of dancing のSVC。後半は all of us＋were sent の受動態で、to以下が行き先です。`,u:`be a huge fan of ... は「〜が大好き」。be sent to ... は「〜へ行かされる／通わされる」です。`,x:`were sent には親の方針で通った感じがあります。this kind of は学校の種類を少し曖昧にする会話表現です。`},
@@ -446,7 +522,7 @@
 → だからもう一度それができて、ダンスを一から学び直して、また取り戻していけるのは、きっとすごく充実した経験になると思います。
 `
     },{
-      id:'builtin-podcast-kevin-japan-parents',title:'ケビンが日本に行った時の親の心境は？',entries:`
+      id:KEVIN_PODCAST_ID,title:'ケビンが日本に行った時の親の心境は？',entries:`
 foreign
 podcast hello hello guys
 all right doing
@@ -786,8 +862,8 @@ all righty wow
 exciting future huh yeah exciting future
 yeah yeah that's right
 thanks listening guys thank you bye-bye
-`.trim().split(/\n\s*\n/).map((paragraph,index)=>({n:index+1,e:paragraph.replace(/\s+/g,' '),j:''}))
-    }];
+`.trim().split(/\n\s*\n/).map((paragraph,index)=>({n:index+1,e:paragraph.replace(/\s+/g,' '),j:KEVIN_TRANSLATIONS[index]}))
+    },...(A2_LESSON?[A2_LESSON]:[])];
     const BUILTIN_PODCAST_GRAMMAR={
       140:`were は過去形で、両親の好みと当時の習慣を回想しています。were sent は過去の受動態。always は頻度副詞でbe動詞の後に置かれます。`,
       141:`was called は「call A B」の単純過去・受動態です。主語 It が名付けられる側なので be動詞＋過去分詞になります。`,
@@ -1820,20 +1896,38 @@ london|ロンドン（地名）
     function parseBuiltinPodcastSource(raw){
       const entries=[];String(raw||'').replace(/\r/g,'').split('\n').forEach(sourceLine=>{const line=sourceLine.trim(),match=line.match(/^\*\*(\d+)\.\s*([^:*]+):\*\*\s*(.+)$/);if(match){entries.push({n:Number(match[1]),e:`${clean(match[2])}: ${clean(match[3])}`,j:''});return}if(/^→/.test(line)&&entries.length)entries[entries.length-1].j=clean(line.replace(/^→\s*/,''))});return entries.filter(entry=>entry.e&&entry.j)
     }
+    function fillKevinTranslations(row,entries){
+      if(!row||row.deleted_at)return false;
+      const data=parseTranscriptRow(row),translations=new Map(entries.map(entry=>[entry.en,entry.ja]));
+      let changed=false;
+      for(const entry of data.entries){
+        if(!entry.ja&&translations.has(entry.en)){entry.ja=translations.get(entry.en);changed=true}
+      }
+      if(changed)Object.assign(row,{en:JSON.stringify({...data,entries:data.entries,formatted:formatTranscriptEntries(data.entries)}),updated_at:nowIso(),dirty:true});
+      const storedTranslations=new Map(data.entries.map(entry=>[entry.en,entry.ja]));
+      for(const note of noteItems()){
+        const data=parseNoteRow(note),translation=storedTranslations.get(data.sourceText);
+        if(data.podcastId===row.id&&!data.translation&&translation){Object.assign(note,{en:JSON.stringify({...data,translation}),updated_at:nowIso(),dirty:true});changed=true}
+      }
+      return changed;
+    }
     function seedBuiltinPodcastPacks(){
       const existingIds=new Set(customItems.map(x=>x.id)),scope=stableScopeSuffix(),updatedAt='2026-09-19T00:00:00.000Z';let changed=false;
       BUILTIN_PODCAST_PACKS.forEach((pack,packIndex)=>{
         const sourceEntries=pack.entries||parseBuiltinPodcastSource(pack.source),podcastId=`${pack.id}-${scope}`,entries=sourceEntries.map(({n,e,j})=>({number:n,en:e,ja:j})),formatted=formatTranscriptEntries(entries);
+        if(pack.id===KEVIN_PODCAST_ID&&fillKevinTranslations(customItems.find(row=>row.id===podcastId),entries))changed=true;
         const transcriptRow={id:podcastId,kind:'quiz',ja:META_TRANSCRIPT_MARKER,en:JSON.stringify({title:pack.title,raw:formatted,formatted,entries}),prompt:pack.title,answer:'transcript',choices:[],position:400000+packIndex,updated_at:updatedAt,dirty:true};
         if(!existingIds.has(transcriptRow.id)){customItems.push(normalizeItem(transcriptRow));existingIds.add(transcriptRow.id);changed=true}
         sourceEntries.forEach((entry,index)=>{
-          const id=`${pack.id}-memo-${entry.n}-${scope}`,existing=customItems.find(x=>x.id===id);
+          const id=`${pack.id}-memo-${entry.n}-${scope}`;
+          if(existingIds.has(id))return;
           const noteData={title:entry.e,sourceText:entry.e,translation:entry.j,body:podcastMemoText(entry),links:[],podcastId,templateVersion:PODCAST_MEMO_TEMPLATE_VERSION};
           const row={id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify(noteData),prompt:pack.title,answer:'Podcastメモ',choices:[],position:400001+index,updated_at:updatedAt,dirty:true};
-          if(!existing){customItems.push(normalizeItem(row));existingIds.add(id);changed=true;return}
+          customItems.push(normalizeItem(row));existingIds.add(id);changed=true;
         });
       });
       if(changed)saveLocalItems();
+      return changed;
     }
     function parseNumberedPodcastEntry(entry){const match=clean(entry?.en).match(/^###\s*(\d+)\s+\*\*([^:*]+):\*\*\s*(.+)$/s);return match?{number:Number(match[1]),speaker:clean(match[2]),text:clean(match[3])}:null}
     function section3Structure(text){
@@ -2010,7 +2104,7 @@ london|ロンドン（地名）
       const rows=transcriptItems(),remembered=localStorage.getItem(ACTIVE_PODCAST_STORAGE_KEY)||'';
       if(!activePodcastId&&rows.some(x=>x.id===remembered))activePodcastId=remembered;
       if(activePodcastId&&!rows.some(x=>x.id===activePodcastId)){activePodcastId='';localStorage.removeItem(ACTIVE_PODCAST_STORAGE_KEY)}
-      $('podcastPicker').innerHTML=rows.length?rows.map(row=>{const data=parseTranscriptRow(row),selected=row.id===activePodcastId;return `<button class="podcast-option${selected?' active':''}" type="button" data-id="${escapeHtml(row.id)}" role="option" aria-selected="${selected?'true':'false'}"><span class="podcast-option-bullet" aria-hidden="true"></span><span class="podcast-option-copy"><strong>${escapeHtml(data.title||row.prompt||'名称未設定')}</strong><small>${data.entries.length}セット</small></span></button>`}).join(''):'<div class="transcript-empty">保存済みスクリプトはありません。</div>';
+      $('podcastPicker').innerHTML=rows.length?rows.map(row=>{const data=parseTranscriptRow(row),selected=row.id===activePodcastId;return `<button class="podcast-option${selected?' active':''}" type="button" data-id="${escapeHtml(row.id)}" role="option" aria-selected="${selected?'true':'false'}"><span class="podcast-option-bullet" aria-hidden="true"></span><span class="podcast-option-copy"><strong>${escapeHtml(data.title||row.prompt||'名称未設定')}</strong><small>${data.entries.length}セット${podcastListeningSource(row)?' · 音声付き':''}</small></span></button>`}).join(''):'<div class="transcript-empty">保存済みスクリプトはありません。</div>';
       $('deletePodcastButton').disabled=!activePodcastId;
       $('podcastEditorHeading').textContent=activePodcastId?'スクリプトを編集':'新規スクリプトを作成';
     }
@@ -2019,12 +2113,56 @@ london|ロンドン（地名）
     function openPodcastMemoDrawer(noteId=''){selectedPodcastMemoId=noteId||'';renderPodcastMemos();document.body.classList.add('podcast-memo-open');$('podcastMemoDrawer').setAttribute('aria-hidden','false');if(noteId)requestAnimationFrame(()=>$('podcastMemoList').querySelector(`[data-id="${CSS.escape(noteId)}"]`)?.scrollIntoView({block:'center'}))}
     function closePodcastMemoDrawer(){document.body.classList.remove('podcast-memo-open');$('podcastMemoDrawer').setAttribute('aria-hidden','true')}
     function transcriptEntryKey(entry){return `${clean(entry?.en)}\n${clean(entry?.ja)}`}
+    let activeListeningCue=null;
+    function podcastListeningSource(row){return A2_LESSON&&row?.id===`${A2_LESSON.id}-${stableScopeSuffix()}`?A2_LESSON.audio:''}
+    function renderPodcastListening(row){
+      const panel=$('podcastListening'),audio=$('podcastAudio');
+      const src=podcastListeningSource(row);
+      panel.hidden=!src;
+      if((audio.getAttribute('src')||'')===src)return;
+      audio.pause();activeListeningCue=null;
+      if(src)audio.setAttribute('src',src);else audio.removeAttribute('src');
+      audio.load();
+      audio.defaultPlaybackRate=audio.playbackRate=Number($('podcastAudioRate').value);
+      $('podcastAudioStatus').textContent='米国英語・合成音声';
+    }
+    function listeningCueAt(time){
+      let index=A2_LESSON.entries.length-1;
+      while(index>0&&time<A2_LESSON.entries[index].start)index--;
+      return index;
+    }
+    function updateListeningHighlight(force=false){
+      if($('podcastListening').hidden)return;
+      const audio=$('podcastAudio'),list=$('transcriptSentenceList');
+      const next=(audio.currentTime>0||!audio.paused)&&!audio.ended?listeningCueAt(audio.currentTime):null;
+      if(!force&&next===activeListeningCue)return;
+      const changed=next!==activeListeningCue;
+      activeListeningCue=next;
+      list.querySelector('[data-listening-cue][aria-current]')?.removeAttribute('aria-current');
+      if(next===null)return;
+      const row=list.querySelector(`[data-listening-cue="${next}"]`);
+      row?.setAttribute('aria-current','true');
+      if(changed&&row&&!audio.paused&&$('podcastAudioFollow').checked&&$('podcast').classList.contains('active')&&!document.body.classList.contains('podcast-memo-open'))row.scrollIntoView({block:'nearest',behavior:'instant'});
+    }
+    function playListeningCue(index){
+      if($('podcastListening').hidden||!A2_LESSON?.entries[index])return;
+      const audio=$('podcastAudio');
+      try{audio.currentTime=A2_LESSON.entries[index].start;audio.play().catch(error=>{if(error.name!=='AbortError')$('podcastAudioStatus').textContent='音声を再生できません。プレーヤーから再試行してください。'});}
+      catch{$('podcastAudioStatus').textContent='音声の位置を変更できません。プレーヤーから再試行してください。';}
+    }
     function renderTranscriptSentences(){
       const data=currentTranscriptData(),query=clean($('transcriptSearch').value).toLowerCase(),memoed=new Map(podcastMemoItems().map(({row,data})=>[`${data.sourceText}\n${data.translation}`,row.id]));
       const all=data.entries||[],shown=all.map((entry,index)=>({entry,index})).filter(x=>!query||`${x.entry.en} ${x.entry.ja}`.toLowerCase().includes(query));
       const openTranslations=openTranscriptTranslations.get(activePodcastId)||new Set();
       $('transcriptCount').textContent=query?`${shown.length} / ${all.length}セット`:`${all.length}セット`;
-      $('transcriptSentenceList').innerHTML=shown.length?shown.map(({entry,index})=>{const key=transcriptEntryKey(entry),memoId=memoed.get(key)||'',done=Boolean(memoId),translationKey=`${index}-${stableTextHash(key)}`;return `<div class="transcript-sentence${done?' memoed':''}"${done?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(entry.number||index+1)}</span><div class="transcript-text"><div class="transcript-en">${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div><button class="ghost transcript-add" type="button" data-index="${index}">${done?'メモを見る':'＋ メモ'}</button></div>`}).join(''):`<div class="transcript-empty">${all.length?'検索に一致する文章がありません。':'「新規作成」または既存のスクリプトを選んでください。'}</div>`;
+      $('transcriptSentenceList').innerHTML=shown.length?shown.map(({entry,index})=>{
+        const key=transcriptEntryKey(entry),memoId=memoed.get(key)||'',done=Boolean(memoId),translationKey=`${index}-${stableTextHash(key)}`;
+        const cue=$('podcastListening').hidden?undefined:A2_CUE_BY_TEXT.get(entry.en),hasCue=cue!==undefined;
+        const memoButton=`<button class="ghost transcript-add" type="button" data-index="${index}">${done?'メモを見る':'＋ メモ'}</button>`;
+        const actions=hasCue?`<div class="listening-actions"><button class="ghost transcript-add listening-seek" type="button" data-cue="${cue}" title="この段落から再生" aria-label="段落${index+1}から再生">▶ ここから</button>${memoButton}</div>`:memoButton;
+        return `<div class="transcript-sentence${done?' memoed':''}"${hasCue?` data-listening-cue="${cue}"`:''}${done&&!hasCue?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(entry.number||index+1)}</span><div class="transcript-text"><div class="transcript-en"${hasCue?' lang="en-US"':''}>${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div>${actions}</div>`;
+      }).join(''):`<div class="transcript-empty">${all.length?'検索に一致する文章がありません。':'「新規作成」または既存のスクリプトを選んでください。'}</div>`;
+      updateListeningHighlight(true);
     }
     function podcastMemoItems(){if(!activePodcastId)return[];return noteItems().map(row=>({row,data:parseNoteRow(row)})).filter(x=>x.data.podcastId===activePodcastId).sort((a,b)=>a.row.position-b.row.position)}
     function previousPodcastMemoMarkup(data){return data.previousBody?`<details class="transcript-translation"><summary>以前の補足メモ</summary><div class="memo-body">${escapeHtml(data.previousBody)}</div></details>`:''}
@@ -2036,7 +2174,7 @@ london|ロンドン（地名）
       renderPodcastSelector();const row=currentTranscriptRow(),data=currentTranscriptData();
       if(row){if(document.activeElement!==$('podcastTitleInput'))$('podcastTitleInput').value=data.title||'';if(document.activeElement!==$('transcriptInput'))$('transcriptInput').value=data.formatted||formatTranscriptEntries(data.entries)||data.raw||'';$('transcriptStatus').textContent=`保存済み：${data.entries.length}セット`;}else if(!$('transcriptInput').value){$('transcriptStatus').textContent='文字起こしを添付するか貼り付けてください。'}
       $('activePodcastTitle').textContent=row?(data.title||'名称未設定のスクリプト'):'スクリプトを選択してください';$('podcastMemoOpenButton').disabled=!row;$('podcastMemoPaneButton').disabled=!row;
-      renderTranscriptSentences();renderPodcastMemos();
+      renderPodcastListening(row);renderTranscriptSentences();renderPodcastMemos();
     }
     async function saveTranscriptFromInput(auto=false){
       const title=clean($('podcastTitleInput').value)||'名称未設定のポッドキャスト',source=$('transcriptInput').value,entries=splitTranscriptIntoEntries(source);
@@ -2066,7 +2204,7 @@ london|ロンドン（地名）
     function isCompactLayout(){return window.matchMedia('(max-width:860px)').matches}
     function openMainDrawer(){if(isCompactLayout())document.body.classList.add('drawer-open');else{document.body.classList.remove('drawer-collapsed');localStorage.setItem(DRAWER_COLLAPSED_STORAGE_KEY,'0')}}
     function closeMainDrawer(){if(isCompactLayout())document.body.classList.remove('drawer-open');else{document.body.classList.add('drawer-collapsed');localStorage.setItem(DRAWER_COLLAPSED_STORAGE_KEY,'1')}}
-    function switchPage(id){stopSpeech();document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav-button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$('mobileTitle').textContent=document.querySelector(`.nav-button[data-page="${id}"]`)?.textContent.trim()||'1秒スピーキング';document.body.classList.remove('drawer-open');if(id!=='podcast')closePodcastMemoDrawer();renderPlaybarVisibility();if(id==='speaking'){refreshSpeakingQueue();renderSpeakingList()}if(id==='home'){buildReviewQueue(true);renderStats();renderHomeReview()}if(id==='library')renderLibrary();if(id==='podcast')renderPodcastWorkspace();window.scrollTo({top:0})}
+    function switchPage(id){stopSpeech();document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('.nav-button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));$('mobileTitle').textContent=document.querySelector(`.nav-button[data-page="${id}"]`)?.textContent.trim()||'1秒スピーキング';document.body.classList.remove('drawer-open');if(id!=='podcast'){$('podcastAudio').pause();closePodcastMemoDrawer()}renderPlaybarVisibility();if(id==='speaking'){refreshSpeakingQueue();renderSpeakingList()}if(id==='home'){buildReviewQueue(true);renderStats();renderHomeReview()}if(id==='library')renderLibrary();if(id==='podcast')renderPodcastWorkspace();window.scrollTo({top:0})}
 
     function bindEvents(){
       $('menuButton').addEventListener('click',openMainDrawer);$('drawerReopenButton').addEventListener('click',openMainDrawer);$('drawerCloseButton').addEventListener('click',closeMainDrawer);$('scrim').addEventListener('click',closeMainDrawer);document.querySelectorAll('.nav-button').forEach(b=>b.addEventListener('click',()=>switchPage(b.dataset.page)));
@@ -2085,13 +2223,19 @@ london|ロンドン（地名）
       $('podcastFileInput').addEventListener('change',async()=>{const file=$('podcastFileInput').files?.[0];if(!file)return;try{const text=await file.text();if(!clean($('podcastTitleInput').value))$('podcastTitleInput').value=file.name.replace(/\.(txt|srt|vtt)$/i,'');$('transcriptInput').value=formatTranscriptText(text);$('transcriptStatus').textContent='ファイルを読み込み、自動整形しています…';await saveTranscriptFromInput(true);showToast('英語＋和訳をセットで自動整形しました')}catch(err){$('transcriptStatus').textContent=`ファイルを読み込めませんでした: ${err.message||err}`}});
       $('deletePodcastButton').addEventListener('click',()=>{const row=currentTranscriptRow();if(!row)return;if(!confirm('この文字起こしと、それに紐づく右側のメモを削除しますか？'))return;podcastMemoItems().forEach(({row:n})=>{const item=customItems.find(x=>x.id===n.id);if(item){item.deleted_at=nowIso();item.updated_at=item.deleted_at;item.dirty=true}});const target=customItems.find(x=>x.id===row.id);if(target){target.deleted_at=nowIso();target.updated_at=target.deleted_at;target.dirty=true}saveLocalItems();activePodcastId='';selectedPodcastMemoId='';localStorage.removeItem(ACTIVE_PODCAST_STORAGE_KEY);closePodcastMemoDrawer();renderAll();scheduleQuickSync();showToast('ポッドキャストノートを削除しました')});
       $('transcriptSearch').addEventListener('input',renderTranscriptSentences);
+      const podcastAudio=$('podcastAudio');
+      ['timeupdate','seeking','play','pause','ended'].forEach(event=>podcastAudio.addEventListener(event,()=>updateListeningHighlight()));
+      podcastAudio.addEventListener('play',stopSpeech);
+      podcastAudio.addEventListener('playing',()=>{$('podcastAudioStatus').textContent='米国英語・合成音声'});
+      podcastAudio.addEventListener('error',()=>{if(!$('podcastListening').hidden)$('podcastAudioStatus').textContent='音声を読み込めません。接続を確認してください。'});
+      $('podcastAudioRate').addEventListener('change',()=>{podcastAudio.defaultPlaybackRate=podcastAudio.playbackRate=Number($('podcastAudioRate').value)});
       $('transcriptSentenceList').addEventListener('toggle',e=>{const details=e.target;if(!details.matches('.transcript-translation')||!e.currentTarget.contains(details))return;const podcastId=details.dataset.podcastId,key=details.dataset.translationKey;if(!podcastId||!key)return;let openTranslations=openTranscriptTranslations.get(podcastId);if(!openTranslations){openTranslations=new Set();openTranscriptTranslations.set(podcastId,openTranslations)}if(details.open)openTranslations.add(key);else openTranslations.delete(key)},true);
-      $('transcriptSentenceList').addEventListener('click',e=>{if(e.target.closest('.transcript-translation'))return;const btn=e.target.closest('.transcript-add');if(btn){selectTranscriptSentence(Number(btn.dataset.index));return}const row=e.target.closest('.transcript-sentence[data-memo-id]');if(row)editPodcastMemo(row.dataset.memoId)});
+      $('transcriptSentenceList').addEventListener('click',e=>{if(e.target.closest('.transcript-translation'))return;const seek=e.target.closest('.listening-seek');if(seek){playListeningCue(Number(seek.dataset.cue));return}const btn=e.target.closest('.transcript-add');if(btn){selectTranscriptSentence(Number(btn.dataset.index));return}const row=e.target.closest('.transcript-sentence[data-memo-id]');if(row)editPodcastMemo(row.dataset.memoId)});
       $('transcriptSentenceList').addEventListener('keydown',e=>{if(e.target.closest('.transcript-translation')||e.key!=='Enter'&&e.key!==' ')return;const row=e.target.closest('.transcript-sentence[data-memo-id]');if(row){e.preventDefault();editPodcastMemo(row.dataset.memoId)}});
       $('podcastMemoBody').addEventListener('input',resizePodcastMemoBody);
       $('podcastMemoForm').addEventListener('submit',e=>{e.preventDefault();const transcript=currentTranscriptRow();if(!transcript){$('transcriptStatus').textContent='先に文字起こしを保存してください。';return}const phrase=clean($('podcastMemoPhrase').value),translation=clean($('podcastMemoTranslation').value);if(!phrase)return;const editing=$('podcastMemoEditingId').value,existing=editing?noteItems().find(x=>x.id===editing):null,previousData=existing?parseNoteRow(existing):{},data=currentTranscriptData(),savedId=editing||makeId('meta-note');upsertLocalItem({...(existing||{}),id:savedId,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({...previousData,title:phrase,sourceText:phrase,translation,body:clean($('podcastMemoBody').value),links:previousData.links||[],podcastId:activePodcastId,templateVersion:PODCAST_MEMO_TEMPLATE_VERSION}),prompt:data.title||transcript.prompt,answer:'Podcastメモ',choices:[],position:existing?.position||Date.now()});selectedPodcastMemoId=savedId;clearPodcastMemoForm();renderPodcastWorkspace();openPodcastMemoDrawer(savedId);showToast(editing?'メモを更新しました':'英語＋和訳をメモに追加しました')});
       $('cancelPodcastMemoButton').addEventListener('click',clearPodcastMemoForm);
-      $('podcastMemoList').addEventListener('click',e=>{const speakBtn=e.target.closest('.podcast-memo-speak');if(speakBtn){const row=noteItems().find(x=>x.id===speakBtn.dataset.id);if(row)speak(parseNoteRow(row).sourceText,'en-US');return}const edit=e.target.closest('.podcast-memo-edit');if(edit){editPodcastMemo(edit.dataset.id);return}const del=e.target.closest('.podcast-memo-delete');if(del&&confirm('このフレーズメモを削除しますか？')){softDeleteLocalItem(del.dataset.id);renderPodcastWorkspace()}});
+      $('podcastMemoList').addEventListener('click',e=>{const speakBtn=e.target.closest('.podcast-memo-speak');if(speakBtn){const row=noteItems().find(x=>x.id===speakBtn.dataset.id);if(row){podcastAudio.pause();speak(parseNoteRow(row).sourceText,'en-US')}return}const edit=e.target.closest('.podcast-memo-edit');if(edit){editPodcastMemo(edit.dataset.id);return}const del=e.target.closest('.podcast-memo-delete');if(del&&confirm('このフレーズメモを削除しますか？')){softDeleteLocalItem(del.dataset.id);renderPodcastWorkspace()}});
       $('newNoteButton').addEventListener('click',()=>{document.querySelector('.legacy-notes').open=true;openNoteForm()});$('cancelNoteButton').addEventListener('click',closeNoteForm);$('noteForm').addEventListener('submit',e=>{e.preventDefault();const id=$('noteEditingId').value||makeId('meta-note');const links=[...$('notePhraseLinks').selectedOptions].map(o=>o.value);upsertLocalItem({id,kind:'quiz',ja:META_NOTE_MARKER,en:JSON.stringify({title:clean($('noteTitle').value),body:clean($('noteBody').value),links,podcastId:''}),prompt:clean($('noteMaterial').value),answer:clean($('noteTheme').value),choices:[],position:Date.now()});closeNoteForm();renderAll();showToast('メモを保存しました')});$('notesList').addEventListener('click',e=>{const ed=e.target.closest('.note-edit');if(ed){const n=customItems.find(x=>x.id===ed.dataset.id);if(n){document.querySelector('.legacy-notes').open=true;openNoteForm(n)}return}const del=e.target.closest('.note-delete');if(del&&confirm('このメモを削除しますか？'))softDeleteLocalItem(del.dataset.id)});
       $('phraseImageInput').addEventListener('change',()=>previewSelectedImage($('phraseImageInput').files?.[0]));$('removePhraseImageButton').addEventListener('click',()=>{pendingImageRemoval=true;$('phraseImageInput').value='';clearImagePreview();$('formMessage').textContent='画像を削除対象にしました。保存すると反映されます。'});
       $('itemForm').addEventListener('submit',async e=>{e.preventDefault();const editing=$('editingId').value;const ja=clean($('jaInput').value),en=clean($('enInput').value);if(!ja||!en)return;const tags=composeTags($('tagsInput').value,$('materialInput').value,$('themeInput').value);userTags=uniq(userTags.concat(regularTags({tags})));saveUserTags();const existing=editing?(customItems.find(x=>x.id===editing)||sentencePairs.find(x=>x.id===editing)):null;const sentence=upsertLocalItem({...existing,id:editing||makeId('sentence'),kind:'sentence',ja,en,tags,position:existing?.position||Date.now()});try{await saveSelectedPhraseImage(sentence.id)}catch(err){$('formMessage').textContent=`フレーズは保存しましたが、画像保存に失敗しました: ${err.message||err}`;renderAll();return}const prompt=clean($('promptInput').value),answer=clean($('answerInput').value);if(prompt&&answer)upsertLocalItem({id:makeId('quiz'),kind:'quiz',prompt,answer,choices:uniq([answer,clean($('choiceAInput').value),clean($('choiceBInput').value)]),tags,position:Date.now()+.1});$('formMessage').textContent=editing?'フレーズと画像を更新しました。':'フレーズを追加しました。';if(!editing)clearItemForm();else await loadImagePreview(sentence.id);renderAll();showToast(editing?'更新しました':'追加しました')});$('clearFormButton').addEventListener('click',clearItemForm);$('importCsvButton').addEventListener('click',importCsv);$('clearCsvButton').addEventListener('click',()=>{$('csvInput').value='';$('csvMessage').textContent=''});$('itemManager').addEventListener('click',e=>{const ed=e.target.closest('.manager-edit');if(ed){editSentence(ed.dataset.id);return}const del=e.target.closest('.manager-delete');if(del&&confirm('このデータを削除しますか？'))softDeleteLocalItem(del.dataset.id)});
