@@ -227,6 +227,7 @@
   <div id="toast" class="toast"></div>
 
   <script src="assets/a2-good-language-learner.js"></script>
+  <script src="assets/b1-cafe-weekend.js"></script>
   <script>
   (()=>{
     'use strict';
@@ -268,7 +269,8 @@
     ];
     const PODCAST_MEMO_TEMPLATE_VERSION='podcast-word-chunks-v2';
     const A2_LESSON=typeof A2_LISTENING_LESSON==='undefined'?null:A2_LISTENING_LESSON;
-    const A2_CUE_BY_TEXT=new Map((A2_LESSON?.entries||[]).map((entry,index)=>[entry.e,index]));
+    const B1_CAFE_LESSON=typeof B1_CAFE_LISTENING_LESSON==='undefined'?null:B1_CAFE_LISTENING_LESSON;
+    const LISTENING_LESSONS=[A2_LESSON,B1_CAFE_LESSON].filter(Boolean);
     const KEVIN_PODCAST_ID='builtin-podcast-kevin-japan-parents';
     const KEVIN_TRANSLATIONS=`
 ［英語以外の音声］ポッドキャストへようこそ。みなさん、こんにちは。よし、これを取り上げよう。
@@ -863,7 +865,7 @@ exciting future huh yeah exciting future
 yeah yeah that's right
 thanks listening guys thank you bye-bye
 `.trim().split(/\n\s*\n/).map((paragraph,index)=>({n:index+1,e:paragraph.replace(/\s+/g,' '),j:KEVIN_TRANSLATIONS[index]}))
-    },...(A2_LESSON?[A2_LESSON]:[])];
+    },...LISTENING_LESSONS];
     const BUILTIN_PODCAST_GRAMMAR={
       140:`were は過去形で、両親の好みと当時の習慣を回想しています。were sent は過去の受動態。always は頻度副詞でbe動詞の後に置かれます。`,
       141:`was called は「call A B」の単純過去・受動態です。主語 It が名付けられる側なので be動詞＋過去分詞になります。`,
@@ -2104,7 +2106,7 @@ london|ロンドン（地名）
       const rows=transcriptItems(),remembered=localStorage.getItem(ACTIVE_PODCAST_STORAGE_KEY)||'';
       if(!activePodcastId&&rows.some(x=>x.id===remembered))activePodcastId=remembered;
       if(activePodcastId&&!rows.some(x=>x.id===activePodcastId)){activePodcastId='';localStorage.removeItem(ACTIVE_PODCAST_STORAGE_KEY)}
-      $('podcastPicker').innerHTML=rows.length?rows.map(row=>{const data=parseTranscriptRow(row),selected=row.id===activePodcastId;return `<button class="podcast-option${selected?' active':''}" type="button" data-id="${escapeHtml(row.id)}" role="option" aria-selected="${selected?'true':'false'}"><span class="podcast-option-bullet" aria-hidden="true"></span><span class="podcast-option-copy"><strong>${escapeHtml(data.title||row.prompt||'名称未設定')}</strong><small>${data.entries.length}セット${podcastListeningSource(row)?' · 音声付き':''}</small></span></button>`}).join(''):'<div class="transcript-empty">保存済みスクリプトはありません。</div>';
+      $('podcastPicker').innerHTML=rows.length?rows.map(row=>{const data=parseTranscriptRow(row),selected=row.id===activePodcastId;return `<button class="podcast-option${selected?' active':''}" type="button" data-id="${escapeHtml(row.id)}" role="option" aria-selected="${selected?'true':'false'}"><span class="podcast-option-bullet" aria-hidden="true"></span><span class="podcast-option-copy"><strong>${escapeHtml(data.title||row.prompt||'名称未設定')}</strong><small>${data.entries.length}セット${podcastListeningLesson(row)?' · 音声付き':''}</small></span></button>`}).join(''):'<div class="transcript-empty">保存済みスクリプトはありません。</div>';
       $('deletePodcastButton').disabled=!activePodcastId;
       $('podcastEditorHeading').textContent=activePodcastId?'スクリプトを編集':'新規スクリプトを作成';
     }
@@ -2113,28 +2115,36 @@ london|ロンドン（地名）
     function openPodcastMemoDrawer(noteId=''){selectedPodcastMemoId=noteId||'';renderPodcastMemos();document.body.classList.add('podcast-memo-open');$('podcastMemoDrawer').setAttribute('aria-hidden','false');if(noteId)requestAnimationFrame(()=>$('podcastMemoList').querySelector(`[data-id="${CSS.escape(noteId)}"]`)?.scrollIntoView({block:'center'}))}
     function closePodcastMemoDrawer(){document.body.classList.remove('podcast-memo-open');$('podcastMemoDrawer').setAttribute('aria-hidden','true')}
     function transcriptEntryKey(entry){return `${clean(entry?.en)}\n${clean(entry?.ja)}`}
-    let activeListeningCue=null;
-    function podcastListeningSource(row){return A2_LESSON&&row?.id===`${A2_LESSON.id}-${stableScopeSuffix()}`?A2_LESSON.audio:''}
+    let activeListeningLesson=null,activeListeningCue=null;
+    function podcastListeningLesson(row){
+      if(!row)return null;
+      const scope=stableScopeSuffix();
+      return LISTENING_LESSONS.find(lesson=>row.id===`${lesson.id}-${scope}`)||null;
+    }
+    function renderPodcastAudioLabel(){
+      $('podcastAudioStatus').textContent=activeListeningLesson?.audioLabel||'米国英語・合成音声';
+    }
     function renderPodcastListening(row){
       const panel=$('podcastListening'),audio=$('podcastAudio');
-      const src=podcastListeningSource(row);
+      activeListeningLesson=podcastListeningLesson(row);
+      const src=activeListeningLesson?.audio||'';
       panel.hidden=!src;
       if((audio.getAttribute('src')||'')===src)return;
       audio.pause();activeListeningCue=null;
       if(src)audio.setAttribute('src',src);else audio.removeAttribute('src');
       audio.load();
       audio.defaultPlaybackRate=audio.playbackRate=Number($('podcastAudioRate').value);
-      $('podcastAudioStatus').textContent='米国英語・合成音声';
+      renderPodcastAudioLabel();
     }
-    function listeningCueAt(time){
-      let index=A2_LESSON.entries.length-1;
-      while(index>0&&time<A2_LESSON.entries[index].start)index--;
+    function listeningCueAt(time,entries){
+      let index=entries.length-1;
+      while(index>0&&time<entries[index].start)index--;
       return index;
     }
     function updateListeningHighlight(force=false){
-      if($('podcastListening').hidden)return;
+      if(!activeListeningLesson)return;
       const audio=$('podcastAudio'),list=$('transcriptSentenceList');
-      const next=(audio.currentTime>0||!audio.paused)&&!audio.ended?listeningCueAt(audio.currentTime):null;
+      const next=(audio.currentTime>0||!audio.paused)&&!audio.ended?listeningCueAt(audio.currentTime,activeListeningLesson.entries):null;
       if(!force&&next===activeListeningCue)return;
       const changed=next!==activeListeningCue;
       activeListeningCue=next;
@@ -2145,22 +2155,25 @@ london|ロンドン（地名）
       if(changed&&row&&!audio.paused&&$('podcastAudioFollow').checked&&$('podcast').classList.contains('active')&&!document.body.classList.contains('podcast-memo-open'))row.scrollIntoView({block:'nearest',behavior:'instant'});
     }
     function playListeningCue(index){
-      if($('podcastListening').hidden||!A2_LESSON?.entries[index])return;
+      const entry=activeListeningLesson?.entries[index];
+      if(!entry)return;
       const audio=$('podcastAudio');
-      try{audio.currentTime=A2_LESSON.entries[index].start;audio.play().catch(error=>{if(error.name!=='AbortError')$('podcastAudioStatus').textContent='音声を再生できません。プレーヤーから再試行してください。'});}
+      try{audio.currentTime=entry.start;audio.play().catch(error=>{if(error.name!=='AbortError')$('podcastAudioStatus').textContent='音声を再生できません。プレーヤーから再試行してください。'});}
       catch{$('podcastAudioStatus').textContent='音声の位置を変更できません。プレーヤーから再試行してください。';}
     }
     function renderTranscriptSentences(){
       const data=currentTranscriptData(),query=clean($('transcriptSearch').value).toLowerCase(),memoed=new Map(podcastMemoItems().map(({row,data})=>[`${data.sourceText}\n${data.translation}`,row.id]));
       const all=data.entries||[],shown=all.map((entry,index)=>({entry,index})).filter(x=>!query||`${x.entry.en} ${x.entry.ja}`.toLowerCase().includes(query));
+      const cueByText=new Map((activeListeningLesson?.entries||[]).map((entry,index)=>[entry.e,index]));
+      const language=activeListeningLesson?.language||'en-US';
       const openTranslations=openTranscriptTranslations.get(activePodcastId)||new Set();
       $('transcriptCount').textContent=query?`${shown.length} / ${all.length}セット`:`${all.length}セット`;
       $('transcriptSentenceList').innerHTML=shown.length?shown.map(({entry,index})=>{
         const key=transcriptEntryKey(entry),memoId=memoed.get(key)||'',done=Boolean(memoId),translationKey=`${index}-${stableTextHash(key)}`;
-        const cue=$('podcastListening').hidden?undefined:A2_CUE_BY_TEXT.get(entry.en),hasCue=cue!==undefined;
+        const cue=cueByText.get(entry.en),hasCue=cue!==undefined;
         const memoButton=`<button class="ghost transcript-add" type="button" data-index="${index}">${done?'メモを見る':'＋ メモ'}</button>`;
         const actions=hasCue?`<div class="listening-actions"><button class="ghost transcript-add listening-seek" type="button" data-cue="${cue}" title="この段落から再生" aria-label="段落${index+1}から再生">▶ ここから</button>${memoButton}</div>`:memoButton;
-        return `<div class="transcript-sentence${done?' memoed':''}"${hasCue?` data-listening-cue="${cue}"`:''}${done&&!hasCue?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(entry.number||index+1)}</span><div class="transcript-text"><div class="transcript-en"${hasCue?' lang="en-US"':''}>${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div>${actions}</div>`;
+        return `<div class="transcript-sentence${done?' memoed':''}"${hasCue?` data-listening-cue="${cue}"`:''}${done&&!hasCue?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(entry.number||index+1)}</span><div class="transcript-text"><div class="transcript-en"${hasCue?` lang="${escapeHtml(language)}"`:''}>${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div>${actions}</div>`;
       }).join(''):`<div class="transcript-empty">${all.length?'検索に一致する文章がありません。':'「新規作成」または既存のスクリプトを選んでください。'}</div>`;
       updateListeningHighlight(true);
     }
@@ -2226,7 +2239,7 @@ london|ロンドン（地名）
       const podcastAudio=$('podcastAudio');
       ['timeupdate','seeking','play','pause','ended'].forEach(event=>podcastAudio.addEventListener(event,()=>updateListeningHighlight()));
       podcastAudio.addEventListener('play',stopSpeech);
-      podcastAudio.addEventListener('playing',()=>{$('podcastAudioStatus').textContent='米国英語・合成音声'});
+      podcastAudio.addEventListener('playing',renderPodcastAudioLabel);
       podcastAudio.addEventListener('error',()=>{if(!$('podcastListening').hidden)$('podcastAudioStatus').textContent='音声を読み込めません。接続を確認してください。'});
       $('podcastAudioRate').addEventListener('change',()=>{podcastAudio.defaultPlaybackRate=podcastAudio.playbackRate=Number($('podcastAudioRate').value)});
       $('transcriptSentenceList').addEventListener('toggle',e=>{const details=e.target;if(!details.matches('.transcript-translation')||!e.currentTarget.contains(details))return;const podcastId=details.dataset.podcastId,key=details.dataset.translationKey;if(!podcastId||!key)return;let openTranslations=openTranscriptTranslations.get(podcastId);if(!openTranslations){openTranslations=new Set();openTranscriptTranslations.set(podcastId,openTranslations)}if(details.open)openTranslations.add(key);else openTranslations.delete(key)},true);
