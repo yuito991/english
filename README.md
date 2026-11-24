@@ -8,6 +8,7 @@ GitHub Pagesで公開するための英語学習アプリです。
 - `assets/a2-good-language-learner.js`: A2リスニング教材の本文と段落ごとの再生位置
 - `assets/a2-good-language-learner.mp3`: [Kokoro](https://github.com/hexgrad/kokoro) の米国英語音声で生成したナレーション
 - `assets/b1-cafe-weekend.js` と `assets/b1-cafe-weekend.mp3`: カフェを題材にしたB1台本と豪州英語のナレーション。音声は [Data Craftsmanの豪州英語Piperモデル](https://huggingface.co/DataCraftsmanAustralia/piper-en_AU-librivox-medium)（Ophelia Darcy、ベース音声 Jenny (Dioco)）で生成。
+- `assets/idiom-dialogues.js` と `assets/idiom-dialogues.mp3`: [元動画](https://youtu.be/-hNLtsV4qXk)の用例と別の場面を組にした20表現・40場面の台本と音声。音声は同じ豪州英語Piperモデルの Timothy Ferguson、Ophelia Darcy（ベース音声 Jenny (Dioco)）とオリジナルのBGMを使用。
 - `outputs/osaru_english.html`: 作業用の元ファイル
 - `outputs/supabase_setup.sql`: Supabase同期用のSQL
 

@@ -63,6 +63,7 @@
     @media(max-width:620px){.podcast-setup>summary{align-items:flex-start;padding:11px 12px}.podcast-setup-copy>span{font-size:11px}.podcast-setup-toggle{min-width:54px}.podcast-setup-body{padding:11px}.podcast-toolbar{grid-template-columns:1fr}.podcast-picker{max-height:210px}.podcast-option{min-height:44px;padding:7px 8px}.transcript-sentence{grid-template-columns:30px minmax(0,1fr)}.transcript-add{grid-column:2;justify-self:start}.podcast-pane-head{align-items:flex-start}.transcript-pane .podcast-pane-head{flex-direction:column}.podcast-memo-drawer{width:100vw}.podcast-memo-list{padding-bottom:32px}}
     .podcast-listening{position:sticky;top:0;z-index:5;width:min(900px,100%);margin:0 auto 10px;padding:8px 10px;background:var(--panel);border:1px solid var(--line);border-radius:8px}.podcast-listening audio{display:block;width:100%;height:40px}.listening-options{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:4px;font-size:12px;color:var(--muted)}.listening-options label{display:inline-flex;align-items:center;gap:5px}.listening-options select{width:auto;min-height:30px;padding:3px 6px}.listening-status{margin-left:auto}.listening-actions{display:flex;flex-wrap:wrap;gap:5px}.transcript-sentence[data-listening-cue]{scroll-margin-top:105px}.transcript-sentence[data-listening-cue][aria-current]{border-color:var(--good);background:var(--goodbg)}
     .listening-options label{white-space:nowrap}.listening-options input[type=checkbox]{width:auto;min-height:0;margin:0;accent-color:var(--primary)}
+    .dialogue-meta{display:flex;flex-wrap:wrap;gap:2px 9px;margin-bottom:5px;font-size:12px;color:var(--muted)}.dialogue-meta strong,.transcript-source{color:var(--primary2)}.dialogue-lines{white-space:pre-line;font-weight:650}.transcript-source{display:inline-block;margin:0 0 7px;font-size:12px}
     .transcript-sentence[data-listening-cue].memoed{cursor:auto}
     @media(max-width:860px){.podcast-listening{top:var(--topbar)}.transcript-sentence[data-listening-cue]{scroll-margin-top:calc(var(--topbar) + 112px)}}
     @media(max-width:620px){.listening-actions{grid-column:2}}
@@ -170,7 +171,7 @@
             </div>
             <section class="podcast-pane transcript-pane" aria-label="文字起こし一覧">
               <div class="podcast-pane-head"><div class="podcast-pane-heading"><h3 id="activePodcastTitle">スクリプト</h3><span id="transcriptCount">0セット</span></div><button id="podcastMemoPaneButton" class="ghost" type="button">メモを見る</button></div>
-              <div class="podcast-pane-tools"><input id="transcriptSearch" type="search" placeholder="文字起こし内を検索"></div>
+              <div class="podcast-pane-tools"><a id="podcastTranscriptSource" class="transcript-source" target="_blank" rel="noopener noreferrer" hidden>元の動画を開く</a><input id="transcriptSearch" type="search" placeholder="文字起こし内を検索"></div>
               <div id="transcriptSentenceList" class="transcript-list"><div class="transcript-empty">文字起こしを添付または貼り付けると、英語＋和訳のセットで表示されます。</div></div>
             </section>
           </div>
@@ -228,6 +229,7 @@
 
   <script src="assets/a2-good-language-learner.js"></script>
   <script src="assets/b1-cafe-weekend.js"></script>
+  <script src="assets/idiom-dialogues.js"></script>
   <script>
   (()=>{
     'use strict';
@@ -270,7 +272,8 @@
     const PODCAST_MEMO_TEMPLATE_VERSION='podcast-word-chunks-v2';
     const A2_LESSON=typeof A2_LISTENING_LESSON==='undefined'?null:A2_LISTENING_LESSON;
     const B1_CAFE_LESSON=typeof B1_CAFE_LISTENING_LESSON==='undefined'?null:B1_CAFE_LISTENING_LESSON;
-    const LISTENING_LESSONS=[A2_LESSON,B1_CAFE_LESSON].filter(Boolean);
+    const IDIOM_LESSON=typeof IDIOM_DIALOGUES_LESSON==='undefined'?null:IDIOM_DIALOGUES_LESSON;
+    const LISTENING_LESSONS=[A2_LESSON,B1_CAFE_LESSON,IDIOM_LESSON].filter(Boolean);
     const KEVIN_PODCAST_ID='builtin-podcast-kevin-japan-parents';
     const KEVIN_TRANSLATIONS=`
 ［英語以外の音声］ポッドキャストへようこそ。みなさん、こんにちは。よし、これを取り上げよう。
@@ -2128,6 +2131,10 @@ london|ロンドン（地名）
       const panel=$('podcastListening'),audio=$('podcastAudio');
       activeListeningLesson=podcastListeningLesson(row);
       const src=activeListeningLesson?.audio||'';
+      const source=$('podcastTranscriptSource');
+      const sourceUrl=activeListeningLesson?.source;
+      source.hidden=!sourceUrl;
+      if(sourceUrl)source.href=sourceUrl;else source.removeAttribute('href');
       panel.hidden=!src;
       if((audio.getAttribute('src')||'')===src)return;
       audio.pause();activeListeningCue=null;
@@ -2163,17 +2170,23 @@ london|ロンドン（地名）
     }
     function renderTranscriptSentences(){
       const data=currentTranscriptData(),query=clean($('transcriptSearch').value).toLowerCase(),memoed=new Map(podcastMemoItems().map(({row,data})=>[`${data.sourceText}\n${data.translation}`,row.id]));
-      const all=data.entries||[],shown=all.map((entry,index)=>({entry,index})).filter(x=>!query||`${x.entry.en} ${x.entry.ja}`.toLowerCase().includes(query));
       const cueByText=new Map((activeListeningLesson?.entries||[]).map((entry,index)=>[entry.e,index]));
+      const all=data.entries||[];
+      const shown=all.map((entry,index)=>{
+        const cue=cueByText.get(entry.en);
+        return {entry,index,cue,scene:activeListeningLesson?.entries[cue]};
+      }).filter(({entry,scene})=>!query||`${entry.en} ${entry.ja} ${scene?.idiom||''} ${scene?.setting||''}`.toLowerCase().includes(query));
       const language=activeListeningLesson?.language||'en-US';
       const openTranslations=openTranscriptTranslations.get(activePodcastId)||new Set();
-      $('transcriptCount').textContent=query?`${shown.length} / ${all.length}セット`:`${all.length}セット`;
-      $('transcriptSentenceList').innerHTML=shown.length?shown.map(({entry,index})=>{
+      const unit=activeListeningLesson===IDIOM_LESSON&&IDIOM_LESSON?'場面':'セット';
+      $('transcriptCount').textContent=query?`${shown.length} / ${all.length}${unit}`:`${all.length}${unit}`;
+      $('transcriptSentenceList').innerHTML=shown.length?shown.map(({entry,index,cue,scene})=>{
         const key=transcriptEntryKey(entry),memoId=memoed.get(key)||'',done=Boolean(memoId),translationKey=`${index}-${stableTextHash(key)}`;
-        const cue=cueByText.get(entry.en),hasCue=cue!==undefined;
+        const hasCue=cue!==undefined;
+        const heading=scene?.idiom?`<div class="dialogue-meta"><strong lang="${escapeHtml(language)}">${escapeHtml(scene.idiom)}</strong><span>${escapeHtml(scene.setting)}</span><span>${escapeHtml(scene.origin)}</span></div>`:'';
         const memoButton=`<button class="ghost transcript-add" type="button" data-index="${index}">${done?'メモを見る':'＋ メモ'}</button>`;
         const actions=hasCue?`<div class="listening-actions"><button class="ghost transcript-add listening-seek" type="button" data-cue="${cue}" title="この段落から再生" aria-label="段落${index+1}から再生">▶ ここから</button>${memoButton}</div>`:memoButton;
-        return `<div class="transcript-sentence${done?' memoed':''}"${hasCue?` data-listening-cue="${cue}"`:''}${done&&!hasCue?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(entry.number||index+1)}</span><div class="transcript-text"><div class="transcript-en"${hasCue?` lang="${escapeHtml(language)}"`:''}>${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div>${actions}</div>`;
+        return `<div class="transcript-sentence${done?' memoed':''}"${hasCue?` data-listening-cue="${cue}"`:''}${done&&!hasCue?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(entry.number||index+1)}</span><div class="transcript-text">${heading}<div class="transcript-en${heading?' dialogue-lines':''}"${hasCue?` lang="${escapeHtml(language)}"`:''}>${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div>${actions}</div>`;
       }).join(''):`<div class="transcript-empty">${all.length?'検索に一致する文章がありません。':'「新規作成」または既存のスクリプトを選んでください。'}</div>`;
       updateListeningHighlight(true);
     }
