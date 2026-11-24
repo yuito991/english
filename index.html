@@ -229,7 +229,7 @@
 
   <script src="assets/a2-good-language-learner.js"></script>
   <script src="assets/b1-cafe-weekend.js"></script>
-  <script src="assets/idiom-dialogues.js?v=kokoro-voices"></script>
+  <script src="assets/idiom-dialogues.js?v=original-lines"></script>
   <script>
   (()=>{
     'use strict';
@@ -1882,7 +1882,7 @@ london|ロンドン（地名）
     function podcastComparisonText(parsed,builtin){const matches=PODCAST_EXPRESSION_COMPARISONS.filter(([pattern])=>pattern.test(parsed.text)).slice(0,3).map(([,explanation])=>explanation);if(!matches.length){if(parsed.text.split(/\s+/).length<=4)matches.push(/\blittle\b/i.test(parsed.text)?'little は small の寸法だけより、幼い姿への親しみ・愛らしさを添えます。':/\bhere\b/i.test(parsed.text)?'here は there より、話し手と同じ場所へ相手を引き込む感じです。登場の冗談では「まさにこの場にいる」という意外さが出ます。':'この短い断片は、完全な説明文より話題・反応をすばやく渡します。名前なら she／he より対象をはっきり示し、相づちなら情報を足さず相手の話を促します。');else if(/\bbut\b/i.test(parsed.text))matches.push('but は and と違い、聞き手の予想をいったん曲げる接続です。前半を認めながら、後半に話し手が強調したい違いを置きます。');else if(/\bbecause\b/i.test(parsed.text))matches.push('because は so と違い、結論の後へ理由を置く言い方です。「こうした、というのも…」と聞き手の疑問に答える流れを作ります。');else matches.push(`原文の「${parsed.text}」は、和訳の「${parsed.j||'前後の発言'}」に加えて、語順・省略で話し手の焦点を示します。類義語での説明が必要な語は、文脈に合わせてメモへ追記できます。`);}
       return [clean(builtin?.x),...matches].filter(Boolean).join('\n\n');
     }
-    function podcastMemoText(entry){const parsed=parsePodcastLearningEntry(entry),builtin=findBuiltinPodcastEntry(parsed),chunks=podcastLearningChunks(parsed,builtin),structure=builtin?.s||section3Structure(parsed.text),tense=builtin?(PODCAST_TENSE_NOTES[builtin.n]||podcastGrammarText(builtin)):podcastFallbackTense(parsed.text);return `① 全体の文の構造\n${chunks.map((chunk,index)=>`[${index+1}] ${chunk}`).join('\n')}\n\n${structure}\n\n② かたまりごとの単語の意味\n${chunks.map((chunk,index)=>`【${index+1}】${chunk}\n${podcastChunkWords(chunk,parsed.text)}`).join('\n\n')}\n\n③ ニュアンス・類義語との比較\n${podcastComparisonText(parsed,builtin)}\n\n④ 時制と文法の解説\n【文法・語法：かたまりごと】\n${chunks.map((chunk,index)=>`[${index+1}] ${chunk}\n${podcastChunkGrammar(chunk)}`).join('\n\n')}${builtin?.u?'\n\n'+builtin.u:''}\n\n【時制を選んだ理由】\n${tense}`}
+    function podcastMemoText(entry,builtinOverride){const parsed=parsePodcastLearningEntry(entry),builtin=builtinOverride||findBuiltinPodcastEntry(parsed),chunks=podcastLearningChunks(parsed,builtin),structure=builtin?.s||section3Structure(parsed.text),tense=builtin?(PODCAST_TENSE_NOTES[builtin.n]||podcastGrammarText(builtin)):podcastFallbackTense(parsed.text);return `① 全体の文の構造\n${chunks.map((chunk,index)=>`[${index+1}] ${chunk}`).join('\n')}\n\n${structure}\n\n② かたまりごとの単語の意味\n${chunks.map((chunk,index)=>`【${index+1}】${chunk}\n${podcastChunkWords(chunk,parsed.text)}`).join('\n\n')}\n\n③ ニュアンス・類義語との比較\n${podcastComparisonText(parsed,builtin)}\n\n④ 時制と文法の解説\n【文法・語法：かたまりごと】\n${chunks.map((chunk,index)=>`[${index+1}] ${chunk}\n${podcastChunkGrammar(chunk)}`).join('\n\n')}${builtin?.u?'\n\n'+builtin.u:''}\n\n【時制を選んだ理由】\n${tense}`}
     function podcastFallbackTense(text){
       const normalized=text.replaceAll('’',"'"),points=[];
       if(/^(?:yeah|yes|oh|wow|right|totally|Janet Jackson)[!., ]*$/i.test(normalized))return '相づち・名前の断片なので、独立した時制はありません。意味は前後の会話から補います。';
@@ -1916,11 +1916,44 @@ london|ロンドン（地名）
       }
       return changed;
     }
+    function restoreOriginalIdiomLines(row,sourceEntries){
+      if(!row||row.deleted_at)return false;
+      const replacements=new Map(sourceEntries.filter(entry=>entry.previousHash).map(entry=>[entry.previousHash,entry]));
+      const data=parseTranscriptRow(row);
+      const refreshed=new Map();
+      for(const entry of data.entries){
+        const replacement=replacements.get(stableTextHash(entry.en));
+        if(!replacement||replacement.e===entry.en)continue;
+        refreshed.set(entry.en,replacement);
+        entry.en=replacement.e;
+      }
+      if(refreshed.size){
+        const formatted=formatTranscriptEntries(data.entries);
+        Object.assign(row,{en:JSON.stringify({...data,raw:formatted,formatted}),updated_at:nowIso(),dirty:true});
+      }
+      let changed=refreshed.size>0;
+      const currentText=new Set(data.entries.map(entry=>entry.en));
+      for(const note of noteItems()){
+        const data=parseNoteRow(note);
+        if(data.podcastId!==row.id)continue;
+        const oldText=data.sourceText;
+        const replacement=replacements.get(stableTextHash(oldText));
+        if(!replacement||replacement.e===oldText||!currentText.has(replacement.e))continue;
+        const previous={n:replacement.n,e:oldText,j:''};
+        if(data.body===clean(podcastMemoText(previous,previous)))data.body=clean(podcastMemoText(replacement));
+        if(data.title===oldText)data.title=replacement.e;
+        data.sourceText=replacement.e;
+        Object.assign(note,{en:JSON.stringify(data),updated_at:nowIso(),dirty:true});
+        changed=true;
+      }
+      return changed;
+    }
     function seedBuiltinPodcastPacks(){
       const existingIds=new Set(customItems.map(x=>x.id)),scope=stableScopeSuffix(),updatedAt='2026-09-19T00:00:00.000Z';let changed=false;
       BUILTIN_PODCAST_PACKS.forEach((pack,packIndex)=>{
         const sourceEntries=pack.entries||parseBuiltinPodcastSource(pack.source),podcastId=`${pack.id}-${scope}`,entries=sourceEntries.map(({n,e,j})=>({number:n,en:e,ja:j})),formatted=formatTranscriptEntries(entries);
         if(pack.id===KEVIN_PODCAST_ID&&fillKevinTranslations(customItems.find(row=>row.id===podcastId),entries))changed=true;
+        if(pack===IDIOM_LESSON&&restoreOriginalIdiomLines(customItems.find(row=>row.id===podcastId),sourceEntries))changed=true;
         const transcriptRow={id:podcastId,kind:'quiz',ja:META_TRANSCRIPT_MARKER,en:JSON.stringify({title:pack.title,raw:formatted,formatted,entries}),prompt:pack.title,answer:'transcript',choices:[],position:400000+packIndex,updated_at:updatedAt,dirty:true};
         if(!existingIds.has(transcriptRow.id)){customItems.push(normalizeItem(transcriptRow));existingIds.add(transcriptRow.id);changed=true}
         sourceEntries.forEach((entry,index)=>{
