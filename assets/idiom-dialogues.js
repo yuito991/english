@@ -1,9 +1,9 @@
 const IDIOM_DIALOGUES_LESSON = {
   "id": "builtin-podcast-idiom-dialogues",
   "title": "イディオム会話｜20表現・40場面",
-  "audio": "assets/idiom-dialogues.mp3",
-  "audioLabel": "2人の合成音声・BGM付き",
-  "language": "en-AU",
+  "audio": "assets/idiom-dialogues.mp3?v=kokoro-voices",
+  "audioLabel": "A 女性・B 男性（合成音声）",
+  "language": "en-US",
   "source": "https://youtu.be/-hNLtsV4qXk",
   "entries": [
     {
@@ -19,7 +19,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 2,
       "e": "A: Are you still coming to the picnic?\nB: I’m feeling a bit under the weather, so I’ll stay home today.\nA: Of course. I’ll save you some cake.",
       "j": "",
-      "start": 9.137,
+      "start": 7.675,
       "idiom": "Under the weather",
       "setting": "朝の電話",
       "origin": "オリジナル"
@@ -28,7 +28,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 3,
       "e": "A: I haven’t seen Jose in a while.\nB: Well, speaking of the devil, he’s walking towards us right now.",
       "j": "",
-      "start": 20.339,
+      "start": 18.415,
       "idiom": "Speak of the devil",
       "setting": "ホセが現れる",
       "origin": "動画例"
@@ -37,7 +37,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 4,
       "e": "A: I was just wondering where Nina was.\nB: Speak of the devil. She’s right behind you.",
       "j": "",
-      "start": 27.15,
+      "start": 26.59,
       "idiom": "Speak of the devil",
       "setting": "職場で同僚が登場",
       "origin": "オリジナル"
@@ -46,7 +46,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 5,
       "e": "A: Hey, let’s go. I need to go home.\nB: Hold your horses. We just got here.",
       "j": "",
-      "start": 36.155,
+      "start": 33.815,
       "idiom": "Hold your horses",
       "setting": "着いたばかりなのに",
       "origin": "動画例"
@@ -55,7 +55,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 6,
       "e": "A: The flights are cheap. I’m booking them now.\nB: Hold your horses. Let’s check if we can both get Friday off.",
       "j": "",
-      "start": 44.051,
+      "start": 40.915,
       "idiom": "Hold your horses",
       "setting": "旅行の予約",
       "origin": "オリジナル"
@@ -64,7 +64,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 7,
       "e": "A: Love you, Dad. Take care.\nB: Was that your dad?\nA: Yeah. My dad calls me once in a blue moon. He’s always busy.",
       "j": "",
-      "start": 56.11,
+      "start": 49.765,
       "idiom": "Once in a blue moon",
       "setting": "父からの電話",
       "origin": "動画例を会話化"
@@ -73,7 +73,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 8,
       "e": "A: Do you come here to watch films often?\nB: Only once in a blue moon. I usually watch them at home.",
       "j": "",
-      "start": 70.426,
+      "start": 59.405,
       "idiom": "Once in a blue moon",
       "setting": "屋上の映画館",
       "origin": "オリジナル"
@@ -82,7 +82,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 9,
       "e": "A: Hey, you should break the ice. Maybe ask her what her name is.\nB: Good idea. I’ll go and say hello.",
       "j": "",
-      "start": 77.82,
+      "start": 67.855,
       "idiom": "Break the ice",
       "setting": "初対面で名前を聞く",
       "origin": "動画例を会話化"
@@ -91,7 +91,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 10,
       "e": "A: Nobody’s said a word since we sat down.\nB: I’ll break the ice. Has anyone found a good lunch spot near here?",
       "j": "",
-      "start": 87.347,
+      "start": 76.055,
       "idiom": "Break the ice",
       "setting": "新しいチームの初日",
       "origin": "オリジナル"
@@ -100,7 +100,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 11,
       "e": "A: Hey, can I talk to you for a sec? I really need to get something off my chest.\nB: Sure. What’s on your mind?",
       "j": "",
-      "start": 96.369,
+      "start": 84.955,
       "idiom": "Get something off your chest",
       "setting": "話を切り出す",
       "origin": "動画例を会話化"
@@ -109,7 +109,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 12,
       "e": "A: Can I get something off my chest? I felt left out when I saw the party photos.\nB: I’m glad you told me. I thought I’d sent you the invite.",
       "j": "",
-      "start": 104.968,
+      "start": 93.33,
       "idiom": "Get something off your chest",
       "setting": "友人に気持ちを伝える",
       "origin": "オリジナル"
@@ -118,7 +118,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 13,
       "e": "A: All right, enough emails for today. Let’s call it a day.\nB: Good idea. We can finish the rest in the morning.",
       "j": "",
-      "start": 114.895,
+      "start": 103.98,
       "idiom": "Call it a day",
       "setting": "メールを切り上げる",
       "origin": "動画例を会話化"
@@ -127,7 +127,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 14,
       "e": "A: We’ve unpacked six boxes. Want to do the kitchen next?\nB: My back’s had enough. Let’s call it a day.",
       "j": "",
-      "start": 123.811,
+      "start": 112.955,
       "idiom": "Call it a day",
       "setting": "引っ越しの片付け",
       "origin": "オリジナル"
@@ -136,7 +136,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 15,
       "e": "A: Oh no.\nB: What’s wrong?\nA: I forgot my credit card. How can I pay for this?\nB: Hey, take a deep breath and pull yourself together. You can use my credit card.\nA: Thank you.",
       "j": "",
-      "start": 132.183,
+      "start": 121.23,
       "idiom": "Pull yourself together",
       "setting": "会計でカードを忘れる",
       "origin": "動画例"
@@ -145,7 +145,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 16,
       "e": "A: I can’t think straight. I’ve forgotten everything I wanted to say.\nB: Take a breath and pull yourself together. You know this stuff. Just start with your name.",
       "j": "",
-      "start": 148.431,
+      "start": 137.1,
       "idiom": "Pull yourself together",
       "setting": "面接の直前",
       "origin": "オリジナル"
@@ -154,7 +154,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 17,
       "e": "A: Hey, did you hear what happened to Santi yesterday?\nB: No, spill the beans.",
       "j": "",
-      "start": 159.326,
+      "start": 148.525,
       "idiom": "Spill the beans",
       "setting": "サンティに何があった？",
       "origin": "動画例"
@@ -163,7 +163,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 18,
       "e": "A: Mum keeps asking why everyone’s free on Saturday.\nB: Whatever you do, don’t spill the beans. The party’s meant to be a surprise.",
       "j": "",
-      "start": 165.928,
+      "start": 155.175,
       "idiom": "Spill the beans",
       "setting": "サプライズの計画",
       "origin": "オリジナル"
@@ -172,7 +172,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 19,
       "e": "A: Oh, wow. This place really went the extra mile with their decorations. They even have Mr. Red Legs.\nB: Yeah, look at the lights across the ceiling.",
       "j": "",
-      "start": 176.571,
+      "start": 165.55,
       "idiom": "Go the extra mile",
       "setting": "お店の飾りつけ",
       "origin": "動画例を会話化"
@@ -181,7 +181,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 20,
       "e": "A: How was the hotel?\nB: The staff went the extra mile. They packed us breakfast because we had to leave before six.",
       "j": "",
-      "start": 191.14,
+      "start": 176.8,
       "idiom": "Go the extra mile",
       "setting": "宿のスタッフ",
       "origin": "オリジナル"
@@ -190,7 +190,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 21,
       "e": "A: Hey, I caught you red-handed. Get away from my car.\nB: Okay, I’m backing away.",
       "j": "",
-      "start": 199.473,
+      "start": 186.225,
       "idiom": "Catch someone red-handed",
       "setting": "車のそばで見つかる",
       "origin": "動画例を会話化"
@@ -199,7 +199,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 22,
       "e": "A: Hey, I caught you red-handed. Those are my chips.\nB: Okay, okay. I’ll get you another bag.",
       "j": "",
-      "start": 207.063,
+      "start": 193.5,
       "idiom": "Catch someone red-handed",
       "setting": "残しておいたポテト",
       "origin": "オリジナル"
@@ -208,7 +208,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 23,
       "e": "A: Man, a hot cup of coffee sounds really good right now.\nB: You can say that again. Let’s go order one.\nA: Yeah.",
       "j": "",
-      "start": 220.091,
+      "start": 201.525,
       "idiom": "You can say that again",
       "setting": "温かいコーヒー",
       "origin": "動画例"
@@ -217,7 +217,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 24,
       "e": "A: This station is way too busy at five.\nB: You can say that again. It took me ten minutes to get up the stairs.",
       "j": "",
-      "start": 233.391,
+      "start": 211.64,
       "idiom": "You can say that again",
       "setting": "混み合う駅",
       "origin": "オリジナル"
@@ -226,7 +226,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 25,
       "e": "A: Hey, they built that fast.\nB: Yeah, I hope they didn’t cut corners anywhere important.",
       "j": "",
-      "start": 243.08,
+      "start": 220.74,
       "idiom": "Cut corners",
       "setting": "工事の仕上がり",
       "origin": "動画例"
@@ -235,7 +235,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 26,
       "e": "A: Do we really need to wrap every plate?\nB: Let’s not cut corners. Last time, half the plates broke.",
       "j": "",
-      "start": 250.75,
+      "start": 228.24,
       "idiom": "Cut corners",
       "setting": "引っ越しの荷造り",
       "origin": "オリジナル"
@@ -244,7 +244,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 27,
       "e": "A: We need to work five days a week.\nB: I agree. We’re on the same page.",
       "j": "",
-      "start": 258.813,
+      "start": 236.465,
       "idiom": "Be on the same page",
       "setting": "週の勤務日数",
       "origin": "動画例"
@@ -253,7 +253,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 28,
       "e": "A: Just so we’re on the same page, are we meeting at the station or at the restaurant?\nB: At the station. We’ll walk over together.",
       "j": "",
-      "start": 268.364,
+      "start": 242.815,
       "idiom": "Be on the same page",
       "setting": "駅での待ち合わせ",
       "origin": "オリジナル"
@@ -262,7 +262,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 29,
       "e": "A: I love this bar. I’m going to get drunk.\nB: Hey, take it easy. It’s only three.",
       "j": "",
-      "start": 276.855,
+      "start": 252.465,
       "idiom": "Take it easy",
       "setting": "まだ午後3時",
       "origin": "動画例"
@@ -271,7 +271,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 30,
       "e": "A: I should clean the whole flat before bed.\nB: Take it easy. You’ve been on your feet all day. The dishes can wait.",
       "j": "",
-      "start": 287.596,
+      "start": 259.94,
       "idiom": "Take it easy",
       "setting": "疲れた日の帰宅",
       "origin": "オリジナル"
@@ -280,7 +280,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 31,
       "e": "A: Have you tried salted caramel?\nB: I’ve never tried that.\nA: You should give it a shot.",
       "j": "",
-      "start": 299.336,
+      "start": 268.79,
       "idiom": "Give it a shot",
       "setting": "塩キャラメルを勧める",
       "origin": "動画例"
@@ -289,7 +289,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 32,
       "e": "A: I’ve never made anything out of clay.\nB: Give it a shot. We can make bowls together, and mine will probably come out crooked.",
       "j": "",
-      "start": 305.595,
+      "start": 276.455,
       "idiom": "Give it a shot",
       "setting": "陶芸クラスに誘う",
       "origin": "オリジナル"
@@ -298,7 +298,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 33,
       "e": "A: Come on. Okay, Ariana, hang in there. I know you lost this round, but in the next round, we’re going to beat the other team.\nB: Thanks. Let’s try again.",
       "j": "",
-      "start": 315.683,
+      "start": 286.33,
       "idiom": "Hang in there",
       "setting": "次の試合に向けて",
       "origin": "動画例を会話化"
@@ -307,7 +307,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 34,
       "e": "A: I’ve been waiting an hour, and my phone’s nearly dead.\nB: Hang in there. I’m five minutes away. I’ll pick you up.",
       "j": "",
-      "start": 331.18,
+      "start": 297.58,
       "idiom": "Hang in there",
       "setting": "電車の遅れ",
       "origin": "オリジナル"
@@ -316,7 +316,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 35,
       "e": "A: I love your jacket.\nB: Oh, thank you.\nA: Are you from around here?\nB: I’m from Cincinnati.\nA: I get along with people from Cincinnati. They’re super nice.",
       "j": "",
-      "start": 342.384,
+      "start": 306.43,
       "idiom": "Get along with someone",
       "setting": "シンシナティ出身の人",
       "origin": "動画例を会話化"
@@ -325,7 +325,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 36,
       "e": "A: How are things with your new flatmate?\nB: We get along really well. We both like a quiet place at night.",
       "j": "",
-      "start": 358.56,
+      "start": 320.225,
       "idiom": "Get along with someone",
       "setting": "新しいルームメイト",
       "origin": "オリジナル"
@@ -334,7 +334,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 37,
       "e": "A: You look happy today.\nB: Finally, sunshine and some warm weather. I’m on cloud nine because it’s the first day of the year where I don’t have to wear a winter jacket.",
       "j": "",
-      "start": 366.658,
+      "start": 328.525,
       "idiom": "Be on cloud nine",
       "setting": "冬のコートがいらない日",
       "origin": "動画例を会話化"
@@ -343,7 +343,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 38,
       "e": "A: How did the interview go?\nB: They offered me the job this morning. I’m on cloud nine!",
       "j": "",
-      "start": 377.478,
+      "start": 341.4,
       "idiom": "Be on cloud nine",
       "setting": "採用の知らせ",
       "origin": "オリジナル"
@@ -352,7 +352,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 39,
       "e": "A: Angie, the cookies and cream cupcake is hands down the best cupcake.\nB: Really? I was going to get the chocolate one.",
       "j": "",
-      "start": 384.335,
+      "start": 349.1,
       "idiom": "Hands down",
       "setting": "一番おいしいカップケーキ",
       "origin": "動画例を会話化"
@@ -361,7 +361,7 @@ const IDIOM_DIALOGUES_LESSON = {
       "n": 40,
       "e": "A: What was your favourite part of the trip?\nB: The ferry ride, hands down. We saw the whole city from the water.",
       "j": "",
-      "start": 394.702,
+      "start": 358.55,
       "idiom": "Hands down",
       "setting": "旅行先を振り返る",
       "origin": "オリジナル"
