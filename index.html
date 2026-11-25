@@ -229,7 +229,7 @@
 
   <script src="assets/a2-good-language-learner.js"></script>
   <script src="assets/b1-cafe-weekend.js"></script>
-  <script src="assets/idiom-dialogues.js?v=source-only"></script>
+  <script src="assets/idiom-dialogues.js?v=source-expanded"></script>
   <script>
   (()=>{
     'use strict';
@@ -1918,19 +1918,27 @@ london|ロンドン（地名）
     }
     function updateSavedIdiomLesson(row,lesson){
       if(!row||row.deleted_at)return false;
-      const replacements=new Map(lesson.entries.filter(entry=>entry.previousHash).map(entry=>[entry.previousHash,entry]));
+      const replacements=new Map(lesson.entries.flatMap(entry=>(entry.previousHashes||[]).map(hash=>[hash,entry])));
       const data=parseTranscriptRow(row);
       const removed=new Set(lesson.removedSceneNumbers||[]);
       const oldCount=data.entries.length;
       data.entries=data.entries.filter(entry=>!removed.has(Number(entry.number)));
       let changed=data.entries.length!==oldCount;
-      const previousTitle='イディオム会話｜20表現・40場面';
-      if(data.title===previousTitle){data.title=lesson.title;changed=true}
-      if(row.prompt===previousTitle){row.prompt=lesson.title;changed=true}
+      const previousTitles=new Set(['イディオム会話｜20表現・40場面','イディオム会話｜動画の原文20場面']);
+      if(previousTitles.has(data.title)){data.title=lesson.title;changed=true}
+      if(previousTitles.has(row.prompt)){row.prompt=lesson.title;changed=true}
       for(const entry of data.entries){
         const replacement=replacements.get(stableTextHash(entry.en));
         if(!replacement||replacement.e===entry.en)continue;
         entry.en=replacement.e;
+        changed=true;
+      }
+      const anchors=new Map(lesson.entries.map(entry=>[entry.n,entry.e]));
+      for(const entry of lesson.entries){
+        if(!entry.after||data.entries.some(saved=>Number(saved.number)===entry.n||saved.en===entry.e))continue;
+        const index=data.entries.findIndex(saved=>saved.en===anchors.get(entry.after));
+        if(index<0)continue;
+        data.entries.splice(index+1,0,{number:entry.n,en:entry.e,ja:entry.j});
         changed=true;
       }
       if(changed){
