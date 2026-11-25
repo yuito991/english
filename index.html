@@ -164,7 +164,7 @@
             <div id="podcastListening" class="podcast-listening" hidden>
               <audio id="podcastAudio" controls preload="metadata" aria-label="英語リスニング音声"></audio>
               <div class="listening-options">
-                <label>速度 <select id="podcastAudioRate"><option value="0.75">0.75×</option><option value="0.9">0.9×</option><option value="1" selected>1×</option><option value="1.15">1.15×</option><option value="1.25">1.25×</option></select></label>
+                <label>速度 <select id="podcastAudioRate"><option value="0.75">0.75×</option><option value="0.85">0.85×</option><option value="0.9">0.9×</option><option value="1" selected>1×</option><option value="1.15">1.15×</option><option value="1.25">1.25×</option></select></label>
                 <label><input id="podcastAudioFollow" type="checkbox" checked> 自動スクロール</label>
                 <span id="podcastAudioStatus" class="listening-status" role="status">米国英語・合成音声</span>
               </div>
@@ -229,7 +229,7 @@
 
   <script src="assets/a2-good-language-learner.js"></script>
   <script src="assets/b1-cafe-weekend.js"></script>
-  <script src="assets/idiom-dialogues.js?v=original-lines"></script>
+  <script src="assets/idiom-dialogues.js?v=source-only"></script>
   <script>
   (()=>{
     'use strict';
@@ -1916,22 +1916,27 @@ london|ロンドン（地名）
       }
       return changed;
     }
-    function restoreOriginalIdiomLines(row,sourceEntries){
+    function updateSavedIdiomLesson(row,lesson){
       if(!row||row.deleted_at)return false;
-      const replacements=new Map(sourceEntries.filter(entry=>entry.previousHash).map(entry=>[entry.previousHash,entry]));
+      const replacements=new Map(lesson.entries.filter(entry=>entry.previousHash).map(entry=>[entry.previousHash,entry]));
       const data=parseTranscriptRow(row);
-      const refreshed=new Map();
+      const removed=new Set(lesson.removedSceneNumbers||[]);
+      const oldCount=data.entries.length;
+      data.entries=data.entries.filter(entry=>!removed.has(Number(entry.number)));
+      let changed=data.entries.length!==oldCount;
+      const previousTitle='イディオム会話｜20表現・40場面';
+      if(data.title===previousTitle){data.title=lesson.title;changed=true}
+      if(row.prompt===previousTitle){row.prompt=lesson.title;changed=true}
       for(const entry of data.entries){
         const replacement=replacements.get(stableTextHash(entry.en));
         if(!replacement||replacement.e===entry.en)continue;
-        refreshed.set(entry.en,replacement);
         entry.en=replacement.e;
+        changed=true;
       }
-      if(refreshed.size){
+      if(changed){
         const formatted=formatTranscriptEntries(data.entries);
         Object.assign(row,{en:JSON.stringify({...data,raw:formatted,formatted}),updated_at:nowIso(),dirty:true});
       }
-      let changed=refreshed.size>0;
       const currentText=new Set(data.entries.map(entry=>entry.en));
       for(const note of noteItems()){
         const data=parseNoteRow(note);
@@ -1953,7 +1958,7 @@ london|ロンドン（地名）
       BUILTIN_PODCAST_PACKS.forEach((pack,packIndex)=>{
         const sourceEntries=pack.entries||parseBuiltinPodcastSource(pack.source),podcastId=`${pack.id}-${scope}`,entries=sourceEntries.map(({n,e,j})=>({number:n,en:e,ja:j})),formatted=formatTranscriptEntries(entries);
         if(pack.id===KEVIN_PODCAST_ID&&fillKevinTranslations(customItems.find(row=>row.id===podcastId),entries))changed=true;
-        if(pack===IDIOM_LESSON&&restoreOriginalIdiomLines(customItems.find(row=>row.id===podcastId),sourceEntries))changed=true;
+        if(pack===IDIOM_LESSON&&updateSavedIdiomLesson(customItems.find(row=>row.id===podcastId),pack))changed=true;
         const transcriptRow={id:podcastId,kind:'quiz',ja:META_TRANSCRIPT_MARKER,en:JSON.stringify({title:pack.title,raw:formatted,formatted,entries}),prompt:pack.title,answer:'transcript',choices:[],position:400000+packIndex,updated_at:updatedAt,dirty:true};
         if(!existingIds.has(transcriptRow.id)){customItems.push(normalizeItem(transcriptRow));existingIds.add(transcriptRow.id);changed=true}
         sourceEntries.forEach((entry,index)=>{
@@ -2173,7 +2178,9 @@ london|ロンドン（地名）
       audio.pause();activeListeningCue=null;
       if(src)audio.setAttribute('src',src);else audio.removeAttribute('src');
       audio.load();
-      audio.defaultPlaybackRate=audio.playbackRate=Number($('podcastAudioRate').value);
+      const rate=activeListeningLesson?.defaultRate||1;
+      $('podcastAudioRate').value=String(rate);
+      audio.defaultPlaybackRate=audio.playbackRate=rate;
       renderPodcastAudioLabel();
     }
     function listeningCueAt(time,entries){
@@ -2216,14 +2223,20 @@ london|ロンドン（地名）
       $('transcriptSentenceList').innerHTML=shown.length?shown.map(({entry,index,cue,scene})=>{
         const key=transcriptEntryKey(entry),memoId=memoed.get(key)||'',done=Boolean(memoId),translationKey=`${index}-${stableTextHash(key)}`;
         const hasCue=cue!==undefined;
+        const displayNumber=scene?.idiom?cue+1:entry.number||index+1;
         const heading=scene?.idiom?`<div class="dialogue-meta"><strong lang="${escapeHtml(language)}">${escapeHtml(scene.idiom)}</strong><span>${escapeHtml(scene.setting)}</span><span>${escapeHtml(scene.origin)}</span></div>`:'';
         const memoButton=`<button class="ghost transcript-add" type="button" data-index="${index}">${done?'メモを見る':'＋ メモ'}</button>`;
         const actions=hasCue?`<div class="listening-actions"><button class="ghost transcript-add listening-seek" type="button" data-cue="${cue}" title="この段落から再生" aria-label="段落${index+1}から再生">▶ ここから</button>${memoButton}</div>`:memoButton;
-        return `<div class="transcript-sentence${done?' memoed':''}"${hasCue?` data-listening-cue="${cue}"`:''}${done&&!hasCue?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(entry.number||index+1)}</span><div class="transcript-text">${heading}<div class="transcript-en${heading?' dialogue-lines':''}"${hasCue?` lang="${escapeHtml(language)}"`:''}>${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div>${actions}</div>`;
+        return `<div class="transcript-sentence${done?' memoed':''}"${hasCue?` data-listening-cue="${cue}"`:''}${done&&!hasCue?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(displayNumber)}</span><div class="transcript-text">${heading}<div class="transcript-en${heading?' dialogue-lines':''}"${hasCue?` lang="${escapeHtml(language)}"`:''}>${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div>${actions}</div>`;
       }).join(''):`<div class="transcript-empty">${all.length?'検索に一致する文章がありません。':'「新規作成」または既存のスクリプトを選んでください。'}</div>`;
       updateListeningHighlight(true);
     }
-    function podcastMemoItems(){if(!activePodcastId)return[];return noteItems().map(row=>({row,data:parseNoteRow(row)})).filter(x=>x.data.podcastId===activePodcastId).sort((a,b)=>a.row.position-b.row.position)}
+    function podcastMemoItems({includeRemoved=false}={}){
+      if(!activePodcastId)return[];
+      const scope=stableScopeSuffix();
+      const removedIds=new Set(!includeRemoved&&IDIOM_LESSON&&activePodcastId===`${IDIOM_LESSON.id}-${scope}`?(IDIOM_LESSON.removedSceneNumbers||[]).map(number=>`${IDIOM_LESSON.id}-memo-${number}-${scope}`):[]);
+      return noteItems().filter(row=>!removedIds.has(row.id)).map(row=>({row,data:parseNoteRow(row)})).filter(x=>x.data.podcastId===activePodcastId).sort((a,b)=>a.row.position-b.row.position);
+    }
     function previousPodcastMemoMarkup(data){return data.previousBody?`<details class="transcript-translation"><summary>以前の補足メモ</summary><div class="memo-body">${escapeHtml(data.previousBody)}</div></details>`:''}
     function renderPodcastMemos(){
       const notes=podcastMemoItems();$('podcastMemoCount').textContent=`${notes.length}件`;$('podcastMemoButtonCount').textContent=notes.length;
@@ -2280,7 +2293,7 @@ london|ロンドン（地名）
       $('podcastMemoOpenButton').addEventListener('click',()=>openPodcastMemoDrawer());$('podcastMemoPaneButton').addEventListener('click',()=>openPodcastMemoDrawer());$('podcastMemoCloseButton').addEventListener('click',closePodcastMemoDrawer);$('podcastMemoScrim').addEventListener('click',closePodcastMemoDrawer);
       $('formatTranscriptButton').addEventListener('click',()=>saveTranscriptFromInput(false));
       $('podcastFileInput').addEventListener('change',async()=>{const file=$('podcastFileInput').files?.[0];if(!file)return;try{const text=await file.text();if(!clean($('podcastTitleInput').value))$('podcastTitleInput').value=file.name.replace(/\.(txt|srt|vtt)$/i,'');$('transcriptInput').value=formatTranscriptText(text);$('transcriptStatus').textContent='ファイルを読み込み、自動整形しています…';await saveTranscriptFromInput(true);showToast('英語＋和訳をセットで自動整形しました')}catch(err){$('transcriptStatus').textContent=`ファイルを読み込めませんでした: ${err.message||err}`}});
-      $('deletePodcastButton').addEventListener('click',()=>{const row=currentTranscriptRow();if(!row)return;if(!confirm('この文字起こしと、それに紐づく右側のメモを削除しますか？'))return;podcastMemoItems().forEach(({row:n})=>{const item=customItems.find(x=>x.id===n.id);if(item){item.deleted_at=nowIso();item.updated_at=item.deleted_at;item.dirty=true}});const target=customItems.find(x=>x.id===row.id);if(target){target.deleted_at=nowIso();target.updated_at=target.deleted_at;target.dirty=true}saveLocalItems();activePodcastId='';selectedPodcastMemoId='';localStorage.removeItem(ACTIVE_PODCAST_STORAGE_KEY);closePodcastMemoDrawer();renderAll();scheduleQuickSync();showToast('ポッドキャストノートを削除しました')});
+      $('deletePodcastButton').addEventListener('click',()=>{const row=currentTranscriptRow();if(!row)return;if(!confirm('この文字起こしと、それに紐づく右側のメモを削除しますか？'))return;podcastMemoItems({includeRemoved:true}).forEach(({row:n})=>{const item=customItems.find(x=>x.id===n.id);if(item){item.deleted_at=nowIso();item.updated_at=item.deleted_at;item.dirty=true}});const target=customItems.find(x=>x.id===row.id);if(target){target.deleted_at=nowIso();target.updated_at=target.deleted_at;target.dirty=true}saveLocalItems();activePodcastId='';selectedPodcastMemoId='';localStorage.removeItem(ACTIVE_PODCAST_STORAGE_KEY);closePodcastMemoDrawer();renderAll();scheduleQuickSync();showToast('ポッドキャストノートを削除しました')});
       $('transcriptSearch').addEventListener('input',renderTranscriptSentences);
       const podcastAudio=$('podcastAudio');
       ['timeupdate','seeking','play','pause','ended'].forEach(event=>podcastAudio.addEventListener(event,()=>updateListeningHighlight()));
