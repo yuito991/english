@@ -230,6 +230,7 @@
   <script src="assets/a2-good-language-learner.js"></script>
   <script src="assets/b1-cafe-weekend.js"></script>
   <script src="assets/idiom-dialogues.js?v=source-expanded"></script>
+  <script src="assets/idiom-practice.js"></script>
   <script>
   (()=>{
     'use strict';
@@ -273,7 +274,8 @@
     const A2_LESSON=typeof A2_LISTENING_LESSON==='undefined'?null:A2_LISTENING_LESSON;
     const B1_CAFE_LESSON=typeof B1_CAFE_LISTENING_LESSON==='undefined'?null:B1_CAFE_LISTENING_LESSON;
     const IDIOM_LESSON=typeof IDIOM_DIALOGUES_LESSON==='undefined'?null:IDIOM_DIALOGUES_LESSON;
-    const LISTENING_LESSONS=[A2_LESSON,B1_CAFE_LESSON,IDIOM_LESSON].filter(Boolean);
+    const IDIOM_PRACTICE=typeof IDIOM_PRACTICE_LESSON==='undefined'?null:IDIOM_PRACTICE_LESSON;
+    const LISTENING_LESSONS=[A2_LESSON,B1_CAFE_LESSON,IDIOM_LESSON,IDIOM_PRACTICE].filter(Boolean);
     const KEVIN_PODCAST_ID='builtin-podcast-kevin-japan-parents';
     const KEVIN_TRANSLATIONS=`
 ［英語以外の音声］ポッドキャストへようこそ。みなさん、こんにちは。よし、これを取り上げよう。
@@ -2155,7 +2157,7 @@ london|ロンドン（地名）
       const rows=transcriptItems(),remembered=localStorage.getItem(ACTIVE_PODCAST_STORAGE_KEY)||'';
       if(!activePodcastId&&rows.some(x=>x.id===remembered))activePodcastId=remembered;
       if(activePodcastId&&!rows.some(x=>x.id===activePodcastId)){activePodcastId='';localStorage.removeItem(ACTIVE_PODCAST_STORAGE_KEY)}
-      $('podcastPicker').innerHTML=rows.length?rows.map(row=>{const data=parseTranscriptRow(row),selected=row.id===activePodcastId;return `<button class="podcast-option${selected?' active':''}" type="button" data-id="${escapeHtml(row.id)}" role="option" aria-selected="${selected?'true':'false'}"><span class="podcast-option-bullet" aria-hidden="true"></span><span class="podcast-option-copy"><strong>${escapeHtml(data.title||row.prompt||'名称未設定')}</strong><small>${data.entries.length}セット${podcastListeningLesson(row)?' · 音声付き':''}</small></span></button>`}).join(''):'<div class="transcript-empty">保存済みスクリプトはありません。</div>';
+      $('podcastPicker').innerHTML=rows.length?rows.map(row=>{const data=parseTranscriptRow(row),selected=row.id===activePodcastId,lesson=podcastListeningLesson(row);return `<button class="podcast-option${selected?' active':''}" type="button" data-id="${escapeHtml(row.id)}" role="option" aria-selected="${selected?'true':'false'}"><span class="podcast-option-bullet" aria-hidden="true"></span><span class="podcast-option-copy"><strong>${escapeHtml(data.title||row.prompt||'名称未設定')}</strong><small>${data.entries.length}${lesson?.gapSeconds?'問':'セット'}${lesson?' · 音声付き':''}</small></span></button>`}).join(''):'<div class="transcript-empty">保存済みスクリプトはありません。</div>';
       $('deletePodcastButton').disabled=!activePodcastId;
       $('podcastEditorHeading').textContent=activePodcastId?'スクリプトを編集':'新規スクリプトを作成';
     }
@@ -2171,7 +2173,14 @@ london|ロンドン（地名）
       return LISTENING_LESSONS.find(lesson=>row.id===`${lesson.id}-${scope}`)||null;
     }
     function renderPodcastAudioLabel(){
-      $('podcastAudioStatus').textContent=activeListeningLesson?.audioLabel||'米国英語・合成音声';
+      const audio=$('podcastAudio'),status=$('podcastAudioStatus'),lesson=activeListeningLesson;
+      let label=lesson?.audioLabel||'米国英語・合成音声';
+      if(lesson?.gapSeconds&&!audio.paused&&!audio.ended){
+        const time=audio.currentTime,scene=lesson.entries[listeningCueAt(time,lesson.entries)];
+        if(time>=scene.pauseStart&&time<scene.answerStart)label='答える時間';
+        else if(time>=scene.answerStart&&time<scene.answerEnd)label='正解のセリフ';
+      }
+      if(status.textContent!==label)status.textContent=label;
     }
     function renderPodcastListening(row){
       const panel=$('podcastListening'),audio=$('podcastAudio');
@@ -2200,6 +2209,7 @@ london|ロンドン（地名）
       if(!activeListeningLesson)return;
       const audio=$('podcastAudio'),list=$('transcriptSentenceList');
       const next=(audio.currentTime>0||!audio.paused)&&!audio.ended?listeningCueAt(audio.currentTime,activeListeningLesson.entries):null;
+      if(activeListeningLesson.gapSeconds&&!audio.error)renderPodcastAudioLabel();
       if(!force&&next===activeListeningCue)return;
       const changed=next!==activeListeningCue;
       activeListeningCue=next;
@@ -2226,16 +2236,18 @@ london|ロンドン（地名）
       }).filter(({entry,scene})=>!query||`${entry.en} ${entry.ja} ${scene?.idiom||''} ${scene?.setting||''}`.toLowerCase().includes(query));
       const language=activeListeningLesson?.language||'en-US';
       const openTranslations=openTranscriptTranslations.get(activePodcastId)||new Set();
-      const unit=activeListeningLesson===IDIOM_LESSON&&IDIOM_LESSON?'場面':'セット';
+      const unit=activeListeningLesson?.gapSeconds?'問':activeListeningLesson===IDIOM_LESSON&&IDIOM_LESSON?'場面':'セット';
       $('transcriptCount').textContent=query?`${shown.length} / ${all.length}${unit}`:`${all.length}${unit}`;
       $('transcriptSentenceList').innerHTML=shown.length?shown.map(({entry,index,cue,scene})=>{
         const key=transcriptEntryKey(entry),memoId=memoed.get(key)||'',done=Boolean(memoId),translationKey=`${index}-${stableTextHash(key)}`;
         const hasCue=cue!==undefined;
-        const displayNumber=scene?.idiom?cue+1:entry.number||index+1;
-        const heading=scene?.idiom?`<div class="dialogue-meta"><strong lang="${escapeHtml(language)}">${escapeHtml(scene.idiom)}</strong><span>${escapeHtml(scene.setting)}</span><span>${escapeHtml(scene.origin)}</span></div>`:'';
+        const displayNumber=scene?.idiom||scene?.answer?cue+1:entry.number||index+1;
+        const heading=scene?.answer?`<div class="dialogue-meta"><span>${escapeHtml(scene.setting)}</span></div>`:scene?.idiom?`<div class="dialogue-meta"><strong lang="${escapeHtml(language)}">${escapeHtml(scene.idiom)}</strong><span>${escapeHtml(scene.setting)}</span><span>${escapeHtml(scene.origin)}</span></div>`:'';
+        const foldedText=scene?.answer||entry.ja;
+        const folded=`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">${scene?.answer?'正解を表示':'和訳を表示'}</span><span class="translation-hide">${scene?.answer?'正解を閉じる':'和訳を閉じる'}</span></summary><div class="transcript-ja" lang="${scene?.answer?escapeHtml(language):'ja'}">${escapeHtml(foldedText)}</div></details>`;
         const memoButton=`<button class="ghost transcript-add" type="button" data-index="${index}">${done?'メモを見る':'＋ メモ'}</button>`;
         const actions=hasCue?`<div class="listening-actions"><button class="ghost transcript-add listening-seek" type="button" data-cue="${cue}" title="この段落から再生" aria-label="段落${index+1}から再生">▶ ここから</button>${memoButton}</div>`:memoButton;
-        return `<div class="transcript-sentence${done?' memoed':''}"${hasCue?` data-listening-cue="${cue}"`:''}${done&&!hasCue?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(displayNumber)}</span><div class="transcript-text">${heading}<div class="transcript-en${heading?' dialogue-lines':''}"${hasCue?` lang="${escapeHtml(language)}"`:''}>${escapeHtml(entry.en||'—')}</div>${entry.ja?`<details class="transcript-translation" data-podcast-id="${escapeHtml(activePodcastId)}" data-translation-key="${translationKey}"${openTranslations.has(translationKey)?' open':''}><summary><span class="translation-show">和訳を表示</span><span class="translation-hide">和訳を閉じる</span></summary><div class="transcript-ja">${escapeHtml(entry.ja)}</div></details>`:''}</div>${actions}</div>`;
+        return `<div class="transcript-sentence${done?' memoed':''}"${hasCue?` data-listening-cue="${cue}"`:''}${done&&!hasCue?` data-memo-id="${escapeHtml(memoId)}" role="button" tabindex="0" aria-label="この文章のメモを見る"`:''}><span class="transcript-number">${escapeHtml(displayNumber)}</span><div class="transcript-text">${heading}<div class="transcript-en${heading?' dialogue-lines':''}"${hasCue?` lang="${escapeHtml(language)}"`:''}>${escapeHtml(entry.en||'—')}</div>${foldedText?folded:''}</div>${actions}</div>`;
       }).join(''):`<div class="transcript-empty">${all.length?'検索に一致する文章がありません。':'「新規作成」または既存のスクリプトを選んでください。'}</div>`;
       updateListeningHighlight(true);
     }

@@ -1,0 +1,232 @@
+const IDIOM_PRACTICE_LESSON = {
+  "id": "builtin-podcast-idiom-practice",
+  "title": "イディオム穴埋め｜声に出す練習",
+  "audio": "assets/idiom-practice.mp3",
+  "defaultRate": 0.85,
+  "language": "en-US",
+  "source": "https://youtu.be/-hNLtsV4qXk",
+  "gapSeconds": 4,
+  "audioLabel": "空欄で約4秒（初期速度） → 正解のセリフ",
+  "entries": [
+    {
+      "n": 1,
+      "e": "A: You look sick.\nB: Yeah, I feel ［空欄］.",
+      "j": "",
+      "start": 0,
+      "pauseStart": 3.285,
+      "answerStart": 6.685,
+      "answerEnd": 9.435,
+      "answer": "under the weather",
+      "setting": "外出先で体調が悪い"
+    },
+    {
+      "n": 3,
+      "e": "A: I haven't seen Jose in a while.\nB: Well, ［空欄］, he's walking towards us right now.",
+      "j": "",
+      "start": 10.015,
+      "pauseStart": 14.2,
+      "answerStart": 17.6,
+      "answerEnd": 22.375,
+      "answer": "speaking of the devil",
+      "setting": "ホセが現れる"
+    },
+    {
+      "n": 5,
+      "e": "A: Hey, let's go. I need to go home.\nB: ［空欄］. We just got here.",
+      "j": "",
+      "start": 22.955,
+      "pauseStart": 26.215,
+      "answerStart": 29.615,
+      "answerEnd": 32.915,
+      "answer": "Hold your horses",
+      "setting": "着いたばかりなのに"
+    },
+    {
+      "n": 7,
+      "e": "Love you, Dad. Take care. My dad calls me ［空欄］. He's always busy.",
+      "j": "",
+      "start": 33.495,
+      "pauseStart": 37.065,
+      "answerStart": 40.465,
+      "answerEnd": 44.49,
+      "answer": "once in a blue moon",
+      "setting": "父からの電話"
+    },
+    {
+      "n": 9,
+      "e": "Hey, you should ［空欄］. Maybe ask her what her name is.",
+      "j": "",
+      "start": 45.07,
+      "pauseStart": 46.865,
+      "answerStart": 50.265,
+      "answerEnd": 54.265,
+      "answer": "break the ice",
+      "setting": "初対面で名前を聞く"
+    },
+    {
+      "n": 11,
+      "e": "Hey, can I talk to you for a sec? I really need to ［空欄］. You know what? I didn't even like working there anyway. By the way, you didn't even pay me minimum wage. Bye.",
+      "j": "",
+      "start": 54.845,
+      "pauseStart": 58.665,
+      "answerStart": 62.065,
+      "answerEnd": 71.765,
+      "answer": "get something off my chest",
+      "setting": "話を切り出す"
+    },
+    {
+      "n": 13,
+      "e": "All right, enough emails for today. Let's ［空欄］.",
+      "j": "",
+      "start": 72.345,
+      "pauseStart": 75.84,
+      "answerStart": 79.24,
+      "answerEnd": 81.065,
+      "answer": "call it a day",
+      "setting": "メールを切り上げる"
+    },
+    {
+      "n": 15,
+      "e": "A: Oh no.\nB: What's wrong?\nA: I forgot my credit card. How can I pay for this?\nB: Hey, take a deep breath and ［空欄］. You can use my credit card.\nA: Thank you.",
+      "j": "",
+      "start": 81.645,
+      "pauseStart": 91.86,
+      "answerStart": 95.26,
+      "answerEnd": 101.11,
+      "answer": "pull yourself together",
+      "setting": "会計でカードを忘れる"
+    },
+    {
+      "n": 17,
+      "e": "A: Hey, did you hear what happened to Santi yesterday?\nB: No, ［空欄］.",
+      "j": "",
+      "start": 103.455,
+      "pauseStart": 108.615,
+      "answerStart": 112.015,
+      "answerEnd": 114.34,
+      "answer": "spill the beans",
+      "setting": "サンティに何があった？"
+    },
+    {
+      "n": 19,
+      "e": "Oh, wow. This place really ［空欄］ with their decorations. They even have Mr. Red Legs.",
+      "j": "",
+      "start": 114.92,
+      "pauseStart": 117.515,
+      "answerStart": 120.915,
+      "answerEnd": 126.965,
+      "answer": "went the extra mile",
+      "setting": "お店の飾りつけ"
+    },
+    {
+      "n": 21,
+      "e": "hey, I ［空欄］. Get away from my car.",
+      "j": "",
+      "start": 127.545,
+      "pauseStart": 129.265,
+      "answerStart": 132.665,
+      "answerEnd": 136.415,
+      "answer": "caught you red-handed",
+      "setting": "車のそばで見つかる"
+    },
+    {
+      "n": 23,
+      "e": "A: Man, a hot cup of coffee sounds really good right now.\nB: ［空欄］. Let's go order one.\nA: Yeah.",
+      "j": "",
+      "start": 136.995,
+      "pauseStart": 141.255,
+      "answerStart": 144.655,
+      "answerEnd": 148.38,
+      "answer": "You can say that again",
+      "setting": "温かいコーヒー"
+    },
+    {
+      "n": 25,
+      "e": "A: Hey, they build that fast.\nB: Yeah, I hope they didn't ［空欄］ anywhere important.",
+      "j": "",
+      "start": 150.55,
+      "pauseStart": 155.51,
+      "answerStart": 158.91,
+      "answerEnd": 163.335,
+      "answer": "cut corners",
+      "setting": "工事の仕上がり"
+    },
+    {
+      "n": 27,
+      "e": "A: we need to work 5 days a week.\nB: I agree. We're ［空欄］.",
+      "j": "",
+      "start": 163.915,
+      "pauseStart": 168.825,
+      "answerStart": 172.225,
+      "answerEnd": 174.5,
+      "answer": "on the same page",
+      "setting": "週の勤務日数"
+    },
+    {
+      "n": 29,
+      "e": "A: I love this bar. I'm going to get drunk.\nB: Hey, ［空欄］. It's only 3:00.",
+      "j": "",
+      "start": 175.08,
+      "pauseStart": 179.84,
+      "answerStart": 183.24,
+      "answerEnd": 187.19,
+      "answer": "take it easy",
+      "setting": "まだ午後3時"
+    },
+    {
+      "n": 31,
+      "e": "A: Have you tried salted caramel?\nB: I've never tried that.\nA: You should ［空欄］.",
+      "j": "",
+      "start": 187.77,
+      "pauseStart": 194.57,
+      "answerStart": 197.97,
+      "answerEnd": 199.795,
+      "answer": "give it a shot",
+      "setting": "塩キャラメルを勧める"
+    },
+    {
+      "n": 33,
+      "e": "Come on. Okay, Ariana, ［空欄］. I know you lost this round, but in the next round, we're going to beat the other team.",
+      "j": "",
+      "start": 200.375,
+      "pauseStart": 203.02,
+      "answerStart": 206.42,
+      "answerEnd": 213.97,
+      "answer": "hang in there",
+      "setting": "次の試合に向けて"
+    },
+    {
+      "n": 35,
+      "e": "A: Hello. I love your jacket.\nB: Oh, thank you.\nA: I ［空欄］ people from Cincinnati. They're super nice.",
+      "j": "",
+      "start": 214.55,
+      "pauseStart": 220.75,
+      "answerStart": 224.15,
+      "answerEnd": 228.3,
+      "answer": "get along with",
+      "setting": "シンシナティ出身の人"
+    },
+    {
+      "n": 37,
+      "e": "finally sunshine and some warm weather. I'm ［空欄］ because it's the first day of the year where I don't have to wear a winter jacket.",
+      "j": "",
+      "start": 228.88,
+      "pauseStart": 232.625,
+      "answerStart": 236.025,
+      "answerEnd": 242.25,
+      "answer": "on cloud nine",
+      "setting": "冬のコートがいらない日"
+    },
+    {
+      "n": 39,
+      "e": "Angie, the cookies and cream cupcake is ［空欄］ the best cupcake.",
+      "j": "",
+      "start": 242.83,
+      "pauseStart": 246.15,
+      "answerStart": 249.55,
+      "answerEnd": 254.575,
+      "answer": "hands down",
+      "setting": "一番おいしいカップケーキ"
+    }
+  ]
+};
